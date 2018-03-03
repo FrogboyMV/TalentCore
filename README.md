@@ -105,8 +105,8 @@ From here on out, most of the parameters are just single values that you fill in
 **Save Talents Object** - Setting this to true allows you to modify the $dataTalents object, which contains most of the information within the plugin parameters, when the player saves the game.  By default, this object is built from the plugin parameters when a new game is started or a saved game is loaded.  This is usually what you’ll want.  If, for some reason, you need need to alter this data in-game and have those changes persist until the end of the game, you’ll need to turn this option on.
 
 **Max Type** - There are two options here that will allow you to customize how your players assign their talents.
-Relative to Level - This option sets a cap on how many ranks a player can assign to a single skill based on the actor’s level plus the number entered in for Max Ranks.  If the Max Ranks is 3, an actor cannot assign more than Level+3 ranks into any one skill.
-Strict Value - This option sets a cap on how many ranks a player can assign to a single skill based on the number entered in for Max Ranks.  If Max Ranks is 100, an actor can freely add ranks to a single skill until the max is reached.
+* **Relative to Level** - This option sets a cap on how many ranks a player can assign to a single skill based on the actor’s level plus the number entered in for Max Ranks.  If the Max Ranks is 3, an actor cannot assign more than Level+3 ranks into any one skill.
+* **Strict Value** - This option sets a cap on how many ranks a player can assign to a single skill based on the number entered in for Max Ranks.  If Max Ranks is 100, an actor can freely add ranks to a single skill until the max is reached.
 
 **Max Ranks** - The maximum number of points that can be spent on a Talent is based on the Max Type setting.  This is the value that is either added to the character level or the absolute maximum that an actor can ever achieve without bonuses, of course.
 
@@ -117,7 +117,7 @@ Strict Value - This option sets a cap on how many ranks a player can assign to a
 
 Checks are an integral part of the Talent system.  It’s neat to have your players build up their character’s out-of-combat abilities but it wouldn’t do them much good unless there were ways to make sure that they possessed enough skill to accomplish whatever task stood in front of them.  That’s where talent checks come in.  So how does a Talent Check work?  Well, that’s mostly up to you.  I’ve provided three choices on how to manage this and the choice you make will largely depend on how much RNG (random number generator) you like in your game.  To perform a Talent Check, you can use the following Plugin command.
 
-TALENT CHECK [list of parameters]
+`TALENT CHECK [list of parameters]`
 
 To avoid making you memorize the exact order of the parameters and have you enter in cryptic plugin commands like TALENT CHECK 1 0 5 4 13 27 etc, I’ve done my best to streamline this with name/value pairs.  Each parameter name is immediately followed by a colon which is immediately followed by the value.  This way, you don’t have to remember the order of all these parameters and as you’ll see in a minute, you won’t have to specify all of them either.  I’ll show you some examples after I explain what all of the parameters do.
 
@@ -170,19 +170,29 @@ One word of warning.  Named Modifiers have no way of determining when they make 
 
 *Examples Plugin Command calls:*
 
-`TALENT CHECK var:5 type:max aid:1 abbr:perc target:4 view:none`
+```
+TALENT CHECK var:5 type:max aid:1 abbr:perc target:4 view:none
+```
 Actor ID 1 will use their Max Score in the Perception (pct) talent and see if it meets a target of 4 or more.  The result will be stored in Variable ID 5.
 
-`TALENT CHECK var:6 type:rnd aid:2 abbr:jump target:3 view:ask`
+```
+TALENT CHECK var:6 type:rnd aid:2 abbr:jump target:3 view:ask
+```
 Actor ID 2 will be asked if they want to attempt a Jump (jmp) check.  The result will be stored in Variable ID 5.
 
-`TALENT CHECK var:7 type:roll aid:3 abbr:arca mod:2 target:13 view:show dcount:1 die:20`
+```
+TALENT CHECK var:7 type:roll aid:3 abbr:arca mod:2 target:13 view:show dcount:1 die:20
+```
 Actor ID 3 will be shown whether they know some detail of magical lore through an Arcana (arc) check.  A roll of 1d20 will be made, +2 will be added to the character’s Arcana Score and the result will be targeting the difficulty of 13.  The result will be stored in Variable ID 7.
 
-`TALENT CHECK abbr:lock target:11`
+```
+TALENT CHECK abbr:lock target:11
+```
 Your best lockpicker will attempt a check using all of the default values specified in the editor’s plugin parameters. This is likely what most of your Plugin Command calls will look like.
 
-`TALENT CHECK aid:v[8] abbr:v[9] target:v[10]`
+```
+TALENT CHECK aid:v[8] abbr:v[9] target:v[10]
+```
 This is a way that you can more easily run a check through all of the party members by utilizing variables instead of hard-coded values.  You can set variable 8 to the ID of the party leader, variable 9 to the Talent Abbreviation and variable 10 to the Target Number.  Run the check, change variable 8 to the next person in the party and run it again.  Do the same for the last couple party members and you’re done.  While you could still hard-code these values for the four checks, changing the values if you decide to do so becomes more cumbersome.  Just a little nicety I threw in to make your development a little easier.
 
 If you prefer using JavaScript calls instead of Plugin Commands, you can do the following to get the same effects as above.
@@ -199,46 +209,84 @@ var x = FROG.Talents.talentCheck({ var: 7, type: roll, aid: 3, abbr: ‘arca’,
 *Other useful Plugin Commands and Script Calls:*
 
 Open the Talents Menu.
-`TALENT OPEN`
+```
+TALENT OPEN
+```
 ```javascript
 SceneManager.push(Scene_Talents);
 ```
 
 Get the current Talent Points for an actor.
-`TALENT GETPOINTS [actorId] [variableId]`
+```
+TALENT GETPOINTS [actorId] [variableId]
+```
+```javascript
 FROG.Talents.getTalentPoints(actorId);
+```
 
 Set the Talent Points for an actor.
-`TALENT SETPOINTS [actorId] [points]`
+```
+TALENT SETPOINTS [actorId] [points]
+```
+```javascript
 FROG.Talents.setTalentPoints(actorId, points);
+```
 
 Add Talent Points to an actor’s pool.
-`TALENT ADDPOINTS [actorId] [points]`
+```
+TALENT ADDPOINTS [actorId] [points]
+```
+```javascript
 FROG.Talents.addTalentPoints(actorId, points);
+```
 
 Remove Talent Points from an actor’s pool.
-`TALENT REMPOINTS [actorId] [points]`
+```
+TALENT REMPOINTS [actorId] [points]
+```
+```javascript
 FROG.Talents.removeTalentPoints(actorId, points);
+```
 
 Get the current Talent Ranks for an actor. [abbr] is the Talent Abbreviation.
-`TALENT GETRANKS [actorId] [abbr] [variableId]`
+```
+TALENT GETRANKS [actorId] [abbr] [variableId]
+```
+```javascript
 FROG.Talents.getTalentRanks(actorId, abbr);
+```
 
 Set the Talent Ranks for an actor’s talent.
-`TALENT SETRANKS [actorId] [abbr] [ranks]`
+```
+TALENT SETRANKS [actorId] [abbr] [ranks]
+```
+```javascript
 FROG.Talents.setTalentRanks(actorId, abbr, ranks);
+```
 
 Add Talent Ranks to an actor’s talent.
-`TALENT ADDRANKS [actorId] [abbr] [ranks]`
+```
+TALENT ADDRANKS [actorId] [abbr] [ranks]
+```
+```javascript
 FROG.Talents.addTalentRanks(actorId, abbr, ranks);
+```
 
 Remove Talent Ranks from an actor’s talent.
-`TALENT REMRANKS [actorId] [abbr] [ranks]`
+```
+TALENT REMRANKS [actorId] [abbr] [ranks]
+```
+```javascript
 FROG.Talents.removeTalentRanks(actorId, abbr, ranks);
+```
 
 Get the current Talent Score for an actor.
-`TALENT GETSCORE [actorId] [abbr] [variableId]`
+```
+TALENT GETSCORE [actorId] [abbr] [variableId]
+```
+```javascript
 FROG.Talents.getTalentScore(actorId, abbr);
+```
 
 ### Enemy Talent Scores and Target Numbers
 
@@ -249,17 +297,27 @@ Enemies can have talents too.  This is useful for formula boxes where skills mig
 * **ROLL** - This will also return the average result that the enemy would get if they were making a check based on the dice rolled and the size of the dice.  If a Bat has a Stealth of 5 and the check is 1d20, the Target Number of 15 will be returned.  This is calculated by halving the total maximum roll of the dice and then adding the Talent Score to the result.  If a Bat actually made a Talent Check, the average roll in this case would be 10.5 rounded down plus the bat’s score of 5.
 
 Get a Talent Score from an enemy.
-`TALENT ENEMYSCORE [enemyId] [abbr] [variableId]`
+```
+TALENT ENEMYSCORE [enemyId] [abbr] [variableId]
+```
 
 If a Bat has a talent score of 5, the value of 5 will be stored in variable 12.
-`TALENT ENEMYSCORE eid:1 abbr:stea var:12`
+```
+TALENT ENEMYSCORE eid:1 abbr:stea var:12
+```
+```javascript
 FROG.Talents.getEnemyTalentScore(enemyId, abbr);
+```
 
 Get a Target Number from an enemy
-`TALENT ENEMYTN [parameters]`
+```
+TALENT ENEMYTN [parameters]
+```
 
 Enemy checks can utilize some of the same parameters as Talent Checks: var, type, eid, abbr, die and dcount.  Default values will fill in when not specified.
-`TALENT ENEMYTN eid:1 abbr:stea var:12`
+```
+TALENT ENEMYTN eid:1 abbr:stea var:12
+```
 ```javascript
 FROG.Talents.enemyTargetNumber({
 	eid: 1,
@@ -345,7 +403,9 @@ I’m sure you’re wondering by now if there’s a way to add bonuses to weapon
 Bonuses and Penalties to Equipment, Items and States
 
 *Adding bonuses and penalties:*
-`<TalentBonus: [bonus_1] [abbr_1], [bonus_2] [abbr_2], … [bonus_n] [abbr_n]>`
+```
+<TalentBonus: [bonus_1] [abbr_1], [bonus_2] [abbr_2], … [bonus_n] [abbr_n]>
+```
 
 *Examples (the + is optional):*
 Add +3 to Religion: `<TalentBonus: +3 reli>`
@@ -364,12 +424,12 @@ Some weapons, armor and items are just not usable without extensive training.  M
 ```
 
 *Examples for equipment:*
-Equip Wizard’s Cloak requires 7 ranks of Arcana: <TalentReq: arca rank 7>
-Equip an Intelligent Sword requires a Talent Score of 30 in Persuasion: <TalentReq: pers score 30>
+Equip Wizard’s Cloak requires 7 ranks of Arcana: `<TalentReq: arca rank 7>`
+Equip an Intelligent Sword requires a Talent Score of 30 in Persuasion: `<TalentReq: pers score 30>`
 
 *Examples for Item Use*:*
-Hi-potion requires a talent score of 5 Medicine to use on yourself or anyone else: <TalentReqGive: medi score 5>
-Fire Spell requires a talent rank of 3 Arcana to use on yourself and thus, learn Fire: <TalentReqGet: arca rank 3>
+Hi-potion requires a talent score of 5 Medicine to use on yourself or anyone else: `<TalentReqGive: medi score 5>`
+Fire Spell requires a talent rank of 3 Arcana to use on yourself and thus, learn Fire: `<TalentReqGet: arca rank 3>`
 
 * Note that when an item with a requirement is used, the plugin will find the actor with the best Pharmacology score that meets the requirement when outside of battle.
 

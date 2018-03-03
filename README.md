@@ -47,9 +47,9 @@ This is the main parameter where you set up all of the talents you are going to 
 Later on, you will encounter a setting for Max Type.  By default, this is set to be relative to the actor’s level.  If you change this setting to “Strict Value” then a Class Signature talent will grant one free talent rank per level instead of max ranks.
 
 **Visibility Mode** - By default, all classes can see and add ranks to any talent.  But you may not want this as it can be handy to piggyback some extra data within talents and want to keep it hidden from your players.  Perhaps you need an Alignment value associated with each actor and want to just use a talent to keep this value.  You can do that but, of course, you don’t want your players adding ranks to it or adjusting the value in any way.  The game will handle that.  For each talent, you can select one of the following three visibility modes.
-* Visible to All - This is the default.  All classes can see this talent add ranks to it unless one of the other parameters changes that functionality.
-* Visible to None - This talent is hidden from the player.  It will not show up in their Talent Window which means that they cannot add ranks to it either.  You will need to tell the game how to handle and use this talent.
-* Visible to Specific Classes - This talent is only visible to classes listed in the Class Visibility parameter.  This is typically only used for talents that are specifically geared towards a certain class.  Maybe you have a Martial Arts talent that only your Monk and Ninja classes can utilize.  You can assign those classes here and only they will be able to see and add ranks to it.
+* **Visible to All** - This is the default.  All classes can see this talent add ranks to it unless one of the other parameters changes that functionality.
+* **Visible to None** - This talent is hidden from the player.  It will not show up in their Talent Window which means that they cannot add ranks to it either.  You will need to tell the game how to handle and use this talent.
+* **Visible to Specific Classes** - This talent is only visible to classes listed in the Class Visibility parameter.  This is typically only used for talents that are specifically geared towards a certain class.  Maybe you have a Martial Arts talent that only your Monk and Ninja classes can utilize.  You can assign those classes here and only they will be able to see and add ranks to it.
 
 **Class Visibility** - If you selected Visible to Specific Classes as the Visibility Mode in the previous parameter, you can specify the classes that have access to this talent here.  As in the example listed above, you would add your Monk and Ninja classes here for your Martial Arts talent so that they would be able to utilize it while the rest of the classes could not.
 
@@ -122,9 +122,9 @@ TALENT CHECK [list of parameters]
 To avoid making you memorize the exact order of the parameters and have you enter in cryptic plugin commands like TALENT CHECK 1 0 5 4 13 27 etc, I’ve done my best to streamline this with name/value pairs.  Each parameter name is immediately followed by a colon which is immediately followed by the value.  This way, you don’t have to remember the order of all these parameters and as you’ll see in a minute, you won’t have to specify all of them either.  I’ll show you some examples after I explain what all of the parameters do.
 
 **type** - There are three types of Talent Checks: MAX, RND and ROLL.
-* MAX - Returns the character’s current Talent Score.  You get no randomness with this type so you’ll mostly be dealing with all or nothing scenarios.  The character is either talented enough to perform the task or is not.
-* RND - Random number between 1 and Max Score.  With this check, you still have the same maximum potential to perform any given task but similar to real life, you don’t always perform at your maximum talent level.  Sometimes you nail it.  Other times, you can totally fumble it, especially if you are under pressure.
-* ROLL - If you love tabletop then you love rolling dice and here’s the option that emulates it.  You will define which die and how many are rolled.  This allows you to have more fine control over the randomness by giving your characters a Min and Max potential for each check and also by introducing bell curves into the mix so that most of the checks usually fall closer to the middle of their potential while still allowing for larger successes and greater failures.
+* **MAX** - Returns the character’s current Talent Score.  You get no randomness with this type so you’ll mostly be dealing with all or nothing scenarios.  The character is either talented enough to perform the task or is not.
+* **RND** - Random number between 1 and Max Score.  With this check, you still have the same maximum potential to perform any given task but similar to real life, you don’t always perform at your maximum talent level.  Sometimes you nail it.  Other times, you can totally fumble it, especially if you are under pressure.
+* **ROLL** - If you love tabletop then you love rolling dice and here’s the option that emulates it.  You will define which die and how many are rolled.  This allows you to have more fine control over the randomness by giving your characters a Min and Max potential for each check and also by introducing bell curves into the mix so that most of the checks usually fall closer to the middle of their potential while still allowing for larger successes and greater failures.
 
 **aid** - This is the ID of the actor who is performing the talent check.  If no Actor ID is specified, the system will determine who has the best Talent Score for the listed talent and they will be the one who performs the check.
 
@@ -139,9 +139,9 @@ To avoid making you memorize the exact order of the parameters and have you ente
 **dcount** - This is the number of dice to roll for the check.  The standard d20 roll is, of course, 1d20.  This would be dcount:1 die:20.  The die and dcount options allow you to set up different probability curves and such.  2d10 will give you results between 2-20 in a nice probability wedge that nudges results near the middle (11 will occur far more often than 2 or 20) while 3d6 gives you a bell curve where results outside of the middle few values are much more rare and become even more so as you add more to the dcount.
 
 **view** - The view mode determines how the results will be be displayed and whether your players have the opportunity to assess the difficulty of the check and decide for themself to attempt it or to pass.  There are three view modes.
-* None - This will cause the check to happen entirely out of view from the player.  These are often times called passive checks as the player may not ever know that they even made one.  Say your party is walking through a dungeon and are passing by a secret door.  You could make a check with the character who has the best Perception talent (or even with all of the characters individually) and see if they notice that a secret door is near them.  If the character fails the check, they get no feedback and will probably just keep walking by.  If they pass the check, you can toss in a short dialog or maybe some sparkles or something to let the player know that they spotted the secret.
-* Show - This option will inform the player that they are making a Talent Check and provide a nice new window to facilitate the process.  The window will pop up in the middle of the screen, display the Target Number alongside a gauge labeled Difficulty, and another Talent Check gauge will begin to fill from completely empty to whatever their check result is.  I designed the window like this to instill a couple seconds of anxiety and anticipation as they won’t know if the bar will stop short (fail) or reach/exceed the Target Number (success).  I’m trying to capture the anticipation you get in tabletop games when you roll the dice and are adding up the result to see if you succeeded or not.
-* Ask - The Ask option works exactly like the Show option except for one very important detail.  Before the check is made, the player gets to see the Talent Check window and the difficulty of the check that is about to be performed and asks the player if they want to attempt the check or decline the attempt.  Say your Barbarian has a really good Jump talent and decides that he’s going to jump from one cliff edge to another because there is a treasure chest on the other side.  When the Ask check is initiated, he doesn’t actually attempt the jump right away.  The player gets to see the the difficulty first and determine whether it’s worth the risk.  If the Difficulty bar is low, their odds are good and they’ll probably go for it.  If the bar is high, they would probably be best off coming back later when the Barbarian’s jump has improved and they’re less likely to take a bunch of falling damage on a likely fail.
+* **None** - This will cause the check to happen entirely out of view from the player.  These are often times called passive checks as the player may not ever know that they even made one.  Say your party is walking through a dungeon and are passing by a secret door.  You could make a check with the character who has the best Perception talent (or even with all of the characters individually) and see if they notice that a secret door is near them.  If the character fails the check, they get no feedback and will probably just keep walking by.  If they pass the check, you can toss in a short dialog or maybe some sparkles or something to let the player know that they spotted the secret.
+* **Show** - This option will inform the player that they are making a Talent Check and provide a nice new window to facilitate the process.  The window will pop up in the middle of the screen, display the Target Number alongside a gauge labeled Difficulty, and another Talent Check gauge will begin to fill from completely empty to whatever their check result is.  I designed the window like this to instill a couple seconds of anxiety and anticipation as they won’t know if the bar will stop short (fail) or reach/exceed the Target Number (success).  I’m trying to capture the anticipation you get in tabletop games when you roll the dice and are adding up the result to see if you succeeded or not.
+* **Ask** - The Ask option works exactly like the Show option except for one very important detail.  Before the check is made, the player gets to see the Talent Check window and the difficulty of the check that is about to be performed and asks the player if they want to attempt the check or decline the attempt.  Say your Barbarian has a really good Jump talent and decides that he’s going to jump from one cliff edge to another because there is a treasure chest on the other side.  When the Ask check is initiated, he doesn’t actually attempt the jump right away.  The player gets to see the the difficulty first and determine whether it’s worth the risk.  If the Difficulty bar is low, their odds are good and they’ll probably go for it.  If the bar is high, they would probably be best off coming back later when the Barbarian’s jump has improved and they’re less likely to take a bunch of falling damage on a likely fail.
 
 **rem** - Key for a check that the player cannot retry without getting the same result.  This property is only valid for the RND and ROLL check types.  Say your Thief tries to pick a difficult lock an is unable open it.  What’s stopping them from just trying over and over again until they get a lucky RNG value to get the lock open?  One way is institute a negative consequence for failure.  Maybe there’s a chance the party gets into a fight each time the Thief fails at their attempt.  It makes sense as the group is waiting a long time as the Thief keeps trying.  Another way is prevent getting different Talent Check results on retries.  If you send a rem value, the result of the first attempt will be stored and any subsequent attempts will yield the same result.  In essence, the first try determines the character’s ability to pick the lock.  If they fail, they cannot pick the lock.  Other actors may try if given the opportunity but only once.  Once a character levels up, they are then able to make another attempt even if they didn’t raise their ranks.  They have advanced and another attempt is warranted.
 
@@ -170,70 +170,74 @@ One word of warning.  Named Modifiers have no way of determining when they make 
 
 *Examples Plugin Command calls:*
 
-TALENT CHECK var:5 type:max aid:1 abbr:perc target:4 view:none
+`TALENT CHECK var:5 type:max aid:1 abbr:perc target:4 view:none`
 Actor ID 1 will use their Max Score in the Perception (pct) talent and see if it meets a target of 4 or more.  The result will be stored in Variable ID 5.
 
-TALENT CHECK var:6 type:rnd aid:2 abbr:jump target:3 view:ask
+`TALENT CHECK var:6 type:rnd aid:2 abbr:jump target:3 view:ask`
 Actor ID 2 will be asked if they want to attempt a Jump (jmp) check.  The result will be stored in Variable ID 5.
 
-TALENT CHECK var:7 type:roll aid:3 abbr:arca mod:2 target:13 view:show dcount:1 die:20
+`TALENT CHECK var:7 type:roll aid:3 abbr:arca mod:2 target:13 view:show dcount:1 die:20`
 Actor ID 3 will be shown whether they know some detail of magical lore through an Arcana (arc) check.  A roll of 1d20 will be made, +2 will be added to the character’s Arcana Score and the result will be targeting the difficulty of 13.  The result will be stored in Variable ID 7.
 
-TALENT CHECK abbr:lock target:11
+`TALENT CHECK abbr:lock target:11`
 Your best lockpicker will attempt a check using all of the default values specified in the editor’s plugin parameters. This is likely what most of your Plugin Command calls will look like.
 
-TALENT CHECK aid:v[8] abbr:v[9] target:v[10]
+`TALENT CHECK aid:v[8] abbr:v[9] target:v[10]`
 This is a way that you can more easily run a check through all of the party members by utilizing variables instead of hard-coded values.  You can set variable 8 to the ID of the party leader, variable 9 to the Talent Abbreviation and variable 10 to the Target Number.  Run the check, change variable 8 to the next person in the party and run it again.  Do the same for the last couple party members and you’re done.  While you could still hard-code these values for the four checks, changing the values if you decide to do so becomes more cumbersome.  Just a little nicety I threw in to make your development a little easier.
 
 If you prefer using JavaScript calls instead of Plugin Commands, you can do the following to get the same effects as above.
 
 *Example Script calls:*
 
+```javascript
 var x = FROG.Talents.talentCheck({ var: 5, type: max, aid: 1, abbr: ‘perc’, target: 4, view: ‘none’ });
 var x = FROG.Talents.talentCheck({ var: 6, type: rnd, aid: 2, abbr: ‘jump’, target: 3, view: ‘ask’ });
 var x = FROG.Talents.talentCheck({ abbr: ‘lock’, target: 11 });
 var x = FROG.Talents.talentCheck({ var: 7, type: roll, aid: 3, abbr: ‘arca’, mod: 2, target: 13, view: ‘show’, dcount: 1, die: 20 });
+```
 
 *Other useful Plugin Commands and Script Calls:*
 
 Open the Talents Menu.
-TALENT OPEN
+`TALENT OPEN`
+```javascript
 SceneManager.push(Scene_Talents);
+```
 
 Get the current Talent Points for an actor.
-TALENT GETPOINTS [actorId] [variableId]
+`TALENT GETPOINTS [actorId] [variableId]`
 FROG.Talents.getTalentPoints(actorId);
 
 Set the Talent Points for an actor.
-TALENT SETPOINTS [actorId] [points]
+`TALENT SETPOINTS [actorId] [points]`
 FROG.Talents.setTalentPoints(actorId, points);
 
 Add Talent Points to an actor’s pool.
-TALENT ADDPOINTS [actorId] [points]
+`TALENT ADDPOINTS [actorId] [points]`
 FROG.Talents.addTalentPoints(actorId, points);
 
 Remove Talent Points from an actor’s pool.
-TALENT REMPOINTS [actorId] [points]
+`TALENT REMPOINTS [actorId] [points]`
 FROG.Talents.removeTalentPoints(actorId, points);
 
 Get the current Talent Ranks for an actor. [abbr] is the Talent Abbreviation.
-TALENT GETRANKS [actorId] [abbr] [variableId]
+`TALENT GETRANKS [actorId] [abbr] [variableId]`
 FROG.Talents.getTalentRanks(actorId, abbr);
 
 Set the Talent Ranks for an actor’s talent.
-TALENT SETRANKS [actorId] [abbr] [ranks]
+`TALENT SETRANKS [actorId] [abbr] [ranks]`
 FROG.Talents.setTalentRanks(actorId, abbr, ranks);
 
 Add Talent Ranks to an actor’s talent.
-TALENT ADDRANKS [actorId] [abbr] [ranks]
+`TALENT ADDRANKS [actorId] [abbr] [ranks]`
 FROG.Talents.addTalentRanks(actorId, abbr, ranks);
 
 Remove Talent Ranks from an actor’s talent.
-TALENT REMRANKS [actorId] [abbr] [ranks]
+`TALENT REMRANKS [actorId] [abbr] [ranks]`
 FROG.Talents.removeTalentRanks(actorId, abbr, ranks);
 
 Get the current Talent Score for an actor.
-TALENT GETSCORE [actorId] [abbr] [variableId]
+`TALENT GETSCORE [actorId] [abbr] [variableId]`
 FROG.Talents.getTalentScore(actorId, abbr);
 
 ### Enemy Talent Scores and Target Numbers
@@ -245,23 +249,24 @@ Enemies can have talents too.  This is useful for formula boxes where skills mig
 * **ROLL** - This will also return the average result that the enemy would get if they were making a check based on the dice rolled and the size of the dice.  If a Bat has a Stealth of 5 and the check is 1d20, the Target Number of 15 will be returned.  This is calculated by halving the total maximum roll of the dice and then adding the Talent Score to the result.  If a Bat actually made a Talent Check, the average roll in this case would be 10.5 rounded down plus the bat’s score of 5.
 
 Get a Talent Score from an enemy.
-TALENT ENEMYSCORE [enemyId] [abbr] [variableId]
+`TALENT ENEMYSCORE [enemyId] [abbr] [variableId]`
 
 If a Bat has a talent score of 5, the value of 5 will be stored in variable 12.
-TALENT ENEMYSCORE eid:1 abbr:stea var:12
+`TALENT ENEMYSCORE eid:1 abbr:stea var:12`
 FROG.Talents.getEnemyTalentScore(enemyId, abbr);
 
 Get a Target Number from an enemy
-TALENT ENEMYTN [parameters]
+`TALENT ENEMYTN [parameters]`
 
 Enemy checks can utilize some of the same parameters as Talent Checks: var, type, eid, abbr, die and dcount.  Default values will fill in when not specified.
-TALENT ENEMYTN eid:1 abbr:stea var:12
+`TALENT ENEMYTN eid:1 abbr:stea var:12`
+```javascript
 FROG.Talents.enemyTargetNumber({
 	eid: 1,
 	abbr: ‘stea’,
 	var: 12
 });
-
+```
 
 ### Commands
 
@@ -340,11 +345,11 @@ I’m sure you’re wondering by now if there’s a way to add bonuses to weapon
 Bonuses and Penalties to Equipment, Items and States
 
 *Adding bonuses and penalties:*
-<TalentBonus: [bonus_1] [abbr_1], [bonus_2] [abbr_2], … [bonus_n] [abbr_n]>
+`<TalentBonus: [bonus_1] [abbr_1], [bonus_2] [abbr_2], … [bonus_n] [abbr_n]>`
 
 *Examples (the + is optional):*
-Add +3 to Religion: <TalentBonus: +3 reli>
-Add +2 to Nature & -2 to Arcana: <TalentBonus: +2 natu, -2 arca>
+Add +3 to Religion: `<TalentBonus: +3 reli>`
+Add +2 to Nature & -2 to Arcana: `<TalentBonus: +2 natu, -2 arca>`
 
 
 ### Talent Requirements
@@ -352,9 +357,11 @@ Add +2 to Nature & -2 to Arcana: <TalentBonus: +2 natu, -2 arca>
 Some weapons, armor and items are just not usable without extensive training.  Medicine that can bring a person back from the dead is probably more complicated than just shoving a potion down someone’s throat.  It would likely require years of learning about treatments and medicine to effectively administer.  Items may even require a certain level of talent to use on yourself.  These would typically be items that let an actor learn spells but I’m sure that there could be other use cases.  You may also want to build a system where a Level 1 character just can’t properly wield the legendary Excalibur sword without some kind of martial talent training.  Maybe the way armor proficiency works in your game is for actors to build up an Armor Training talent.  Talent requirements give you a way to restrict the use of certain items and equipment unless that character has enough Talent Ranks or a high enough Talent Score (your choice).
 
 *Talent Requirements (Equip, Get and Give):*
+```
 <TalentReq: [abbr] [rank/score] [required value]>
 <TalentReqGet: [abbr] [rank/score] [required value]>
 <TalentReqGive: [abbr] [rank/score] [required value]>
+```
 
 *Examples for equipment:*
 Equip Wizard’s Cloak requires 7 ranks of Arcana: <TalentReq: arca rank 7>

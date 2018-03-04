@@ -293,6 +293,15 @@ TALENT GETSCORE [actorId] [abbr] [variableId]
 FROG.Talents.getTalentScore(actorId, abbr);
 ```
 
+Get the Actor ID that has the highest Talent Score for a given talent
+```
+TALENT GETBEST [abbr] [variableId]
+```
+```javascript
+FROG.Talents.getMostTalented(abbr);
+```
+
+
 ### Enemy Talent Scores and Target Numbers
 
 Enemies can have talents too.  This is useful for formula boxes where skills might call upon said talents.  You may also just want to get an enemy’s Talent Score.  But it can also be useful for something known as opposed checks.  Opposed checks are Talent Checks where the Target Number is derived from the talents of an enemy as opposed to some static task.  A very common one is Stealth vs. Perception.  An enemy is hiding and the actor needs to make a check to see if they spot them.  You can use the ENEMYTN to get a Target Number based on the enemy’s Talent Score and store it into a variable so that it can be used in the actor’s Talent Check.  The check type is important here as it will determine how the Target Number is calculated.

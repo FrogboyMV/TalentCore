@@ -710,6 +710,10 @@ FROG.Talents = FROG.Talents || {};
  * TALENT GETSCORE [actorId] [abbr] [variableId]
  * FROG.Talents.getActorTalentScore(actorId, abbr);
  *
+ * Get the Actor ID that has the highest Talent Score for a given talent
+ * TALENT GETBEST [abbr] [variableId]
+ * FROG.Talents.getMostTalented(abbr);
+ *
  *
  * Enemy Talent Scores and Target Numbers
  *
@@ -3844,6 +3848,12 @@ FROG.Talents = FROG.Talents || {};
 						var abbr = ft.formatArg(args[2]);
 						var vid = parseInt(ft.formatArg(args[3]));
 						$gameVariables.setValue(vid, ft.getActorTalentScore(actorId, abbr));
+						break;
+
+					case "GETBEST":
+						var abbr = ft.formatArg(args[1]);
+						var vid = parseInt(ft.formatArg(args[2]));
+						$gameVariables.setValue(vid, ft.getMostTalented(abbr));
 						break;
 
 					case "CHECK":

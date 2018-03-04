@@ -12,6 +12,7 @@ And that’s precisely what Frogboy’s Talent Core does!  It lets you easily de
 
 As an added bonus, I also present to you: Frogboy’s Talent-based Traits!  I’m not going to explain much about this plugin as it basically the same thing as my Actor, Class and Race based Traits plugin but for Talents.  Take a look at the page for those similar plugins I made and you should have a good understanding of what the Talents version does.  It should come in handy when you want to allow character advancement based on how your characters build their Talents.  You could even build a pseudo-job system out of these two plugins by upgrading characters weapon and armor proficiencies when they advance the Fighter Talent or hand out magic spells if they advance their Black Mage or White Mage Talents.  Your imagination is the limit.
 
+![Talents](/img/window1.png)
 
 ## Features
 
@@ -117,6 +118,8 @@ From here on out, most of the parameters are just single values that you fill in
 
 Checks are an integral part of the Talent system.  It’s neat to have your players build up their character’s out-of-combat abilities but it wouldn’t do them much good unless there were ways to make sure that they possessed enough skill to accomplish whatever task stood in front of them.  That’s where talent checks come in.  So how does a Talent Check work?  Well, that’s mostly up to you.  I’ve provided three choices on how to manage this and the choice you make will largely depend on how much RNG (random number generator) you like in your game.  To perform a Talent Check, you can use the following Plugin command.
 
+![Pick Lock](/img/lock1.png)
+
 `TALENT CHECK [list of parameters]`
 
 To avoid making you memorize the exact order of the parameters and have you enter in cryptic plugin commands like TALENT CHECK 1 0 5 4 13 27 etc, I’ve done my best to streamline this with name/value pairs.  Each parameter name is immediately followed by a colon which is immediately followed by the value.  This way, you don’t have to remember the order of all these parameters and as you’ll see in a minute, you won’t have to specify all of them either.  I’ll show you some examples after I explain what all of the parameters do.
@@ -146,6 +149,8 @@ To avoid making you memorize the exact order of the parameters and have you ente
 **rem** - Key for a check that the player cannot retry without getting the same result.  This property is only valid for the RND and ROLL check types.  Say your Thief tries to pick a difficult lock an is unable open it.  What’s stopping them from just trying over and over again until they get a lucky RNG value to get the lock open?  One way is institute a negative consequence for failure.  Maybe there’s a chance the party gets into a fight each time the Thief fails at their attempt.  It makes sense as the group is waiting a long time as the Thief keeps trying.  Another way is prevent getting different Talent Check results on retries.  If you send a rem value, the result of the first attempt will be stored and any subsequent attempts will yield the same result.  In essence, the first try determines the character’s ability to pick the lock.  If they fail, they cannot pick the lock.  Other actors may try if given the opportunity but only once.  Once a character levels up, they are then able to make another attempt even if they didn’t raise their ranks.  They have advanced and another attempt is warranted.
 
 **var** - This is the ID of the Variable that you want to store the Talent Check Result into after it is made.  The value stored will be in relation to the Target Number so 0 means that the check result matched exactly and that they barely succeeded.  A negative number means the check failed by that amount and a positive number means the check exceeded the target by that amount.  Returning the results in this way allows you to gauge the level of success or failure very easily if you want to create more than two outcomes.  Maybe you want to provide a “great success” option that does more than barely succeeding.  For instance, maybe your character is making a Disable Trap check to disable a trap and they get a phenomenal check result.  Perhaps this trap normally resets itself after being disabled but because of the check exceeding the target by 5 or more, it is no longer a threat ever again.  You could also do the same for minor failures.  Say that Barbarian attempted the jump and failed by just 1.  You could make the player think he’s going to fall into the chasm but have him grab onto the ledge instead turning it into a success.  Or perhaps it’s still a failure but now the character at least gets to make a mandatory Climb check to salvage the initial botched check and turn it back into a success.
+
+![Pick Lock](/img/lock2.png)
 
 ### Default Talent Checks
 
@@ -300,18 +305,24 @@ Get a Talent Score from an enemy.
 ```
 TALENT ENEMYSCORE [enemyId] [abbr] [variableId]
 ```
+```javascript
+FROG.Talents.getEnemyTalentScore(enemyId, abbr);
+```
 
 If a Bat has a talent score of 5, the value of 5 will be stored in variable 12.
 ```
 TALENT ENEMYSCORE eid:1 abbr:stea var:12
 ```
 ```javascript
-FROG.Talents.getEnemyTalentScore(enemyId, abbr);
+FROG.Talents.getEnemyTalentScore(1, 'stea');
 ```
 
 Get a Target Number from an enemy
 ```
 TALENT ENEMYTN [parameters]
+```
+```javascript
+FROG.Talents.enemyTargetNumber(options);
 ```
 
 Enemy checks can utilize some of the same parameters as Talent Checks: var, type, eid, abbr, die and dcount.  Default values will fill in when not specified.

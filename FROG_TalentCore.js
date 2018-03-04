@@ -1553,93 +1553,93 @@ FROG.Talents = FROG.Talents || {};
  var $dataTalents = {};
 
 (function () {
-	// Settings
-	FROG.Talents.prm = PluginManager.parameters('FROG_TalentCore');
-	FROG.Talents.talents = (FROG.Talents.prm['Talents']) ? JSON.parse(FROG.Talents.prm['Talents']) : [];
-	FROG.Talents.classConfig = (FROG.Talents.prm['Class Config']) ? JSON.parse(FROG.Talents.prm['Class Config']) : [];
-	FROG.Talents.actorConfig = (FROG.Talents.prm['Actor Config']) ? JSON.parse(FROG.Talents.prm['Actor Config']) : [];
+    // Settings
+    FROG.Talents.prm = PluginManager.parameters('FROG_TalentCore');
+    FROG.Talents.talents = (FROG.Talents.prm['Talents']) ? JSON.parse(FROG.Talents.prm['Talents']) : [];
+    FROG.Talents.classConfig = (FROG.Talents.prm['Class Config']) ? JSON.parse(FROG.Talents.prm['Class Config']) : [];
+    FROG.Talents.actorConfig = (FROG.Talents.prm['Actor Config']) ? JSON.parse(FROG.Talents.prm['Actor Config']) : [];
     FROG.Talents.raceConfig = (FROG.Talents.prm['Race Config']) ? JSON.parse(FROG.Talents.prm['Race Config']) : [];
     FROG.Talents.enemyConfig = (FROG.Talents.prm['Enemy Config']) ? JSON.parse(FROG.Talents.prm['Enemy Config']) : [];
     FROG.Talents.addToFormulas = (FROG.Talents.prm['Add to Formulas'] === "true");
     FROG.Talents.saveTalentsObject = (FROG.Talents.prm['Save Talents Object'] === "true");
     FROG.Talents.maxType = FROG.Talents.prm['Max Type'].toString().trim() || "LEVEL";
     FROG.Talents.maxRanks = parseInt(FROG.Talents.prm['Max Ranks']) || 0;
-	FROG.Talents.proficiencyBonus = parseInt(FROG.Talents.prm['Proficiency Bonus']) || 0;
-	FROG.Talents.talentBarIncrement = parseFloat(FROG.Talents.prm['Talent Bar Increment']) || 0.2;
-	FROG.Talents.talentBarWait = parseInt(FROG.Talents.prm['Talent Bar Wait']) || 20;
+    FROG.Talents.proficiencyBonus = parseInt(FROG.Talents.prm['Proficiency Bonus']) || 0;
+    FROG.Talents.talentBarIncrement = parseFloat(FROG.Talents.prm['Talent Bar Increment']) || 0.2;
+    FROG.Talents.talentBarWait = parseInt(FROG.Talents.prm['Talent Bar Wait']) || 20;
 
-	// Default Checks
-	FROG.Talents.lastCheckVar = parseInt(FROG.Talents.prm['Last Check Variable']) || 0;
+    // Default Checks
+    FROG.Talents.lastCheckVar = parseInt(FROG.Talents.prm['Last Check Variable']) || 0;
     FROG.Talents.targetNumberVar = parseInt(FROG.Talents.prm['Target Number Variable']) || 0;
-	FROG.Talents.rollType = FROG.Talents.prm['Roll Type'].toString().trim() || "ROLL";
-	FROG.Talents.dieCount = parseInt(FROG.Talents.prm['Die Count']) || 1;
-	FROG.Talents.dieType = parseInt(FROG.Talents.prm['Die Type'].replace("d", "")) || 20;
-	FROG.Talents.viewType = FROG.Talents.prm['View Mode'].toString().trim() || "ASK";
-	FROG.Talents.declineCheckVal = parseInt(FROG.Talents.prm['Decline Check Value']) || 9999;
-	FROG.Talents.normalizeTarget = (FROG.Talents.prm['Normalize Target Number'] === "true");
+    FROG.Talents.rollType = FROG.Talents.prm['Roll Type'].toString().trim() || "ROLL";
+    FROG.Talents.dieCount = parseInt(FROG.Talents.prm['Die Count']) || 1;
+    FROG.Talents.dieType = parseInt(FROG.Talents.prm['Die Type'].replace("d", "")) || 20;
+    FROG.Talents.viewType = FROG.Talents.prm['View Mode'].toString().trim() || "ASK";
+    FROG.Talents.declineCheckVal = parseInt(FROG.Talents.prm['Decline Check Value']) || 9999;
+    FROG.Talents.normalizeTarget = (FROG.Talents.prm['Normalize Target Number'] === "true");
     FROG.Talents.namedChecks = (FROG.Talents.prm['Named Checks']) ? JSON.parse(FROG.Talents.prm['Named Checks']) : [];
     FROG.Talents.namedModifiers = (FROG.Talents.prm['Named Modifiers']) ? JSON.parse(FROG.Talents.prm['Named Modifiers']) : [];
 
-	// Commands
-	FROG.Talents.systemMode = FROG.Talents.prm['System Mode'].toString().trim() || "FULL";
-	FROG.Talents.mainMenuCommand = FROG.Talents.prm['Main Menu'].toString().trim() || "Talents";
-	FROG.Talents.talentsMenuCommand = FROG.Talents.prm['Talents Menu'].toString().trim() || "Raise Talent";
-	FROG.Talents.exitCommand = FROG.Talents.prm['Exit'].toString().trim() || "Exit";
-	FROG.Talents.finishCommand = FROG.Talents.prm['Finish'].toString().trim() || "Finish";
+    // Commands
+    FROG.Talents.systemMode = FROG.Talents.prm['System Mode'].toString().trim() || "FULL";
+    FROG.Talents.mainMenuCommand = FROG.Talents.prm['Main Menu'].toString().trim() || "Talents";
+    FROG.Talents.talentsMenuCommand = FROG.Talents.prm['Talents Menu'].toString().trim() || "Raise Talent";
+    FROG.Talents.exitCommand = FROG.Talents.prm['Exit'].toString().trim() || "Exit";
+    FROG.Talents.finishCommand = FROG.Talents.prm['Finish'].toString().trim() || "Finish";
 
-	// Text
-	FROG.Talents.pointsText = FROG.Talents.prm['Points Text'].toString().trim() || "Talent Points";
+    // Text
+    FROG.Talents.pointsText = FROG.Talents.prm['Points Text'].toString().trim() || "Talent Points";
     FROG.Talents.talentsText = FROG.Talents.prm['Talents Text'].toString().trim() || "Talents";
     FROG.Talents.ranksText = FROG.Talents.prm['Ranks Text'].toString().trim() || "Ranks";
     FROG.Talents.bonusText = FROG.Talents.prm['Bonus Text'].toString().trim() || "Bonus";
     FROG.Talents.scoreText = FROG.Talents.prm['Score Text'].toString().trim() || "Score";
-	FROG.Talents.difficultyText = FROG.Talents.prm['Difficulty Text'].toString().trim() || "Difficulty";
-	FROG.Talents.talentCheckText = FROG.Talents.prm['Talent Check Text'].toString().trim() || "Talent Check";
+    FROG.Talents.difficultyText = FROG.Talents.prm['Difficulty Text'].toString().trim() || "Difficulty";
+    FROG.Talents.talentCheckText = FROG.Talents.prm['Talent Check Text'].toString().trim() || "Talent Check";
     FROG.Talents.successText = FROG.Talents.prm['Success Text'].toString().trim() || "Success!";
     FROG.Talents.successColor = FROG.Talents.prm['Success Color'].toString().trim() || "#30FF30";
     FROG.Talents.failText = FROG.Talents.prm['Fail Text'].toString().trim() || "Failed!";
     FROG.Talents.failColor = FROG.Talents.prm['Fail Color'].toString().trim() || "#FF3030";
 
-	// Style
+    // Style
     FROG.Talents.showRanks = (FROG.Talents.prm['Show Ranks'] === "true");
     FROG.Talents.showBonus = (FROG.Talents.prm['Show Bonus'] === "true");
     FROG.Talents.showScore = (FROG.Talents.prm['Show Score'] === "true");
-	FROG.Talents.showCheckNumbers = (FROG.Talents.prm['Show Check Numbers'] === "true");
-	FROG.Talents.gaugeHeight = parseInt(FROG.Talents.prm['Gauge Height']) || 12;
-	FROG.Talents.gaugeColorType = FROG.Talents.prm['Gauge Color Type'].toString().trim() || "Proficiency";
-	FROG.Talents.proficientColor = (FROG.Talents.prm['Proficient Color']) ? JSON.parse(FROG.Talents.prm['Proficient Color']) : {"Start Color":"#0000FF","End Color":"#6666FF"};
-	FROG.Talents.nonProficientColor = (FROG.Talents.prm['Non-proficient Color']) ? JSON.parse(FROG.Talents.prm['Non-proficient Color']) : {"Start Color":"#EA7000","End Color":"#FFA655"};
+    FROG.Talents.showCheckNumbers = (FROG.Talents.prm['Show Check Numbers'] === "true");
+    FROG.Talents.gaugeHeight = parseInt(FROG.Talents.prm['Gauge Height']) || 12;
+    FROG.Talents.gaugeColorType = FROG.Talents.prm['Gauge Color Type'].toString().trim() || "Proficiency";
+    FROG.Talents.proficientColor = (FROG.Talents.prm['Proficient Color']) ? JSON.parse(FROG.Talents.prm['Proficient Color']) : {"Start Color":"#0000FF","End Color":"#6666FF"};
+    FROG.Talents.nonProficientColor = (FROG.Talents.prm['Non-proficient Color']) ? JSON.parse(FROG.Talents.prm['Non-proficient Color']) : {"Start Color":"#EA7000","End Color":"#FFA655"};
     FROG.Talents.signatureColor = (FROG.Talents.prm['Signature Color']) ? JSON.parse(FROG.Talents.prm['Signature Color']) : {"Start Color":"#00B000","End Color":"#00FF00"};
-	FROG.Talents.colorList = (FROG.Talents.prm['Color List']) ? JSON.parse(FROG.Talents.prm['Color List']) : ["{\"Start Color\":\"#B00000\",\"End Color\":\"#FF3030\"}","{\"Start Color\":\"#0000B0\",\"End Color\":\"#3030FF\"}","{\"Start Color\":\"#008000\",\"End Color\":\"#00FF00\"}","{\"Start Color\":\"#900090\",\"End Color\":\"#FF00FF\"}","{\"Start Color\":\"#008080\",\"End Color\":\"#00D0D0\"}","{\"Start Color\":\"#A08000\",\"End Color\":\"#FFC000\"}"];
+    FROG.Talents.colorList = (FROG.Talents.prm['Color List']) ? JSON.parse(FROG.Talents.prm['Color List']) : ["{\"Start Color\":\"#B00000\",\"End Color\":\"#FF3030\"}","{\"Start Color\":\"#0000B0\",\"End Color\":\"#3030FF\"}","{\"Start Color\":\"#008000\",\"End Color\":\"#00FF00\"}","{\"Start Color\":\"#900090\",\"End Color\":\"#FF00FF\"}","{\"Start Color\":\"#008080\",\"End Color\":\"#00D0D0\"}","{\"Start Color\":\"#A08000\",\"End Color\":\"#FFC000\"}"];
     FROG.Talents.fontSize = parseInt(FROG.Talents.prm['Font Size']) || 26;
 
     /* ---------------------------------------------------------------*\
-							Add to Formulas
-	\* -------------------------------------------------------------- */
+                            Add to Formulas
+    \* -------------------------------------------------------------- */
 
     // Add properties to Game_BattlerBase so that talents can be used in formulas
     if (FROG.Talents.addToFormulas === true) {
         var evalStr = "Object.defineProperties (Game_BattlerBase.prototype, {";
         for (var i in FROG.Talents.talents) {
-        	var talParam = JSON.parse(FROG.Talents.talents[i]).Abbreviation;
-			if (talParam) {
-	        	evalStr += "" +
-	                talParam + ": { " +
-	                "   get: function () { " +
-	                "      return FROG.Talents.getTalentScore(this, '" + talParam + "'); " +
-	                "   }, " +
-	                "   configurable: true " +
-	                "}, ";
-			}
+            var talParam = JSON.parse(FROG.Talents.talents[i]).Abbreviation;
+            if (talParam) {
+                evalStr += "" +
+                    talParam + ": { " +
+                    "   get: function () { " +
+                    "      return FROG.Talents.getTalentScore(this, '" + talParam + "'); " +
+                    "   }, " +
+                    "   configurable: true " +
+                    "}, ";
+            }
         }
         evalStr = evalStr.slice(0, -1) + " });";
         eval(evalStr);
         i = evalStr = talParam = undefined;
     }
 
-	/* ---------------------------------------------------------------*\
-								Data Manager
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                                Data Manager
+    \* -------------------------------------------------------------- */
 
     FROG.Talents.DataManager_IsDatabaseLoaded = DataManager.isDatabaseLoaded;
     DataManager.isDatabaseLoaded = function () {
@@ -1672,7 +1672,7 @@ FROG.Talents = FROG.Talents || {};
                 dieType: ft.dieType,
                 viewType: ft.viewType,
                 declineCheckVal: ft.declineCheckVal,
-				normalizeTarget: ft.normalizeTarget,
+                normalizeTarget: ft.normalizeTarget,
                 namedChecks: [],
                 namedModifiers: []
             },
@@ -1724,49 +1724,49 @@ FROG.Talents = FROG.Talents || {};
         $dataTalents.talents.push(null);
         for (var i in ft.talents) {
             var obj = JSON.parse(ft.talents[i]);
-			if (obj && obj["Abbreviation"].trim() && obj["Name"].trim()) {
-	            var tobj = {
-	                name: obj["Name"].trim(),
-	                abbreviation: obj["Abbreviation"].toLowerCase().trim(),
-	                description: obj["Description"].replace(/\\n/g, String.fromCharCode(10)).slice(1, -1),
-	                classProficiencies: (obj["Class Proficiencies"]) ? JSON.parse(obj["Class Proficiencies"]).map(Number) : [],
-	                classSignatures: (obj["Class Signatures"]) ? JSON.parse(obj["Class Signatures"]).map(Number) : [],
-	                visibilityMode: (obj["Visibility Mode"]) ? obj["Visibility Mode"].toUpperCase().trim() : "ALL",
-	                classVisibility: (obj["Class Visibility"]) ? JSON.parse(obj["Class Visibility"]).map(Number) : [],
-	                startingRanks: parseInt(obj["Starting Ranks"]) || 0
-	            }
-	            $dataTalents.talents.push(tobj);
-			}
+            if (obj && obj["Abbreviation"].trim() && obj["Name"].trim()) {
+                var tobj = {
+                    name: obj["Name"].trim(),
+                    abbreviation: obj["Abbreviation"].toLowerCase().trim(),
+                    description: obj["Description"].replace(/\\n/g, String.fromCharCode(10)).slice(1, -1),
+                    classProficiencies: (obj["Class Proficiencies"]) ? JSON.parse(obj["Class Proficiencies"]).map(Number) : [],
+                    classSignatures: (obj["Class Signatures"]) ? JSON.parse(obj["Class Signatures"]).map(Number) : [],
+                    visibilityMode: (obj["Visibility Mode"]) ? obj["Visibility Mode"].toUpperCase().trim() : "ALL",
+                    classVisibility: (obj["Class Visibility"]) ? JSON.parse(obj["Class Visibility"]).map(Number) : [],
+                    startingRanks: parseInt(obj["Starting Ranks"]) || 0
+                }
+                $dataTalents.talents.push(tobj);
+            }
         }
 
         // Named Checks
         for (var i in ft.namedChecks) {
             var obj = JSON.parse(ft.namedChecks[i]);
-			if (obj && obj["Name"].trim()) {
-	            var tobj = {
-	                name: obj["Name"].toLowerCase().trim(),
-	                target: parseInt(obj["Target Number"]) || 0
-	            }
-	            $dataTalents.check.namedChecks.push(tobj);
-			}
+            if (obj && obj["Name"].trim()) {
+                var tobj = {
+                    name: obj["Name"].toLowerCase().trim(),
+                    target: parseInt(obj["Target Number"]) || 0
+                }
+                $dataTalents.check.namedChecks.push(tobj);
+            }
         }
 
         // Named Modifiers
         for (var i in ft.namedModifiers) {
             var obj = JSON.parse(ft.namedModifiers[i]);
-			if (obj && obj["Name"].trim()) {
-	            var tobj = {
-	                name: obj["Name"].toLowerCase().trim(),
-	                mod: parseInt(obj["Modifier"])
-	            }
-	            $dataTalents.check.namedModifiers.push(tobj);
-			}
+            if (obj && obj["Name"].trim()) {
+                var tobj = {
+                    name: obj["Name"].toLowerCase().trim(),
+                    mod: parseInt(obj["Modifier"])
+                }
+                $dataTalents.check.namedModifiers.push(tobj);
+            }
         }
 
         // Add to $dataClasses
         for (var i in ft.classConfig) {
             var obj = JSON.parse(ft.classConfig[i]) || 0;
-			var classId = parseInt(obj["Class"]) || 0;
+            var classId = parseInt(obj["Class"]) || 0;
             var clas = $dataClasses[classId];
             if (clas) {
                 clas.talentConfig = {
@@ -1788,14 +1788,14 @@ FROG.Talents = FROG.Talents || {};
                     talentBonus: {}
                 };
 
-				if (obj["Talent Bonus/Penalty"]) {
-	                for (var j in JSON.parse(obj["Talent Bonus/Penalty"])) {
-	                    var obj2 = JSON.parse(JSON.parse(obj["Talent Bonus/Penalty"])[j]);
-						if (obj2 && obj2["Talent Abbreviation"].trim()) {
-	                    	actor.talentConfig.talentBonus[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Bonus/Penalty"]);
-						}
-	                }
-				}
+                if (obj["Talent Bonus/Penalty"]) {
+                    for (var j in JSON.parse(obj["Talent Bonus/Penalty"])) {
+                        var obj2 = JSON.parse(JSON.parse(obj["Talent Bonus/Penalty"])[j]);
+                        if (obj2 && obj2["Talent Abbreviation"].trim()) {
+                            actor.talentConfig.talentBonus[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Bonus/Penalty"]);
+                        }
+                    }
+                }
             }
         }
 
@@ -1805,25 +1805,25 @@ FROG.Talents = FROG.Talents || {};
                 var obj = JSON.parse(ft.raceConfig[i]);
                 var id = parseInt(obj["Race ID"]) || 0;
 
-				if (id > 0) {
-	                var tobj = {
-	                    pointBonus: parseInt(obj["Point Bonus/Penalty"]) || 0,
-	                    startingBonus: parseInt(obj["Starting Bonus/Penalty"]) || 0,
-	                    talentBonus: {}
-	                };
+                if (id > 0) {
+                    var tobj = {
+                        pointBonus: parseInt(obj["Point Bonus/Penalty"]) || 0,
+                        startingBonus: parseInt(obj["Starting Bonus/Penalty"]) || 0,
+                        talentBonus: {}
+                    };
 
-					if (obj["Talent Bonus/Penalty"]) {
-		                for (var j in JSON.parse(obj["Talent Bonus/Penalty"])) {
-		                    var obj2 = JSON.parse(JSON.parse(obj["Talent Bonus/Penalty"])[j]);
-							if (obj2 && obj2["Talent Abbreviation"].trim()) {
-		                    	tobj.talentBonus[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Bonus/Penalty"]) || 0;
-							}
-		                }
-					}
-	                if ($dataRaces[id]) {
-	                    $dataRaces[id].talentConfig = tobj;
-	                }
-				}
+                    if (obj["Talent Bonus/Penalty"]) {
+                        for (var j in JSON.parse(obj["Talent Bonus/Penalty"])) {
+                            var obj2 = JSON.parse(JSON.parse(obj["Talent Bonus/Penalty"])[j]);
+                            if (obj2 && obj2["Talent Abbreviation"].trim()) {
+                                tobj.talentBonus[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Bonus/Penalty"]) || 0;
+                            }
+                        }
+                    }
+                    if ($dataRaces[id]) {
+                        $dataRaces[id].talentConfig = tobj;
+                    }
+                }
             }
         }
 
@@ -1834,44 +1834,44 @@ FROG.Talents = FROG.Talents || {};
             if ($dataEnemies[id]) {
                 $dataEnemies[id].talents = {};
                 //var enemyTalObj = (obj["Enemy Talents"]) ? JSON.parse(obj["Enemy Talents"]) : ;
-				if (obj["Enemy Talents"]) {
-	                for (var j in JSON.parse(obj["Enemy Talents"])) {
-	                    var obj2 = JSON.parse(JSON.parse(obj["Enemy Talents"])[j]);
-						if (obj2 && obj2["Talent Abbreviation"].trim()) {
-	                    	$dataEnemies[id].talents[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Score"]) || 0;
-						}
-	                }
-				}
+                if (obj["Enemy Talents"]) {
+                    for (var j in JSON.parse(obj["Enemy Talents"])) {
+                        var obj2 = JSON.parse(JSON.parse(obj["Enemy Talents"])[j]);
+                        if (obj2 && obj2["Talent Abbreviation"].trim()) {
+                            $dataEnemies[id].talents[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Score"]) || 0;
+                        }
+                    }
+                }
             }
         }
 
         return true;
     }
 
-	// Save File
+    // Save File
     FROG.Talents.DataManager_MakeSaveContents = DataManager.makeSaveContents;
-	DataManager.makeSaveContents = function() {
+    DataManager.makeSaveContents = function() {
         var contents = FROG.Talents.DataManager_MakeSaveContents.call(this);
         if (FROG.Talents.saveTalentsObject === true) {
             contents.talents = $dataTalents;
         }
-	    return contents;
-	}
+        return contents;
+    }
 
-	// Load File
-	FROG.Talents.DataManager_ExtractSaveContents = DataManager.extractSaveContents;
-	DataManager.extractSaveContents = function(contents) {
+    // Load File
+    FROG.Talents.DataManager_ExtractSaveContents = DataManager.extractSaveContents;
+    DataManager.extractSaveContents = function(contents) {
         FROG.Talents.DataManager_ExtractSaveContents.call(this, contents);
         if (FROG.Talents.saveTalentsObject === true) {
             $dataTalents = contents.talents;
         }
-	}
+    }
 
     /* ---------------------------------------------------------------*\
-								Game Enemy
-	\* -------------------------------------------------------------- */
+                                Game Enemy
+    \* -------------------------------------------------------------- */
 
-	// Initialize enemy talents when battle starts
+    // Initialize enemy talents when battle starts
     FROG.Talents.Game_Enemy_setup = Game_Enemy.prototype.setup;
     Game_Enemy.prototype.setup = function (enemyId, x, y) {
         FROG.Talents.Game_Enemy_setup.call(this, enemyId, x, y);
@@ -1884,16 +1884,16 @@ FROG.Talents = FROG.Talents || {};
         }
     }
 
-	/* ---------------------------------------------------------------*\
-								Game Actor
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                                Game Actor
+    \* -------------------------------------------------------------- */
 
-	// Initialize actor talents when game starts
+    // Initialize actor talents when game starts
     FROG.Talents.Game_Actor_setup = Game_Actor.prototype.setup;
     Game_Actor.prototype.setup = function (actorId) {
         FROG.Talents.Game_Actor_setup.call(this, actorId);
 
-		// Set up talents
+        // Set up talents
         this._talents = [];
         var actor = $dataActors[actorId];
         if (actor) {
@@ -1917,630 +1917,630 @@ FROG.Talents = FROG.Talents || {};
                 // Push talent ranks
                 this._talents.push({
                     name: talent.name,
-    				desc: talent.description,
+                    desc: talent.description,
                     abbr: talent.abbreviation,
                     prof: (talent.classProficiencies.indexOf(this._classId) > -1) ? true : false,
                     sig: (talent.classSignatures.indexOf(this._classId) > -1) ? true : false,
                     vis: (talent.visibilityMode == "ALL" || (talent.visibilityMode == "CLASS" && talent.classVisibility.indexOf(this._classId) > -1)) ? true : false,
-    				ranks: ranks
+                    ranks: ranks
                 });
             }
         }
 
-		// Issue starting talent points
-		this._talentPoints = 0;
-		this.addTalentPoints(true);
+        // Issue starting talent points
+        this._talentPoints = 0;
+        this.addTalentPoints(true);
     }
 
-	// Reset starting talent points if class changes at initial level
-	//		Used for when the player chooses their character's classes
+    // Reset starting talent points if class changes at initial level
+    //        Used for when the player chooses their character's classes
     FROG.Talents.Game_Actor_ChangeClass = Game_Actor.prototype.changeClass;
     Game_Actor.prototype.changeClass = function (classId, keepExp) {
         FROG.Talents.Game_Actor_ChangeClass.call(this, classId, keepExp);
 
-	    if (this._level <= $dataActors[this.actorId()].initialLevel) {
-			this._talentPoints = 0;
-			this.addTalentPoints(true);
-	    }
-	}
+        if (this._level <= $dataActors[this.actorId()].initialLevel) {
+            this._talentPoints = 0;
+            this.addTalentPoints(true);
+        }
+    }
 
-	/** Adds points to an actor
-	 * @param {boolean} initialize - Will add the starting points instead of the points per level
-	 */
-	Game_Actor.prototype.addTalentPoints = function (initialize) {
-		if (initialize) {
-			this._talentPoints = 0;
+    /** Adds points to an actor
+     * @param {boolean} initialize - Will add the starting points instead of the points per level
+     */
+    Game_Actor.prototype.addTalentPoints = function (initialize) {
+        if (initialize) {
+            this._talentPoints = 0;
 
-			// Class Starting Points
-			if ($dataClasses[this._classId] && $dataClasses[this._classId].talentConfig) {
-            	this._talentPoints += $dataClasses[this._classId].talentConfig.startingPoints || 0;
-			}
+            // Class Starting Points
+            if ($dataClasses[this._classId] && $dataClasses[this._classId].talentConfig) {
+                this._talentPoints += $dataClasses[this._classId].talentConfig.startingPoints || 0;
+            }
 
-			// Actor Starting Points
-			if (this._talentConfig) {
-            	this._talentPoints += this._talentConfig.startingBonus || 0;
-			}
+            // Actor Starting Points
+            if (this._talentConfig) {
+                this._talentPoints += this._talentConfig.startingBonus || 0;
+            }
 
-			// Race Starting Points
+            // Race Starting Points
             if (Imported.FROG_Races === true && $dataRaces && this.raceId() && $dataRaces[this.raceId()] && $dataRaces[this.raceId()].talentConfig) {
                 this._talentPoints += $dataRaces[this.raceId()].talentConfig.startingBonus || 0;
             }
-		}
-		else {
-			// Class Points Per Level
-			if ($dataClasses[this._classId] && $dataClasses[this._classId].talentConfig) {
-            	this._talentPoints += $dataClasses[this._classId].talentConfig.pointsPerLevel || 0;
-			}
+        }
+        else {
+            // Class Points Per Level
+            if ($dataClasses[this._classId] && $dataClasses[this._classId].talentConfig) {
+                this._talentPoints += $dataClasses[this._classId].talentConfig.pointsPerLevel || 0;
+            }
 
-			// Actor Points Per Level
-			if (this._talentConfig) {
-            	this._talentPoints += this._talentConfig.pointBonus || 0;
-			}
+            // Actor Points Per Level
+            if (this._talentConfig) {
+                this._talentPoints += this._talentConfig.pointBonus || 0;
+            }
 
-			// Race Points Per Level
+            // Race Points Per Level
             if (Imported.FROG_Races === true && $dataRaces && this.raceId() && $dataRaces[this.raceId()] && $dataRaces[this.raceId()].talentConfig) {
                 this._talentPoints += $dataRaces[this.raceId()].talentConfig.pointBonus || 0;
             }
-		}
-	}
+        }
+    }
 
-	// Add talent points per level when actor levels up
-	FROG.Talents.Game_Actor_levelUp = Game_Actor.prototype.levelUp;
-	Game_Actor.prototype.levelUp = function () {
-		FROG.Talents.Game_Actor_levelUp.call(this);
-		this.addTalentPoints(false);
+    // Add talent points per level when actor levels up
+    FROG.Talents.Game_Actor_levelUp = Game_Actor.prototype.levelUp;
+    Game_Actor.prototype.levelUp = function () {
+        FROG.Talents.Game_Actor_levelUp.call(this);
+        this.addTalentPoints(false);
 
-		// Class Signature Talents (Add 1 rank to each so that these stay maxed out)
+        // Class Signature Talents (Add 1 rank to each so that these stay maxed out)
         for (var i in $dataTalents.talents) {
             var talent = $dataTalents.talents[i];
             if (talent && talent.classSignatures && talent.classSignatures.indexOf(this._classId) > -1) {
                 FROG.Talents.addTalentRanks(this.actorId(), talent.abbreviation, 1);
             }
         }
-	}
+    }
 
-	/* ---------------------------------------------------------------*\
-							Window MenuCommand
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                            Window MenuCommand
+    \* -------------------------------------------------------------- */
 
-	// Add Talents command to the main menu
-	FROG.Talents.Window_MenuCommand_AddOriginalCommands = Window_MenuCommand.prototype.addOriginalCommands;
-	Window_MenuCommand.prototype.addOriginalCommands = function () {
-		FROG.Talents.Window_MenuCommand_AddOriginalCommands.call(this);
-		if ($dataTalents.commands.systemMode != "HIDE") {
-			this.addCommand($dataTalents.commands.mainMenuCommand, 'talents', true);
-		}
-	}
+    // Add Talents command to the main menu
+    FROG.Talents.Window_MenuCommand_AddOriginalCommands = Window_MenuCommand.prototype.addOriginalCommands;
+    Window_MenuCommand.prototype.addOriginalCommands = function () {
+        FROG.Talents.Window_MenuCommand_AddOriginalCommands.call(this);
+        if ($dataTalents.commands.systemMode != "HIDE") {
+            this.addCommand($dataTalents.commands.mainMenuCommand, 'talents', true);
+        }
+    }
 
-	/* ---------------------------------------------------------------*\
-							Scene Menu
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                            Scene Menu
+    \* -------------------------------------------------------------- */
 
-	// Binds selection of Talents main menu command
-	FROG.Talents.Scene_Menu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
-	Scene_Menu.prototype.createCommandWindow = function () {
-		FROG.Talents.Scene_Menu_createCommandWindow.call(this);
-		this._commandWindow.setHandler('talents', this.commandPersonal.bind(this));
-	}
+    // Binds selection of Talents main menu command
+    FROG.Talents.Scene_Menu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
+    Scene_Menu.prototype.createCommandWindow = function () {
+        FROG.Talents.Scene_Menu_createCommandWindow.call(this);
+        this._commandWindow.setHandler('talents', this.commandPersonal.bind(this));
+    }
 
-	// Opens the talents scene when main menu command is fired
-	FROG.Talents.Scene_Menu_onPersonalOk = Scene_Menu.prototype.onPersonalOk;
-	Scene_Menu.prototype.onPersonalOk = function () {
-		if (this._commandWindow.currentSymbol() === 'talents') {
-			this.openTalents();
-			return;
-		}
-		FROG.Talents.Scene_Menu_onPersonalOk.call(this);
-	}
+    // Opens the talents scene when main menu command is fired
+    FROG.Talents.Scene_Menu_onPersonalOk = Scene_Menu.prototype.onPersonalOk;
+    Scene_Menu.prototype.onPersonalOk = function () {
+        if (this._commandWindow.currentSymbol() === 'talents') {
+            this.openTalents();
+            return;
+        }
+        FROG.Talents.Scene_Menu_onPersonalOk.call(this);
+    }
 
-	// Opens Talents scene
-	Scene_Menu.prototype.openTalents = function () {
-		SceneManager.push(Scene_Talents);
-	}
+    // Opens Talents scene
+    Scene_Menu.prototype.openTalents = function () {
+        SceneManager.push(Scene_Talents);
+    }
 
-	/* ---------------------------------------------------------------*\
-							Scene Talents
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                            Scene Talents
+    \* -------------------------------------------------------------- */
 
-	function Scene_Talents() {
-		this.initialize.apply(this, arguments);
-	}
+    function Scene_Talents() {
+        this.initialize.apply(this, arguments);
+    }
 
-	Scene_Talents.prototype = Object.create(Scene_ItemBase.prototype);
-	Scene_Talents.prototype.constructor = Scene_Talents;
+    Scene_Talents.prototype = Object.create(Scene_ItemBase.prototype);
+    Scene_Talents.prototype.constructor = Scene_Talents;
 
     // Create talents scene
-	Scene_Talents.prototype.create = function () {
-		Scene_MenuBase.prototype.create.call(this);
-		this.createHelpWindow();
-		this.createCommandWindow();
-		this.createStatusWindow();
-		if ($dataTalents.commands.systemMode == "FULL") {
-			this.createPointsWindow();
-		}
-		this.createTalentsWindow();
-		this.refreshActor();
-	}
+    Scene_Talents.prototype.create = function () {
+        Scene_MenuBase.prototype.create.call(this);
+        this.createHelpWindow();
+        this.createCommandWindow();
+        this.createStatusWindow();
+        if ($dataTalents.commands.systemMode == "FULL") {
+            this.createPointsWindow();
+        }
+        this.createTalentsWindow();
+        this.refreshActor();
+    }
 
     // Create Help window
-	Scene_Talents.prototype.createHelpWindow = function () {
-	    this._helpWindow = new Window_Help(2);
-	    this._helpWindow.setText("");
-	    this.addWindow(this._helpWindow);
-	}
+    Scene_Talents.prototype.createHelpWindow = function () {
+        this._helpWindow = new Window_Help(2);
+        this._helpWindow.setText("");
+        this.addWindow(this._helpWindow);
+    }
 
-	// Creates command window and bind menu selections
-	Scene_Talents.prototype.createCommandWindow = function () {
-		var wx = 0;
-	    var wy = this._helpWindow.height;
-	    this._commandWindow = new Window_TalentsCommand(wx, wy);
-	    this._commandWindow.setHelpWindow(this._helpWindow);
-	    this._commandWindow.setHandler('addpoints', this.commandAddPoints.bind(this));
-		this._commandWindow.setHandler('exit', this.popScene.bind(this));
-		this._commandWindow.setHandler('cancel', this.popScene.bind(this));
-	    this._commandWindow.setHandler('pagedown', this.nextActor.bind(this));
-	    this._commandWindow.setHandler('pageup', this.previousActor.bind(this));
-	    this.addWindow(this._commandWindow);
-	}
+    // Creates command window and bind menu selections
+    Scene_Talents.prototype.createCommandWindow = function () {
+        var wx = 0;
+        var wy = this._helpWindow.height;
+        this._commandWindow = new Window_TalentsCommand(wx, wy);
+        this._commandWindow.setHelpWindow(this._helpWindow);
+        this._commandWindow.setHandler('addpoints', this.commandAddPoints.bind(this));
+        this._commandWindow.setHandler('exit', this.popScene.bind(this));
+        this._commandWindow.setHandler('cancel', this.popScene.bind(this));
+        this._commandWindow.setHandler('pagedown', this.nextActor.bind(this));
+        this._commandWindow.setHandler('pageup', this.previousActor.bind(this));
+        this.addWindow(this._commandWindow);
+    }
 
-	// Create status window
-	Scene_Talents.prototype.createStatusWindow = function () {
-		var wx = 0;
-	    var wy = this._helpWindow.height + this._commandWindow.height;
-	    var ww = this._commandWindow.width;
-		var wh = 300;
-	    this._statusWindow = new Window_TalentsStatus(wx, wy, ww, wh);
-	    this._statusWindow.reserveFaceImages();
-	    this.addWindow(this._statusWindow);
-	}
+    // Create status window
+    Scene_Talents.prototype.createStatusWindow = function () {
+        var wx = 0;
+        var wy = this._helpWindow.height + this._commandWindow.height;
+        var ww = this._commandWindow.width;
+        var wh = 300;
+        this._statusWindow = new Window_TalentsStatus(wx, wy, ww, wh);
+        this._statusWindow.reserveFaceImages();
+        this.addWindow(this._statusWindow);
+    }
 
-	// Create points window
-	Scene_Talents.prototype.createPointsWindow = function () {
-	    var wx = 0;
-	    var wy = this._statusWindow.y + this._statusWindow.height;
-	    var ww = this._statusWindow.width;
-	    var wh = 0;
-	    this._pointsWindow = new Window_TalentPoints(wx, wy, ww, wh);
-	    this.addWindow(this._pointsWindow);
-	}
+    // Create points window
+    Scene_Talents.prototype.createPointsWindow = function () {
+        var wx = 0;
+        var wy = this._statusWindow.y + this._statusWindow.height;
+        var ww = this._statusWindow.width;
+        var wh = 0;
+        this._pointsWindow = new Window_TalentPoints(wx, wy, ww, wh);
+        this.addWindow(this._pointsWindow);
+    }
 
-	// Create window where the talents are listed
-	Scene_Talents.prototype.createTalentsWindow = function () {
-		var wx = this._commandWindow.width;
-	    var wy = this._helpWindow.height;
-	    var ww = Graphics.boxWidth - this._commandWindow.width;
-		var wh = Graphics.boxHeight - wy;
-	    this._talentsWindow = new Window_Talent(wx, wy, ww, wh);
-	    this._talentsWindow.setHelpWindow(this._helpWindow);
-		this._talentsWindow.setStatusWindow(this._statusWindow);
-		if (this._pointsWindow) {
-			this._talentsWindow.setPointsWindow(this._pointsWindow);
-		}
-		this._talentsWindow.setHandler("finish", this.commandTalentFinish.bind(this));
-		this._talentsWindow.setHandler("cancel", this.commandTalentCancel.bind(this));
-	    this.addWindow(this._talentsWindow);
-	}
+    // Create window where the talents are listed
+    Scene_Talents.prototype.createTalentsWindow = function () {
+        var wx = this._commandWindow.width;
+        var wy = this._helpWindow.height;
+        var ww = Graphics.boxWidth - this._commandWindow.width;
+        var wh = Graphics.boxHeight - wy;
+        this._talentsWindow = new Window_Talent(wx, wy, ww, wh);
+        this._talentsWindow.setHelpWindow(this._helpWindow);
+        this._talentsWindow.setStatusWindow(this._statusWindow);
+        if (this._pointsWindow) {
+            this._talentsWindow.setPointsWindow(this._pointsWindow);
+        }
+        this._talentsWindow.setHandler("finish", this.commandTalentFinish.bind(this));
+        this._talentsWindow.setHandler("cancel", this.commandTalentCancel.bind(this));
+        this.addWindow(this._talentsWindow);
+    }
 
-	// Refresh Actor
-	Scene_Talents.prototype.refreshActor = function () {
-		var actor = this.actor();
-		this._commandWindow.setActor(actor);
-		this._statusWindow.setActor(actor);
-		if (this._pointsWindow) {
-			this._pointsWindow.setActor(actor);
-		}
-		this._talentsWindow.setActor(actor);
-	}
+    // Refresh Actor
+    Scene_Talents.prototype.refreshActor = function () {
+        var actor = this.actor();
+        this._commandWindow.setActor(actor);
+        this._statusWindow.setActor(actor);
+        if (this._pointsWindow) {
+            this._pointsWindow.setActor(actor);
+        }
+        this._talentsWindow.setActor(actor);
+    }
 
-	// Actor has changed
-	Scene_Talents.prototype.onActorChange = function () {
-	    this.refreshActor();
-	    this._commandWindow.activate();
-	}
+    // Actor has changed
+    Scene_Talents.prototype.onActorChange = function () {
+        this.refreshActor();
+        this._commandWindow.activate();
+    }
 
-	// Select the Raise Talents command
-	Scene_Talents.prototype.commandAddPoints = function () {
-		this._talentsWindow.activate();
-		this._talentsWindow.select(0);
-	}
+    // Select the Raise Talents command
+    Scene_Talents.prototype.commandAddPoints = function () {
+        this._talentsWindow.activate();
+        this._talentsWindow.select(0);
+    }
 
-	// Select the Finish command from the Talents window
-	Scene_Talents.prototype.commandTalentFinish = function () {
-		if (this._talentsWindow.totalPointsAdded() > 0) {
-			this._talentsWindow.applyPoints();
-			this._talentsWindow.deselect();
-			this._commandWindow.activate();
-			this._commandWindow.refresh();
-			this._talentsWindow.setPoints(this._actor._talentPoints);
-			if (this._pointsWindow) {
-				this._pointsWindow.setPoints(this._actor._talentPoints);
-			}
-			this._helpWindow.setText("Your changes were saved.");
-		}
-		else {
-			this.refreshActor();
-			this._talentsWindow.activate();
-		}
-	}
+    // Select the Finish command from the Talents window
+    Scene_Talents.prototype.commandTalentFinish = function () {
+        if (this._talentsWindow.totalPointsAdded() > 0) {
+            this._talentsWindow.applyPoints();
+            this._talentsWindow.deselect();
+            this._commandWindow.activate();
+            this._commandWindow.refresh();
+            this._talentsWindow.setPoints(this._actor._talentPoints);
+            if (this._pointsWindow) {
+                this._pointsWindow.setPoints(this._actor._talentPoints);
+            }
+            this._helpWindow.setText("Your changes were saved.");
+        }
+        else {
+            this.refreshActor();
+            this._talentsWindow.activate();
+        }
+    }
 
-	// Cancel from the Talents window
-	Scene_Talents.prototype.commandTalentCancel = function () {
-		this._talentsWindow.deselect();
-		this._commandWindow.activate();
-		if (this._talentsWindow.totalPointsAdded() > 0) {
-			this._helpWindow.setText("Changes you made were not saved.\nSelect the " + $dataTalents.commands.finishCommand + " command to save your changes.");
-		}
-	}
+    // Cancel from the Talents window
+    Scene_Talents.prototype.commandTalentCancel = function () {
+        this._talentsWindow.deselect();
+        this._commandWindow.activate();
+        if (this._talentsWindow.totalPointsAdded() > 0) {
+            this._helpWindow.setText("Changes you made were not saved.\nSelect the " + $dataTalents.commands.finishCommand + " command to save your changes.");
+        }
+    }
 
-	/* ---------------------------------------------------------------*\
-						Window Talents Command
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                        Window Talents Command
+    \* -------------------------------------------------------------- */
 
-	function Window_TalentsCommand() {
-		this.initialize.apply(this, arguments)
-	}
+    function Window_TalentsCommand() {
+        this.initialize.apply(this, arguments)
+    }
 
-	Window_TalentsCommand.prototype = Object.create(Window_Command.prototype);
-	Window_TalentsCommand.prototype.constructor = Window_TalentsCommand;
+    Window_TalentsCommand.prototype = Object.create(Window_Command.prototype);
+    Window_TalentsCommand.prototype.constructor = Window_TalentsCommand;
 
-	// Talent command window width
-	Window_TalentsCommand.prototype.windowWidth = function () {
-	    return 300;
-	}
+    // Talent command window width
+    Window_TalentsCommand.prototype.windowWidth = function () {
+        return 300;
+    }
 
-	// Returns the number of commands in the Talent command window
-	Window_TalentsCommand.prototype.numVisibleRows = function () {
-		if ($dataTalents.commands.systemMode == "FULL") {
-			return 2;
-		}
-	    return 1;
-	}
+    // Returns the number of commands in the Talent command window
+    Window_TalentsCommand.prototype.numVisibleRows = function () {
+        if ($dataTalents.commands.systemMode == "FULL") {
+            return 2;
+        }
+        return 1;
+    }
 
-	// Set Actor
-	Window_TalentsCommand.prototype.setActor = function (actor) {
-	    if (this._actor !== actor) {
-	        this._actor = actor;
-	        this.refresh();
-	    }
-	}
+    // Set Actor
+    Window_TalentsCommand.prototype.setActor = function (actor) {
+        if (this._actor !== actor) {
+            this._actor = actor;
+            this.refresh();
+        }
+    }
 
-	// Add Raise Talents and Exit commands to  the Talents scene manu
-	Window_TalentsCommand.prototype.makeCommandList = function () {
-		if ($dataTalents.commands.systemMode == "FULL") {
-			this.addCommand($dataTalents.commands.talentsMenuCommand, 'addpoints');
-		}
-		this.addCommand($dataTalents.commands.exitCommand, 'exit');
-	}
+    // Add Raise Talents and Exit commands to  the Talents scene manu
+    Window_TalentsCommand.prototype.makeCommandList = function () {
+        if ($dataTalents.commands.systemMode == "FULL") {
+            this.addCommand($dataTalents.commands.talentsMenuCommand, 'addpoints');
+        }
+        this.addCommand($dataTalents.commands.exitCommand, 'exit');
+    }
 
-	/* ---------------------------------------------------------------*\
-						Window Talents Status
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                        Window Talents Status
+    \* -------------------------------------------------------------- */
 
-	function Window_TalentsStatus() {
-		this.initialize.apply(this, arguments)
-	}
+    function Window_TalentsStatus() {
+        this.initialize.apply(this, arguments)
+    }
 
-	Window_TalentsStatus.prototype = Object.create(Window_Base.prototype);
-	Window_TalentsStatus.prototype.constructor = Window_TalentsStatus;
+    Window_TalentsStatus.prototype = Object.create(Window_Base.prototype);
+    Window_TalentsStatus.prototype.constructor = Window_TalentsStatus;
 
-	// Initialize Status window
-	Window_TalentsStatus.prototype.initialize = function (x, y, width, height) {
-	    Window_Base.prototype.initialize.call(this, x, y, width, height);
-	    this._actor = null;
-	}
+    // Initialize Status window
+    Window_TalentsStatus.prototype.initialize = function (x, y, width, height) {
+        Window_Base.prototype.initialize.call(this, x, y, width, height);
+        this._actor = null;
+    }
 
-	// Set Actor
-	Window_TalentsStatus.prototype.setActor = function (actor) {
-	    if (this._actor !== actor) {
-	        this._actor = actor;
-	        this.refresh();
-	    }
-	}
+    // Set Actor
+    Window_TalentsStatus.prototype.setActor = function (actor) {
+        if (this._actor !== actor) {
+            this._actor = actor;
+            this.refresh();
+        }
+    }
 
-	// Refresh contents
-	Window_TalentsStatus.prototype.refresh = function () {
-	    this.contents.clear();
-	    if (this._actor) {
-			this.drawActorVerticalStatus();
-	    }
-	}
+    // Refresh contents
+    Window_TalentsStatus.prototype.refresh = function () {
+        this.contents.clear();
+        if (this._actor) {
+            this.drawActorVerticalStatus();
+        }
+    }
 
-	// Draw the actor's face and info
-	Window_TalentsStatus.prototype.drawActorVerticalStatus = function () {
-	    var lineHeight = this.lineHeight();
-		var wx = 0;
-		var wy = 0;
-		var ww = this.contentsWidth();
-		this.drawActorName(this._actor, wx, wy);
-		this.drawActorClass(this._actor, this.width / 2, wy);
-		wy += lineHeight;
-		this.drawFace(this._actor.faceName(), this._actor.faceIndex(), wx, wy, ww);
-		wy += Window_Base._faceHeight;
-	    this.drawActorHp(this._actor, wx, wy, ww);
-		wy += lineHeight;
-	    this.drawActorMp(this._actor, wx, wy, ww);
-	}
+    // Draw the actor's face and info
+    Window_TalentsStatus.prototype.drawActorVerticalStatus = function () {
+        var lineHeight = this.lineHeight();
+        var wx = 0;
+        var wy = 0;
+        var ww = this.contentsWidth();
+        this.drawActorName(this._actor, wx, wy);
+        this.drawActorClass(this._actor, this.width / 2, wy);
+        wy += lineHeight;
+        this.drawFace(this._actor.faceName(), this._actor.faceIndex(), wx, wy, ww);
+        wy += Window_Base._faceHeight;
+        this.drawActorHp(this._actor, wx, wy, ww);
+        wy += lineHeight;
+        this.drawActorMp(this._actor, wx, wy, ww);
+    }
 
-	/* ---------------------------------------------------------------*\
-							Window Points
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                            Window Points
+    \* -------------------------------------------------------------- */
 
-	function Window_TalentPoints() {
-		this.initialize.apply(this, arguments)
-	}
+    function Window_TalentPoints() {
+        this.initialize.apply(this, arguments)
+    }
 
-	Window_TalentPoints.prototype = Object.create(Window_Base.prototype);
-	Window_TalentPoints.prototype.constructor = Window_TalentPoints;
+    Window_TalentPoints.prototype = Object.create(Window_Base.prototype);
+    Window_TalentPoints.prototype.constructor = Window_TalentPoints;
 
-	// Initialize Points window
-	Window_TalentPoints.prototype.initialize = function (x, y, width, height) {
-		height = height || this.fittingHeight(1);
-	    Window_Base.prototype.initialize.call(this, x, y, width, height);
-	    this._actor = null;
-	}
+    // Initialize Points window
+    Window_TalentPoints.prototype.initialize = function (x, y, width, height) {
+        height = height || this.fittingHeight(1);
+        Window_Base.prototype.initialize.call(this, x, y, width, height);
+        this._actor = null;
+    }
 
-	// Set Actor
-	Window_TalentPoints.prototype.setActor = function (actor) {
-	    if (this._actor !== actor) {
-	        this._actor = actor;
-			this.setPoints(this._actor._talentPoints);
-	        this.refresh();
-	    }
-	}
+    // Set Actor
+    Window_TalentPoints.prototype.setActor = function (actor) {
+        if (this._actor !== actor) {
+            this._actor = actor;
+            this.setPoints(this._actor._talentPoints);
+            this.refresh();
+        }
+    }
 
-	// Clear contents
-	Window_TalentPoints.prototype.clear = function () {
-		this.contents.clear();
-	}
+    // Clear contents
+    Window_TalentPoints.prototype.clear = function () {
+        this.contents.clear();
+    }
 
-	// Get points
-	Window_TalentPoints.prototype.points = function () {
-		return this._points;
-	}
+    // Get points
+    Window_TalentPoints.prototype.points = function () {
+        return this._points;
+    }
 
-	// Set points
-	Window_TalentPoints.prototype.setPoints = function (value) {
-		this._points = value;
-		this.refresh();
-	}
+    // Set points
+    Window_TalentPoints.prototype.setPoints = function (value) {
+        this._points = value;
+        this.refresh();
+    }
 
-	// Refresh Points window
-	Window_TalentPoints.prototype.refresh = function () {
-	    this.contents.clear();
-	    if (this._actor) {
-			var ww = this.contentsWidth();
-			this.changeTextColor(this.systemColor());
-			this.drawText($dataTalents.text.pointsText, 0, 0, ww * .75);
-			this.resetTextColor();
-			this.drawText(this.points(), ww * .75, 0, ww * .25, 'right');
-	    }
-	}
+    // Refresh Points window
+    Window_TalentPoints.prototype.refresh = function () {
+        this.contents.clear();
+        if (this._actor) {
+            var ww = this.contentsWidth();
+            this.changeTextColor(this.systemColor());
+            this.drawText($dataTalents.text.pointsText, 0, 0, ww * .75);
+            this.resetTextColor();
+            this.drawText(this.points(), ww * .75, 0, ww * .25, 'right');
+        }
+    }
 
-	/* ---------------------------------------------------------------*\
-							Window Talents
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                            Window Talents
+    \* -------------------------------------------------------------- */
 
-	function Window_Talent() {
-		this.initialize.apply(this, arguments)
-	}
+    function Window_Talent() {
+        this.initialize.apply(this, arguments)
+    }
 
-	Window_Talent.prototype = Object.create(Window_Command.prototype);
-	Window_Talent.prototype.constructor = Window_Talent;
+    Window_Talent.prototype = Object.create(Window_Command.prototype);
+    Window_Talent.prototype.constructor = Window_Talent;
 
-	// Initialize Talents window
-	Window_Talent.prototype.initialize = function (x, y, width, height) {
-		this._windowWidth = width;
-		this._windowHeight = height;
-		this._statusWindow = null;
-		this._pointsWindow = null;
-		this.clearInfo();
-		Window_Command.prototype.initialize.call(this, x, y);
-		this.deselect();
-		this.deactivate();
-	}
+    // Initialize Talents window
+    Window_Talent.prototype.initialize = function (x, y, width, height) {
+        this._windowWidth = width;
+        this._windowHeight = height;
+        this._statusWindow = null;
+        this._pointsWindow = null;
+        this.clearInfo();
+        Window_Command.prototype.initialize.call(this, x, y);
+        this.deselect();
+        this.deactivate();
+    }
 
-	// Get window width
-	Window_Talent.prototype.windowWidth = function () {
-	    return this._windowWidth;
-	}
+    // Get window width
+    Window_Talent.prototype.windowWidth = function () {
+        return this._windowWidth;
+    }
 
-	// Get window height
-	Window_Talent.prototype.windowHeight = function () {
-		return this._windowHeight;
-	}
+    // Get window height
+    Window_Talent.prototype.windowHeight = function () {
+        return this._windowHeight;
+    }
 
-	// Clear Talents window information
-	Window_Talent.prototype.clearInfo = function () {
-		this._points = 0;
-		this._pointsAdded = {};
-	}
+    // Clear Talents window information
+    Window_Talent.prototype.clearInfo = function () {
+        this._points = 0;
+        this._pointsAdded = {};
+    }
 
-	// Get points
-	Window_Talent.prototype.points = function () {
-		return this._points;
-	}
+    // Get points
+    Window_Talent.prototype.points = function () {
+        return this._points;
+    }
 
-	// Set points
-	Window_Talent.prototype.setPoints = function (value) {
-		this._points = value;
-	}
+    // Set points
+    Window_Talent.prototype.setPoints = function (value) {
+        this._points = value;
+    }
 
-	// Get points added to a particular talent
-	Window_Talent.prototype.getPointsAdded = function (symbol) {
-		return this._pointsAdded[symbol] || 0;
-	}
+    // Get points added to a particular talent
+    Window_Talent.prototype.getPointsAdded = function (symbol) {
+        return this._pointsAdded[symbol] || 0;
+    }
 
-	// Add point to a particular talent
-	Window_Talent.prototype.addPoint = function (symbol) {
-		if (this._actor) {
-			if (this._pointsAdded[symbol]) {
-				this._pointsAdded[symbol]++;
-			}
-			else {
-				this._pointsAdded[symbol] = 1;
-			}
-			this.updatePointsWindow();
-		}
-	}
+    // Add point to a particular talent
+    Window_Talent.prototype.addPoint = function (symbol) {
+        if (this._actor) {
+            if (this._pointsAdded[symbol]) {
+                this._pointsAdded[symbol]++;
+            }
+            else {
+                this._pointsAdded[symbol] = 1;
+            }
+            this.updatePointsWindow();
+        }
+    }
 
-	// Remove point from a particular talent
-	Window_Talent.prototype.remPoint = function (symbol) {
-		if (this._actor && this._pointsAdded[symbol]) {
-			if (this._pointsAdded[symbol] > 0) {
-				this._pointsAdded[symbol]--;
-				this.updatePointsWindow();
-			}
-		}
-	}
+    // Remove point from a particular talent
+    Window_Talent.prototype.remPoint = function (symbol) {
+        if (this._actor && this._pointsAdded[symbol]) {
+            if (this._pointsAdded[symbol] > 0) {
+                this._pointsAdded[symbol]--;
+                this.updatePointsWindow();
+            }
+        }
+    }
 
-	// Get total points added
-	Window_Talent.prototype.totalPointsAdded = function () {
-		var p = 0;
-		for (var key in this._pointsAdded) {
-			p += parseInt(this._pointsAdded[key]);
-		}
-		return p;
-	}
+    // Get total points added
+    Window_Talent.prototype.totalPointsAdded = function () {
+        var p = 0;
+        for (var key in this._pointsAdded) {
+            p += parseInt(this._pointsAdded[key]);
+        }
+        return p;
+    }
 
-	// Get the number of points left
-	Window_Talent.prototype.pointsLeft = function () {
-		return this.points() - this.totalPointsAdded();
-	}
+    // Get the number of points left
+    Window_Talent.prototype.pointsLeft = function () {
+        return this.points() - this.totalPointsAdded();
+    }
 
-	// Set the status window so that the Talents window can call it's methods
-	Window_Talent.prototype.setStatusWindow = function (window) {
-		this._statusWindow = window;
-	}
+    // Set the status window so that the Talents window can call it's methods
+    Window_Talent.prototype.setStatusWindow = function (window) {
+        this._statusWindow = window;
+    }
 
-	// Set the Points window so that the Talents window can call it's methods
-	Window_Talent.prototype.setPointsWindow = function (window) {
-		this._pointsWindow = window;
-	}
+    // Set the Points window so that the Talents window can call it's methods
+    Window_Talent.prototype.setPointsWindow = function (window) {
+        this._pointsWindow = window;
+    }
 
-	// Refresh contents
-	Window_Talent.prototype.refresh = function () {
-		this.clearCommandList();
-		this.makeCommandList();
-		this.height = this.windowHeight();
-		this.createContents();
-		Window_Selectable.prototype.refresh.call(this);
-	}
+    // Refresh contents
+    Window_Talent.prototype.refresh = function () {
+        this.clearCommandList();
+        this.makeCommandList();
+        this.height = this.windowHeight();
+        this.createContents();
+        Window_Selectable.prototype.refresh.call(this);
+    }
 
-	// Set actor
-	Window_Talent.prototype.setActor = function (actor) {
-		if (this._actor !== actor) {
-			this._actor = actor;
+    // Set actor
+    Window_Talent.prototype.setActor = function (actor) {
+        if (this._actor !== actor) {
+            this._actor = actor;
             this._maxRanks = FROG.Talents.getMaxRanks(actor);
             this._maxScore = FROG.Talents.getMaxScore(actor);
             this._maxGauge = FROG.Talents.getMaxGauge(actor);
-			this.clearInfo();
-			this.setPoints(this._actor._talentPoints);
-			this.refresh();
-		}
-	}
+            this.clearInfo();
+            this.setPoints(this._actor._talentPoints);
+            this.refresh();
+        }
+    }
 
-	// Refresh everything
-	Window_Talent.prototype.restartInfo = function () {
-		this.refreshEverything();
-		this.clearInfo();
-	}
+    // Refresh everything
+    Window_Talent.prototype.restartInfo = function () {
+        this.refreshEverything();
+        this.clearInfo();
+    }
 
-	// Set text in the Help window
-	Window_Talent.prototype.updateHelp = function () {
-		var index = this.index();
-		if (!this._list[index]) return;
-		var symbol = this.commandSymbol(index);
-		this._helpWindow.clear();
-		if (symbol != "header" && symbol !== "finish") {
+    // Set text in the Help window
+    Window_Talent.prototype.updateHelp = function () {
+        var index = this.index();
+        if (!this._list[index]) return;
+        var symbol = this.commandSymbol(index);
+        this._helpWindow.clear();
+        if (symbol != "header" && symbol !== "finish") {
             var help = this._list[index].desc;
-			if (help && help.includes('\"')) {
-				help = help.replace(/\\n/g, String.fromCharCode(10)).slice(1, -1);
-			}
-			this._helpWindow.setText(help);
-		}
-	}
+            if (help && help.includes('\"')) {
+                help = help.replace(/\\n/g, String.fromCharCode(10)).slice(1, -1);
+            }
+            this._helpWindow.setText(help);
+        }
+    }
 
-	// Set points for the Points window
-	Window_Talent.prototype.updatePointsWindow = function () {
-		if (this._pointsWindow) {
-			this._pointsWindow.clear();
-			this._pointsWindow.setPoints(this.pointsLeft());
-		}
-	}
+    // Set points for the Points window
+    Window_Talent.prototype.updatePointsWindow = function () {
+        if (this._pointsWindow) {
+            this._pointsWindow.clear();
+            this._pointsWindow.setPoints(this.pointsLeft());
+        }
+    }
 
-	// Handle action button press on a selected talent
-	Window_Talent.prototype.processOk = function () {
-		var index = this.index();
-		var symbol = this.commandSymbol(index);
+    // Handle action button press on a selected talent
+    Window_Talent.prototype.processOk = function () {
+        var index = this.index();
+        var symbol = this.commandSymbol(index);
         switch (symbol) {
             case "header": break;
             case "finish": Window_Command.prototype.processOk.apply(this, arguments); break;
             default: this.cursorRight(); break;
         }
-	}
+    }
 
-	// Add points to the selected talent
-	Window_Talent.prototype.applyPoints = function () {
-		if (this._actor) {
-			for (var key in this._pointsAdded) {
-				var points = parseInt(this._pointsAdded[key]);
-				for (var i=0; i<this._actor._talents.length; i++) {
-					var t = this._actor._talents[i];
-					if (t.abbr == key.replace("talent_", "")) {
-						t.ranks += points;
-					}
-				}
-			}
-			this._actor._talentPoints -= this.totalPointsAdded();
-			this.clearInfo();
+    // Add points to the selected talent
+    Window_Talent.prototype.applyPoints = function () {
+        if (this._actor) {
+            for (var key in this._pointsAdded) {
+                var points = parseInt(this._pointsAdded[key]);
+                for (var i=0; i<this._actor._talents.length; i++) {
+                    var t = this._actor._talents[i];
+                    if (t.abbr == key.replace("talent_", "")) {
+                        t.ranks += points;
+                    }
+                }
+            }
+            this._actor._talentPoints -= this.totalPointsAdded();
+            this.clearInfo();
 
-			if (Imported.FROG_LevelBasedTraitsTalent === true) {
-				this._actor.addTalentTraits();
-			}
-		}
-	}
+            if (Imported.FROG_LevelBasedTraitsTalent === true) {
+                this._actor.addTalentTraits();
+            }
+        }
+    }
 
-	// Build a command list that consists of all of the talents
-	Window_Talent.prototype.makeCommandList = function () {
+    // Build a command list that consists of all of the talents
+    Window_Talent.prototype.makeCommandList = function () {
         this.addCommand("Header", "header");
         this._list[this._list.length - 1].active = false;
 
-		if (this._actor) {
-			for (var i in this._actor._talents) {
-	            var t = this._actor._talents[i];
+        if (this._actor) {
+            for (var i in this._actor._talents) {
+                var t = this._actor._talents[i];
                 if (t.vis === true) {
-    				this.addCommand(t.name, "talent_" + t.abbr);
+                    this.addCommand(t.name, "talent_" + t.abbr);
                     this._list[this._list.length - 1].active = true;
-    				this._list[this._list.length - 1].abbr = t.abbr;
+                    this._list[this._list.length - 1].abbr = t.abbr;
                     this._list[this._list.length - 1].desc = t.desc;
-    				this._list[this._list.length - 1].prof = t.prof;
+                    this._list[this._list.length - 1].prof = t.prof;
                     this._list[this._list.length - 1].ranks = t.ranks;
                     this._list[this._list.length - 1].sig = t.sig;
                 }
-	        }
-		}
+            }
+        }
 
-		if ($dataTalents.commands.systemMode == "FULL") {
-			this.addCommand($dataTalents.commands.finishCommand, "finish");
+        if ($dataTalents.commands.systemMode == "FULL") {
+            this.addCommand($dataTalents.commands.finishCommand, "finish");
             this._list[this._list.length - 1].active = false;
-		}
-	}
+        }
+    }
 
-	// Draw a talent or the Finish command
-	Window_Talent.prototype.drawItem = function (index) {
-		var symbol = this.commandSymbol(index);
+    // Draw a talent or the Finish command
+    Window_Talent.prototype.drawItem = function (index) {
+        var symbol = this.commandSymbol(index);
         switch (symbol) {
             case "header": this.drawHeaderItem(index);   break;
             case "finish": this.drawFinishItem(index);   break;
             default: this.drawTalentItem(index, symbol); break;
         }
-	}
+    }
 
-	// Draw the name, ranks, score and gauge for a talent
-	Window_Talent.prototype.drawHeaderItem = function (index) {
-		var symbol = this.commandSymbol(index);
-		var rect = this.itemRectForText(index);
-		var align = this.itemTextAlign();
+    // Draw the name, ranks, score and gauge for a talent
+    Window_Talent.prototype.drawHeaderItem = function (index) {
+        var symbol = this.commandSymbol(index);
+        var rect = this.itemRectForText(index);
+        var align = this.itemTextAlign();
         this.changeTextColor(this.systemColor());
         this.contents.fontSize = $dataTalents.style.fontSize - 4;
         this.drawText($dataTalents.text.talentsText, rect.x + 5, rect.y, rect.width * 0.5 - 5, align);
@@ -2570,30 +2570,30 @@ FROG.Talents = FROG.Talents || {};
 
         this.resetTextColor();
         this.contents.fontSize = $dataTalents.style.fontSize;
-	}
+    }
 
-	// Draw the name, ranks, score and gauge for a talent
-	Window_Talent.prototype.drawTalentItem = function (index) {
+    // Draw the name, ranks, score and gauge for a talent
+    Window_Talent.prototype.drawTalentItem = function (index) {
         if (this._maxGauge <= 0) {
             console.error("Max Ranks cannot be zero when using type STRICT.");
             return;
         }
-		var symbol = this.commandSymbol(index);
-		var rect = this.itemRectForText(index);
-		var align = this.itemTextAlign();
-		var addedPoints = this.getPointsAdded(symbol);
+        var symbol = this.commandSymbol(index);
+        var rect = this.itemRectForText(index);
+        var align = this.itemTextAlign();
+        var addedPoints = this.getPointsAdded(symbol);
         var rate = parseFloat((FROG.Talents.getActorTalentScore(this._actor.actorId(), this._list[index].abbr) + addedPoints) / this._maxGauge).toFixed(2);
 
-		if ($dataTalents.style.gaugeColorType == "Color List") {
-			for (var i in $dataTalents.style.colorList) {
-				if (i == index % $dataTalents.style.colorList.length) {
-					var colors = $dataTalents.style.colorList[i];
-					var color1 = colors.startColor;
-					var color2 = colors.endColor;
-				}
-			}
-		}
-		else {
+        if ($dataTalents.style.gaugeColorType == "Color List") {
+            for (var i in $dataTalents.style.colorList) {
+                if (i == index % $dataTalents.style.colorList.length) {
+                    var colors = $dataTalents.style.colorList[i];
+                    var color1 = colors.startColor;
+                    var color2 = colors.endColor;
+                }
+            }
+        }
+        else {
             var colors = $dataTalents.style.nonProficientColor;
             if (this._list[index].sig === true) {
                 colors = $dataTalents.style.signatureColor;
@@ -2601,38 +2601,38 @@ FROG.Talents = FROG.Talents || {};
             else if (this._list[index].prof === true) {
                 colors = $dataTalents.style.proficientColor;
             }
-			var color1 = colors.startColor;
-			var color2 = colors.endColor;
-		}
+            var color1 = colors.startColor;
+            var color2 = colors.endColor;
+        }
 
-		//this.changeTextColor(this.systemColor());
-		this.resetTextColor();
-	    this.changePaintOpacity(this.isCommandEnabled(index));
-		this.drawGauge(rect.x, rect.y, rect.width, rate, color1, color2);
+        //this.changeTextColor(this.systemColor());
+        this.resetTextColor();
+        this.changePaintOpacity(this.isCommandEnabled(index));
+        this.drawGauge(rect.x, rect.y, rect.width, rate, color1, color2);
         this.contents.fontSize = $dataTalents.style.fontSize;
-	    this.drawText(this.commandName(index), rect.x + 5, rect.y, rect.width * 0.5 - 5, align);
-		this.drawTalentItemNumbers(index, rect.x + rect.width * 0.5, rect.width * 0.5 - 5, rect);
-	}
+        this.drawText(this.commandName(index), rect.x + 5, rect.y, rect.width * 0.5 - 5, align);
+        this.drawTalentItemNumbers(index, rect.x + rect.width * 0.5, rect.width * 0.5 - 5, rect);
+    }
 
-	// Draw talent gauge
-	Window_Talent.prototype.drawGauge = function (x, y, width, rate, color1, color2) {
-	    var fillW = Math.floor(width * rate);
-		var height = $dataTalents.style.gaugeHeight;
-	    var gaugeY = y + this.lineHeight() - height;
-	    this.contents.fillRect(x, gaugeY, width, height, this.gaugeBackColor());
-	    this.contents.gradientFillRect(x, gaugeY, fillW, height, color1, color2);
-	}
+    // Draw talent gauge
+    Window_Talent.prototype.drawGauge = function (x, y, width, rate, color1, color2) {
+        var fillW = Math.floor(width * rate);
+        var height = $dataTalents.style.gaugeHeight;
+        var gaugeY = y + this.lineHeight() - height;
+        this.contents.fillRect(x, gaugeY, width, height, this.gaugeBackColor());
+        this.contents.gradientFillRect(x, gaugeY, fillW, height, color1, color2);
+    }
 
-	// Draw talent ranks
-	Window_Talent.prototype.drawTalentItemNumbers = function (index, start, width, rect) {
-		var symbol = this.commandSymbol(index);
-		var addedPoints = this.getPointsAdded(symbol);
-		var ranks = this._list[index].ranks + addedPoints;
-		var score = FROG.Talents.getActorTalentScore(this._actor.actorId(), this._list[index].abbr) + addedPoints;
+    // Draw talent ranks
+    Window_Talent.prototype.drawTalentItemNumbers = function (index, start, width, rect) {
+        var symbol = this.commandSymbol(index);
+        var addedPoints = this.getPointsAdded(symbol);
+        var ranks = this._list[index].ranks + addedPoints;
+        var score = FROG.Talents.getActorTalentScore(this._actor.actorId(), this._list[index].abbr) + addedPoints;
         var bonus = score - ranks;
         if (bonus >= 0) bonus = "+" + bonus;
-		if (addedPoints > 0) this.changeTextColor("#80FF80");
-		else this.resetTextColor();
+        if (addedPoints > 0) this.changeTextColor("#80FF80");
+        else this.resetTextColor();
 
         var slot = {
             position: 1,
@@ -2657,7 +2657,7 @@ FROG.Talents = FROG.Talents || {};
             this.drawText(ranks.toString(), slot.x, rect.y, slot.w, 'right');
         }
         this.contents.fontSize = $dataTalents.style.fontSize;
-	}
+    }
 
     // Returns the coordinates of the numbers slot
     Window_Talent.prototype.setSlot = function (slot, header) {
@@ -2683,184 +2683,184 @@ FROG.Talents = FROG.Talents || {};
         slot.position++;
     }
 
-	// Draw finish command in the Talent window
-	Window_Talent.prototype.drawFinishItem = function (index) {
-		const rect = this.itemRectForText(index);
-		const isEnabled = (this.totalPointsAdded() > 0);
-		this.resetTextColor();
-		this.changePaintOpacity(isEnabled);
-		this.contents.fontSize = $dataTalents.style.fontSize;
-		this.drawText(this.commandName(index), rect.x, rect.y, rect.width, 'center');
-		this.resetFontSettings();
-	}
+    // Draw finish command in the Talent window
+    Window_Talent.prototype.drawFinishItem = function (index) {
+        const rect = this.itemRectForText(index);
+        const isEnabled = (this.totalPointsAdded() > 0);
+        this.resetTextColor();
+        this.changePaintOpacity(isEnabled);
+        this.contents.fontSize = $dataTalents.style.fontSize;
+        this.drawText(this.commandName(index), rect.x, rect.y, rect.width, 'center');
+        this.resetFontSettings();
+    }
 
-	// Increase ranks when the Right direction is pressed
-	Window_Talent.prototype.cursorRight = function (wrap) {
-		var item = this._list[this.index()];
-		if (item.active === true && (item.ranks + this.getPointsAdded(item.symbol)) < FROG.Talents.getMaxRanks(this._actor) && this.pointsLeft() > 0) {
-			this.addPoint(item.symbol);
-			SoundManager.playCursor();
-			this.updatePointsWindow();
-			this.refresh();
-		}
-	}
+    // Increase ranks when the Right direction is pressed
+    Window_Talent.prototype.cursorRight = function (wrap) {
+        var item = this._list[this.index()];
+        if (item.active === true && (item.ranks + this.getPointsAdded(item.symbol)) < FROG.Talents.getMaxRanks(this._actor) && this.pointsLeft() > 0) {
+            this.addPoint(item.symbol);
+            SoundManager.playCursor();
+            this.updatePointsWindow();
+            this.refresh();
+        }
+    }
 
-	// Increase ranks when the Left direction is pressed
-	Window_Talent.prototype.cursorLeft = function (wrap) {
-		var item = this._list[this.index()];
-		if (item.active === true && this.getPointsAdded(item.symbol) > 0) {
-			this.remPoint(item.symbol);
-			SoundManager.playCursor();
-			this.updatePointsWindow();
-			this.refresh();
-		}
-	}
+    // Increase ranks when the Left direction is pressed
+    Window_Talent.prototype.cursorLeft = function (wrap) {
+        var item = this._list[this.index()];
+        if (item.active === true && this.getPointsAdded(item.symbol) > 0) {
+            this.remPoint(item.symbol);
+            SoundManager.playCursor();
+            this.updatePointsWindow();
+            this.refresh();
+        }
+    }
 
     // Play OK Sound
-	Window_Talent.prototype.playOkSound = function () {
-		var symbol = this.commandSymbol(this.index());
+    Window_Talent.prototype.playOkSound = function () {
+        var symbol = this.commandSymbol(this.index());
         switch (symbol) {
             case "header": SoundManager.playBuzzer(); break;
             case "finish":
-				if (this.totalPointsAdded() > 0) {
-					SoundManager.playSave();
-				}
-				else {
-					SoundManager.playBuzzer();
-				}
-				break;
+                if (this.totalPointsAdded() > 0) {
+                    SoundManager.playSave();
+                }
+                else {
+                    SoundManager.playBuzzer();
+                }
+                break;
             default:
                 Window_Command.prototype.playOkSound.apply(this, arguments);
                 break;
         }
-	}
+    }
 
-	/* ---------------------------------------------------------------*\
-						Scene Talent Check
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                        Scene Talent Check
+    \* -------------------------------------------------------------- */
 
-	function Scene_TalentCheckResults() {
-		this.initialize.apply(this, arguments);
-	}
+    function Scene_TalentCheckResults() {
+        this.initialize.apply(this, arguments);
+    }
 
-	Scene_TalentCheckResults.prototype = Object.create(Scene_ItemBase.prototype);
-	Scene_TalentCheckResults.prototype.constructor = Scene_TalentCheckResults;
+    Scene_TalentCheckResults.prototype = Object.create(Scene_ItemBase.prototype);
+    Scene_TalentCheckResults.prototype.constructor = Scene_TalentCheckResults;
 
-	// Pass in the talent check values to set up the Talent Check scene
-	Scene_TalentCheckResults.prototype.prepare = function (options) {
-		this._options = options;
-		this._actor = $gameActors.actor(options.aid);
-	}
+    // Pass in the talent check values to set up the Talent Check scene
+    Scene_TalentCheckResults.prototype.prepare = function (options) {
+        this._options = options;
+        this._actor = $gameActors.actor(options.aid);
+    }
 
-	// Create Talent Check scene
-	Scene_TalentCheckResults.prototype.create = function () {
-		Scene_MenuBase.prototype.create.call(this);
-		this.createStatusWindow();
-		this.createCommandWindow();
-		this.refreshActor();
-		this._statusWindow._commandWindow = this._commandWindow;
-		this._commandWindow.activate();
-		this._commandWindow.select(0);
-	}
+    // Create Talent Check scene
+    Scene_TalentCheckResults.prototype.create = function () {
+        Scene_MenuBase.prototype.create.call(this);
+        this.createStatusWindow();
+        this.createCommandWindow();
+        this.refreshActor();
+        this._statusWindow._commandWindow = this._commandWindow;
+        this._commandWindow.activate();
+        this._commandWindow.select(0);
+    }
 
-	// Create the status window for the Talent Check scene and set the values
-	Scene_TalentCheckResults.prototype.createStatusWindow = function () {
-	    var ww = 400;
-		var wh = 390;
-		var wx = (Graphics.boxWidth - ww) / 2;
-	    var wy = (Graphics.boxHeight - wh) / 2 - 50;
-	    this._statusWindow = new Window_TalentCheckResults(wx, wy, ww, wh);
-	    this._statusWindow.reserveFaceImages();
-		var o = this._options;
-		this._var = o.var;
-		this._statusWindow._type = o.type;
-		this._statusWindow._aid = o.aid;
-		this._statusWindow._abbr = o.abbr;
-		this._statusWindow._target = o.target;
-		this._statusWindow._result = o.result;
-		this._statusWindow._mod = o.mod;
-		this._statusWindow._die = o.die;
-		this._statusWindow._dcount = o.dcount;
-		this._statusWindow._min = o.min;
-		this._statusWindow._max = o.max;
-		this._statusWindow._view = o.view;
-	    this.addWindow(this._statusWindow);
-	}
+    // Create the status window for the Talent Check scene and set the values
+    Scene_TalentCheckResults.prototype.createStatusWindow = function () {
+        var ww = 400;
+        var wh = 390;
+        var wx = (Graphics.boxWidth - ww) / 2;
+        var wy = (Graphics.boxHeight - wh) / 2 - 50;
+        this._statusWindow = new Window_TalentCheckResults(wx, wy, ww, wh);
+        this._statusWindow.reserveFaceImages();
+        var o = this._options;
+        this._var = o.var;
+        this._statusWindow._type = o.type;
+        this._statusWindow._aid = o.aid;
+        this._statusWindow._abbr = o.abbr;
+        this._statusWindow._target = o.target;
+        this._statusWindow._result = o.result;
+        this._statusWindow._mod = o.mod;
+        this._statusWindow._die = o.die;
+        this._statusWindow._dcount = o.dcount;
+        this._statusWindow._min = o.min;
+        this._statusWindow._max = o.max;
+        this._statusWindow._view = o.view;
+        this.addWindow(this._statusWindow);
+    }
 
-	// Create commands for the Talent Check scene
-	Scene_TalentCheckResults.prototype.createCommandWindow = function () {
-		var wx = this._statusWindow.x;
-	    var wy = this._statusWindow.y + this._statusWindow.height;
-	    this._commandWindow = new Window_TalentCheckCommand(wx, wy);
-		this._commandWindow.setStatusWindow(this._statusWindow);
-		this._commandWindow.setHandler('attempt', this.commandAttempt.bind(this));
-		this._commandWindow.setHandler('pass', this.commandPass.bind(this));
-		this._commandWindow.setHandler('exit', this.popScene.bind(this));
-		this._commandWindow.setHandler('cancel', this.popScene.bind(this));
-		this._commandWindow._view = this._options.view;
-	    this.addWindow(this._commandWindow);
-	}
+    // Create commands for the Talent Check scene
+    Scene_TalentCheckResults.prototype.createCommandWindow = function () {
+        var wx = this._statusWindow.x;
+        var wy = this._statusWindow.y + this._statusWindow.height;
+        this._commandWindow = new Window_TalentCheckCommand(wx, wy);
+        this._commandWindow.setStatusWindow(this._statusWindow);
+        this._commandWindow.setHandler('attempt', this.commandAttempt.bind(this));
+        this._commandWindow.setHandler('pass', this.commandPass.bind(this));
+        this._commandWindow.setHandler('exit', this.popScene.bind(this));
+        this._commandWindow.setHandler('cancel', this.popScene.bind(this));
+        this._commandWindow._view = this._options.view;
+        this.addWindow(this._commandWindow);
+    }
 
-	// Refresh actor
-	Scene_TalentCheckResults.prototype.refreshActor = function () {
-		var actor = this._actor;
-		this._statusWindow.setActor(actor);
-		this._commandWindow.setActor(actor);
-	}
+    // Refresh actor
+    Scene_TalentCheckResults.prototype.refreshActor = function () {
+        var actor = this._actor;
+        this._statusWindow.setActor(actor);
+        this._commandWindow.setActor(actor);
+    }
 
-	// Called when the player chooses the Attempt command to attempt a talent
-	Scene_TalentCheckResults.prototype.commandAttempt = function () {
-		this._statusWindow._view = "SHOW";
-		this._statusWindow.refresh();
-	}
+    // Called when the player chooses the Attempt command to attempt a talent
+    Scene_TalentCheckResults.prototype.commandAttempt = function () {
+        this._statusWindow._view = "SHOW";
+        this._statusWindow.refresh();
+    }
 
-	// Called when the player chooses to not attempt a talent
-	Scene_TalentCheckResults.prototype.commandPass = function () {
-		$gameVariables.setValue(parseInt(this._var), $dataTalents.check.declineCheckVal)
-		this.popScene();
-	}
+    // Called when the player chooses to not attempt a talent
+    Scene_TalentCheckResults.prototype.commandPass = function () {
+        $gameVariables.setValue(parseInt(this._var), $dataTalents.check.declineCheckVal)
+        this.popScene();
+    }
 
-	/* ---------------------------------------------------------------*\
-						Window Talents Command
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                        Window Talents Command
+    \* -------------------------------------------------------------- */
 
-	function Window_TalentCheckCommand() {
-		this.initialize.apply(this, arguments)
-	}
+    function Window_TalentCheckCommand() {
+        this.initialize.apply(this, arguments)
+    }
 
-	Window_TalentCheckCommand.prototype = Object.create(Window_HorzCommand.prototype);
-	Window_TalentCheckCommand.prototype.constructor = Window_TalentCheckCommand;
+    Window_TalentCheckCommand.prototype = Object.create(Window_HorzCommand.prototype);
+    Window_TalentCheckCommand.prototype.constructor = Window_TalentCheckCommand;
 
-	// Initialize Talent Check window
-	Window_TalentCheckCommand.prototype.initialize = function (x, y) {
-	    Window_HorzCommand.prototype.initialize.call(this, x, y);
-	}
+    // Initialize Talent Check window
+    Window_TalentCheckCommand.prototype.initialize = function (x, y) {
+        Window_HorzCommand.prototype.initialize.call(this, x, y);
+    }
 
-	// Set status window
-	Window_TalentCheckCommand.prototype.setStatusWindow = function (window) {
-		this._statusWindow = window;
-	}
+    // Set status window
+    Window_TalentCheckCommand.prototype.setStatusWindow = function (window) {
+        this._statusWindow = window;
+    }
 
-	// Talent Check command width (this should match the Status window width)
-	Window_TalentCheckCommand.prototype.windowWidth = function () {
-	    return 400;
-	}
+    // Talent Check command width (this should match the Status window width)
+    Window_TalentCheckCommand.prototype.windowWidth = function () {
+        return 400;
+    }
 
-	// Number of commands
-	Window_TalentCheckCommand.prototype.maxCols = function () {
-		return this._list.length;
-	};
+    // Number of commands
+    Window_TalentCheckCommand.prototype.maxCols = function () {
+        return this._list.length;
+    };
 
-	// Set Actor
-	Window_TalentCheckCommand.prototype.setActor = function (actor) {
-	    if (this._actor !== actor) {
-	        this._actor = actor;
-	        this.refresh();
-	    }
-	}
+    // Set Actor
+    Window_TalentCheckCommand.prototype.setActor = function (actor) {
+        if (this._actor !== actor) {
+            this._actor = actor;
+            this.refresh();
+        }
+    }
 
-	// Talent Check commands
-	Window_TalentCheckCommand.prototype.makeCommandList = function () {
+    // Talent Check commands
+    Window_TalentCheckCommand.prototype.makeCommandList = function () {
         if (this._view == "ASK") {
             this.addCommand("Attempt", 'attempt');
             this.addCommand("Pass", 'pass');
@@ -2868,89 +2868,89 @@ FROG.Talents = FROG.Talents || {};
         else {
             this.addCommand($dataTalents.commands.exitCommand, 'exit');
         }
-	}
+    }
 
-	/* ---------------------------------------------------------------*\
-						Window Talent Check
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                        Window Talent Check
+    \* -------------------------------------------------------------- */
 
-	function Window_TalentCheckResults() {
-		this.initialize.apply(this, arguments)
-	}
+    function Window_TalentCheckResults() {
+        this.initialize.apply(this, arguments)
+    }
 
-	Window_TalentCheckResults.prototype = Object.create(Window_Base.prototype);
-	Window_TalentCheckResults.prototype.constructor = Window_TalentCheckResults;
+    Window_TalentCheckResults.prototype = Object.create(Window_Base.prototype);
+    Window_TalentCheckResults.prototype.constructor = Window_TalentCheckResults;
 
-	// Initialize Talent Check window
-	Window_TalentCheckResults.prototype.initialize = function (x, y, width, height) {
-	    Window_Base.prototype.initialize.call(this, x, y, width, height);
-	    this._actor = null;
-		this._resultCounter = 0;
-		this._done = false;
-	}
+    // Initialize Talent Check window
+    Window_TalentCheckResults.prototype.initialize = function (x, y, width, height) {
+        Window_Base.prototype.initialize.call(this, x, y, width, height);
+        this._actor = null;
+        this._resultCounter = 0;
+        this._done = false;
+    }
 
-	// Set Actor
-	Window_TalentCheckResults.prototype.setActor = function (actor) {
-	    if (this._actor !== actor) {
-	        this._actor = actor;
-	        this.refresh();
-	    }
-	}
+    // Set Actor
+    Window_TalentCheckResults.prototype.setActor = function (actor) {
+        if (this._actor !== actor) {
+            this._actor = actor;
+            this.refresh();
+        }
+    }
 
-	// Refresh content
-	Window_TalentCheckResults.prototype.refresh = function () {
-	    this.contents.clear();
-	    if (this._actor) {
-			this.drawCheckResults();
-	    }
-	}
+    // Refresh content
+    Window_TalentCheckResults.prototype.refresh = function () {
+        this.contents.clear();
+        if (this._actor) {
+            this.drawCheckResults();
+        }
+    }
 
-	// Draw talent checks
-	Window_TalentCheckResults.prototype.drawCheckResults = function () {
-	    var lineHeight = this.lineHeight();
-		var wx = 0;
-		var wy = 0;
-		var ww = this.contentsWidth();
+    // Draw talent checks
+    Window_TalentCheckResults.prototype.drawCheckResults = function () {
+        var lineHeight = this.lineHeight();
+        var wx = 0;
+        var wy = 0;
+        var ww = this.contentsWidth();
 
         // Manage result text and colors
-		if (this._done === false) {
-			var resultColor = "#000000";
-			var resultText = "";
-		}
-		else if (this._result >= 0) {
-			var resultColor = $dataTalents.text.successColor;
-			var resultText = $dataTalents.text.successText;
-		}
-		else {
-			var resultColor = $dataTalents.text.failColor;
-			var resultText = $dataTalents.text.failText;
-		}
+        if (this._done === false) {
+            var resultColor = "#000000";
+            var resultText = "";
+        }
+        else if (this._result >= 0) {
+            var resultColor = $dataTalents.text.successColor;
+            var resultText = $dataTalents.text.successText;
+        }
+        else {
+            var resultColor = $dataTalents.text.failColor;
+            var resultText = $dataTalents.text.failText;
+        }
 
         // Draw check name
         var talentName = FROG.Talents._find($dataTalents.talents, "abbreviation", this._abbr, "name");
         this.resetTextColor();
-	    this.drawText(talentName, wx, wy, ww, "center");
+        this.drawText(talentName, wx, wy, ww, "center");
         wy += lineHeight;
         this.drawHorzLine(lineHeight);
         wy += lineHeight;
 
         // Draw actor name and success/fail
-		this.drawActorName(this._actor, wx, wy, ww / 2);
-		this.changeTextColor(resultColor);
-	    this.drawText(resultText, ww / 2, wy, ww / 2, "right");
-		wy += lineHeight;
+        this.drawActorName(this._actor, wx, wy, ww / 2);
+        this.changeTextColor(resultColor);
+        this.drawText(resultText, ww / 2, wy, ww / 2, "right");
+        wy += lineHeight;
 
         // Draw face
-		this.drawFace(this._actor.faceName(), this._actor.faceIndex(), wx, wy, ww);
-		wy += Window_Base._faceHeight;
+        this.drawFace(this._actor.faceName(), this._actor.faceIndex(), wx, wy, ww);
+        wy += Window_Base._faceHeight;
 
         // Draw target number
-		this.drawTargetNumber(this._actor, wx, wy, ww);
-		wy += lineHeight + $dataTalents.style.gaugeHeight;
+        this.drawTargetNumber(this._actor, wx, wy, ww);
+        wy += lineHeight + $dataTalents.style.gaugeHeight;
 
         // Draw check result
-		this.drawResult(this._actor, wx, wy, ww);
-	}
+        this.drawResult(this._actor, wx, wy, ww);
+    }
 
     // Draw horizontal line
     Window_TalentCheckResults.prototype.drawHorzLine = function (y) {
@@ -2960,112 +2960,112 @@ FROG.Talents = FROG.Talents || {};
         this.contents.paintOpacity = 255;
     }
 
-	// Draw target number
-	Window_TalentCheckResults.prototype.drawTargetNumber = function (actor, x, y, width) {
-	    width = width || 186;
-	    var color1 = this.hpGaugeColor1();
-	    var color2 = this.hpGaugeColor2();
-		var min = (this._min < this._target) ? this._min : this._target;
-		var max = (this._max > this._target) ? this._max : this._target;
-		var rate = ((this._target - min + 1) / (max - min + 1)).toFixed(2);
+    // Draw target number
+    Window_TalentCheckResults.prototype.drawTargetNumber = function (actor, x, y, width) {
+        width = width || 186;
+        var color1 = this.hpGaugeColor1();
+        var color2 = this.hpGaugeColor2();
+        var min = (this._min < this._target) ? this._min : this._target;
+        var max = (this._max > this._target) ? this._max : this._target;
+        var rate = ((this._target - min + 1) / (max - min + 1)).toFixed(2);
 
-	    this.drawGauge(x, y, width, rate, color1, color2);
-		this.resetTextColor();
-	    this.drawText($dataTalents.text.difficultyText, x, y, width * 0.7);
-		if ($dataTalents.style.showCheckNumbers) {
-			this.drawText(this._target, width * 0.7, y, width * 0.3 - 5, 'right');
-		}
-	}
+        this.drawGauge(x, y, width, rate, color1, color2);
+        this.resetTextColor();
+        this.drawText($dataTalents.text.difficultyText, x, y, width * 0.7);
+        if ($dataTalents.style.showCheckNumbers) {
+            this.drawText(this._target, width * 0.7, y, width * 0.3 - 5, 'right');
+        }
+    }
 
-	// Draw talent check result
-	Window_TalentCheckResults.prototype.drawResult = function (actor, x, y, width) {
-	    width = width || 186;
-	    var color1 = this.mpGaugeColor1();
-	    var color2 = this.mpGaugeColor2();
-		var min = (this._min < this._target) ? this._min : this._target;
-		var max = (this._max > this._target) ? this._max : this._target;
-		var rate = (this._done === false) ?
-			((this._resultCounter - min + 1) / (max - min + 1)).toFixed(2) :
-			((this._target + this._result - min + 1) / (max - min + 1)).toFixed(2);
+    // Draw talent check result
+    Window_TalentCheckResults.prototype.drawResult = function (actor, x, y, width) {
+        width = width || 186;
+        var color1 = this.mpGaugeColor1();
+        var color2 = this.mpGaugeColor2();
+        var min = (this._min < this._target) ? this._min : this._target;
+        var max = (this._max > this._target) ? this._max : this._target;
+        var rate = (this._done === false) ?
+            ((this._resultCounter - min + 1) / (max - min + 1)).toFixed(2) :
+            ((this._target + this._result - min + 1) / (max - min + 1)).toFixed(2);
 
-	    this.drawGauge(x, y, width, rate, color1, color2);
-		this.resetTextColor();
-	    this.drawText($dataTalents.text.talentCheckText, x, y, width * 0.7);
+        this.drawGauge(x, y, width, rate, color1, color2);
+        this.resetTextColor();
+        this.drawText($dataTalents.text.talentCheckText, x, y, width * 0.7);
 
-		if (this._view != "ASK") {
-			// Handles the bar growth and refresh
-			if (this._resultCounter.toFixed(2) < parseInt(this._target + this._result)) {
-				this._resultCounter += $dataTalents.settings.talentBarIncrement;
-				var self = this;
-				setTimeout(function () {
-					self.refresh();
-				}, $dataTalents.settings.talentBarWait);
-			}
-			else {
-				// Bar is done growing. Refresh one more time to draw the final results
-				if ($dataTalents.style.showCheckNumbers) {
-					this.drawText(this._target + this._result, width * 0.7, y, width * 0.3 - 5, 'right');
-				}
+        if (this._view != "ASK") {
+            // Handles the bar growth and refresh
+            if (this._resultCounter.toFixed(2) < parseInt(this._target + this._result)) {
+                this._resultCounter += $dataTalents.settings.talentBarIncrement;
+                var self = this;
+                setTimeout(function () {
+                    self.refresh();
+                }, $dataTalents.settings.talentBarWait);
+            }
+            else {
+                // Bar is done growing. Refresh one more time to draw the final results
+                if ($dataTalents.style.showCheckNumbers) {
+                    this.drawText(this._target + this._result, width * 0.7, y, width * 0.3 - 5, 'right');
+                }
 
-				if (this._done === false) {
-					this._done = true;
-					this.refresh();
-				}
-				else {
-					this._commandWindow._view = "NONE";
-					this._commandWindow.refresh();
-					this._commandWindow.activate();
-					this._commandWindow.select(0);
-				}
-			}
-		}
-	}
+                if (this._done === false) {
+                    this._done = true;
+                    this.refresh();
+                }
+                else {
+                    this._commandWindow._view = "NONE";
+                    this._commandWindow.refresh();
+                    this._commandWindow.activate();
+                    this._commandWindow.select(0);
+                }
+            }
+        }
+    }
 
-	// Draw gauge
-	Window_TalentCheckResults.prototype.drawGauge = function (x, y, width, rate, color1, color2) {
-	    var fillW = Math.floor(width * rate);
-	    var gaugeY = y + this.lineHeight() - 8;
-		this.contents.fillRect(x, gaugeY, width, $dataTalents.style.gaugeHeight, this.gaugeBackColor());
-	    this.contents.gradientFillRect(x, gaugeY, fillW, $dataTalents.style.gaugeHeight, color1, color2);
-	}
+    // Draw gauge
+    Window_TalentCheckResults.prototype.drawGauge = function (x, y, width, rate, color1, color2) {
+        var fillW = Math.floor(width * rate);
+        var gaugeY = y + this.lineHeight() - 8;
+        this.contents.fillRect(x, gaugeY, width, $dataTalents.style.gaugeHeight, this.gaugeBackColor());
+        this.contents.gradientFillRect(x, gaugeY, fillW, $dataTalents.style.gaugeHeight, color1, color2);
+    }
 
-	// Open talent check scene
-	FROG.Talents.openTalentCheckResults = function (options) {
-		var o = options;
-		var actor = $gameActors.actor(o.aid);
-		if (actor) {
-			$gameParty.setMenuActor(actor);
-			SceneManager.push(Scene_TalentCheckResults);
-			SceneManager.prepareNextScene(options);
-		}
-	}
+    // Open talent check scene
+    FROG.Talents.openTalentCheckResults = function (options) {
+        var o = options;
+        var actor = $gameActors.actor(o.aid);
+        if (actor) {
+            $gameParty.setMenuActor(actor);
+            SceneManager.push(Scene_TalentCheckResults);
+            SceneManager.prepareNextScene(options);
+        }
+    }
 
-	/* ---------------------------------------------------------------*\
-							Script Calls
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                            Script Calls
+    \* -------------------------------------------------------------- */
 
-	/** Get the maximum number of ranks that can be currently applied to a skill by an actor
-	 * @param {object} actor - A Game_Actor object (required)
-	 * @returns {number} Returns the max ranks for the actor
-	 */
-	FROG.Talents.getMaxRanks = function (actor) {
-		if (actor) {
+    /** Get the maximum number of ranks that can be currently applied to a skill by an actor
+     * @param {object} actor - A Game_Actor object (required)
+     * @returns {number} Returns the max ranks for the actor
+     */
+    FROG.Talents.getMaxRanks = function (actor) {
+        if (actor) {
             var max = $dataTalents.settings.maxRanks;
             if ($dataTalents.settings.maxType == "LEVEL") {
                 max += actor._level;
             }
             return max;
-		}
-		return 0;
-	}
+        }
+        return 0;
+    }
 
-	/** Get the highest Talent Score for an actor
-	 * @param {object} actor - A Game_Actor object (required)
-	 * @returns {number} Returns the max ranks for the actor
-	 */
-	FROG.Talents.getMaxScore = function (actor) {
+    /** Get the highest Talent Score for an actor
+     * @param {object} actor - A Game_Actor object (required)
+     * @returns {number} Returns the max ranks for the actor
+     */
+    FROG.Talents.getMaxScore = function (actor) {
         var maxScore = 0;
-		if (actor) {
+        if (actor) {
             for (var i in actor._talents) {
                 var t = actor._talents[i];
                 var score = this.getActorTalentScore(actor.actorId(), t.abbr);
@@ -3073,17 +3073,17 @@ FROG.Talents = FROG.Talents || {};
                     maxScore = score;
                 }
             }
-		}
-		return maxScore;
-	}
+        }
+        return maxScore;
+    }
 
-	/** This is just used to determine how the Talent Window gauge displays
-	 * @param {object} actor - A Game_Actor object (required)
-	 * @returns {number} Returns the max ranks for the actor
-	 */
-	FROG.Talents.getMaxGauge = function (actor) {
+    /** This is just used to determine how the Talent Window gauge displays
+     * @param {object} actor - A Game_Actor object (required)
+     * @returns {number} Returns the max ranks for the actor
+     */
+    FROG.Talents.getMaxGauge = function (actor) {
         var maxGauge = 0;
-		if (actor) {
+        if (actor) {
             for (var i in actor._talents) {
                 var t = actor._talents[i];
                 var maxRanks = this.getMaxRanks(actor);
@@ -3095,212 +3095,212 @@ FROG.Talents = FROG.Talents || {};
                     maxGauge = gauge;
                 }
             }
-		}
-		return maxGauge;
-	}
+        }
+        return maxGauge;
+    }
 
-	/** Is an actor proficient with a talent
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent
-	 * @returns {boolean} Does the actor have proficiency with the talent
-	 */
-	FROG.Talents.isActorProficientWithTalent = function (actorId, abbr) {
-		if (isNaN(actorId) === false && actorId > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				for (var i=0; i<actor._talents.length; i++) {
-					return actor._talents[i].prof;
-				}
-			}
-		}
-		return false;
-	}
+    /** Is an actor proficient with a talent
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {string} abbr - The abbreviation used to identify a talent
+     * @returns {boolean} Does the actor have proficiency with the talent
+     */
+    FROG.Talents.isActorProficientWithTalent = function (actorId, abbr) {
+        if (isNaN(actorId) === false && actorId > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                for (var i=0; i<actor._talents.length; i++) {
+                    return actor._talents[i].prof;
+                }
+            }
+        }
+        return false;
+    }
 
-	/** Get unspent talent points for a given actor
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @returns {number} Return points remaining
-	 */
-	FROG.Talents.getTalentPoints = function (actorId) {
-		var p = -1;
-		if (isNaN(actorId) === false && actorId > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				p = actor._talentPoints;
-			}
-		}
-		return p;
-	}
+    /** Get unspent talent points for a given actor
+     * @param {number} actorId - The ID of an actor (required)
+     * @returns {number} Return points remaining
+     */
+    FROG.Talents.getTalentPoints = function (actorId) {
+        var p = -1;
+        if (isNaN(actorId) === false && actorId > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                p = actor._talentPoints;
+            }
+        }
+        return p;
+    }
 
-	/** Gets the total talent points accumulated by the given actor
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @returns {number} Returns the total number of points, spent and unspent
-	 */
-	FROG.Talents.getTotalTalentPoints = function (actorId) {
-		var p = -1;
-		if (isNaN(actorId) === false && actorId > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				p = 0;
-				for (var i=0; i<actor._talents.length; i++) {
-					var t = actor._talents[i];
-					p += t.ranks;
-				}
-				p += actor._talentPoints;
-			}
-		}
-		return p;
-	}
+    /** Gets the total talent points accumulated by the given actor
+     * @param {number} actorId - The ID of an actor (required)
+     * @returns {number} Returns the total number of points, spent and unspent
+     */
+    FROG.Talents.getTotalTalentPoints = function (actorId) {
+        var p = -1;
+        if (isNaN(actorId) === false && actorId > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                p = 0;
+                for (var i=0; i<actor._talents.length; i++) {
+                    var t = actor._talents[i];
+                    p += t.ranks;
+                }
+                p += actor._talentPoints;
+            }
+        }
+        return p;
+    }
 
-	/** Manually set the number of talent points for an actor
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {number} points - The point total that the actor will be set to (required)
-	 * @returns {boolean} Returns true if the points were set correctly, false if this function was unable to
-	 */
-	FROG.Talents.setTalentPoints = function (actorId, points) {
-		var bOk = false;
-		if (isNaN(actorId) === false && actorId > 0 && isNaN(points) === false) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				actor._talentPoints = parseInt(points).clamp(0, 100000);
-				bOk = true;
-			}
-		}
-		return bOk;
-	}
+    /** Manually set the number of talent points for an actor
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} points - The point total that the actor will be set to (required)
+     * @returns {boolean} Returns true if the points were set correctly, false if this function was unable to
+     */
+    FROG.Talents.setTalentPoints = function (actorId, points) {
+        var bOk = false;
+        if (isNaN(actorId) === false && actorId > 0 && isNaN(points) === false) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                actor._talentPoints = parseInt(points).clamp(0, 100000);
+                bOk = true;
+            }
+        }
+        return bOk;
+    }
 
-	/** Add a given number of talent points to an actor
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {number} points - The number of points that will be added to the actor (required)
-	 * @returns {boolean} Returns true if the points were added correctly, false if this function was unable to
-	 */
-	FROG.Talents.addTalentPoints = function (actorId, points) {
-		var bOk = false;
-		if (isNaN(actorId) === false && actorId > 0 && isNaN(points) === false && parseInt(points) > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				actor._talentPoints += parseInt(points);
-				bOk = true;
-			}
-		}
-		return bOk;
-	}
+    /** Add a given number of talent points to an actor
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} points - The number of points that will be added to the actor (required)
+     * @returns {boolean} Returns true if the points were added correctly, false if this function was unable to
+     */
+    FROG.Talents.addTalentPoints = function (actorId, points) {
+        var bOk = false;
+        if (isNaN(actorId) === false && actorId > 0 && isNaN(points) === false && parseInt(points) > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                actor._talentPoints += parseInt(points);
+                bOk = true;
+            }
+        }
+        return bOk;
+    }
 
-	/** Remove a given number of talent points from an actor
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {number} points - The number of points that will be subtracted from the actor (required)
-	 * @returns {boolean} Returns true if the points were removed correctly, false if this function was unable to
-	 */
-	FROG.Talents.removeTalentPoints = function (actorId, points) {
-		var bOk = false;
-		if (isNaN(actorId) === false && actorId > 0 && isNaN(points) === false && parseInt(points) > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				actor._talentPoints -= parseInt(points);
-				bOk = true;
-			}
-		}
-		return bOk;
-	}
+    /** Remove a given number of talent points from an actor
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} points - The number of points that will be subtracted from the actor (required)
+     * @returns {boolean} Returns true if the points were removed correctly, false if this function was unable to
+     */
+    FROG.Talents.removeTalentPoints = function (actorId, points) {
+        var bOk = false;
+        if (isNaN(actorId) === false && actorId > 0 && isNaN(points) === false && parseInt(points) > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                actor._talentPoints -= parseInt(points);
+                bOk = true;
+            }
+        }
+        return bOk;
+    }
 
-	/** Set the number of ranks for a specific talent. This will overwrite any ranks the actor currently has.
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @param {number} ranks - The number of ranks to set the actor to (required)
-	 * @returns {boolean} Returns true if the ranks were set correctly, false if this function was unable to
-	 */
-	FROG.Talents.setTalentRanks = function (actorId, abbr, ranks) {
-		var bOk = false;
-		if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				for (var i=0; i<actor._talents.length; i++) {
-					var t = actor._talents[i];
-					if (t.abbr.toLowerCase() == abbr.toLowerCase() && t.ranks < FROG.Talents.getMaxRanks(actor)) {
-						t.ranks = ranks.clamp(0, FROG.Talents.getMaxRanks(actor));
-						bOk = true;
-					}
-				}
-			}
-		}
-		return bOk;
-	}
+    /** Set the number of ranks for a specific talent. This will overwrite any ranks the actor currently has.
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @param {number} ranks - The number of ranks to set the actor to (required)
+     * @returns {boolean} Returns true if the ranks were set correctly, false if this function was unable to
+     */
+    FROG.Talents.setTalentRanks = function (actorId, abbr, ranks) {
+        var bOk = false;
+        if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                for (var i=0; i<actor._talents.length; i++) {
+                    var t = actor._talents[i];
+                    if (t.abbr.toLowerCase() == abbr.toLowerCase() && t.ranks < FROG.Talents.getMaxRanks(actor)) {
+                        t.ranks = ranks.clamp(0, FROG.Talents.getMaxRanks(actor));
+                        bOk = true;
+                    }
+                }
+            }
+        }
+        return bOk;
+    }
 
-	/** Add a number of talent ranks to an actor
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @param {number} ranks - The number of ranks to add (required)
-	 * @returns {boolean} Returns true if the ranks were added correctly, false if this function was unable to
-	 */
-	FROG.Talents.addTalentRanks = function (actorId, abbr, ranks) {
-		var bOk = false;
-		if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				for (var i in actor._talents) {
-					var t = actor._talents[i];
-					if (t.abbr.toLowerCase() == abbr.toLowerCase()) {
-						t.ranks += ranks;
-						bOk = true;
+    /** Add a number of talent ranks to an actor
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @param {number} ranks - The number of ranks to add (required)
+     * @returns {boolean} Returns true if the ranks were added correctly, false if this function was unable to
+     */
+    FROG.Talents.addTalentRanks = function (actorId, abbr, ranks) {
+        var bOk = false;
+        if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                for (var i in actor._talents) {
+                    var t = actor._talents[i];
+                    if (t.abbr.toLowerCase() == abbr.toLowerCase()) {
+                        t.ranks += ranks;
+                        bOk = true;
 
-						if (Imported.FROG_LevelBasedTraitsTalent === true) {
-							actor.addTalentTraits();
-						}
-					}
-				}
-			}
-		}
-		return bOk;
-	}
+                        if (Imported.FROG_LevelBasedTraitsTalent === true) {
+                            actor.addTalentTraits();
+                        }
+                    }
+                }
+            }
+        }
+        return bOk;
+    }
 
-	/** Remove a number of talent ranks from an actor
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @param {number} ranks - The number of ranks to subtract (required)
-	 * @returns {boolean} Returns true if the ranks were removed correctly, false if this function was unable to
-	 */
-	FROG.Talents.removeTalentRanks = function (actorId, abbr, ranks) {
-		var bOk = false;
-		if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				for (var i=0; i<actor._talents.length; i++) {
-					var t = actor._talents[i];
-					if (t.abbr.toLowerCase() == abbr.toLowerCase()) {
-						t.ranks -= ranks;
-						bOk = true;
+    /** Remove a number of talent ranks from an actor
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @param {number} ranks - The number of ranks to subtract (required)
+     * @returns {boolean} Returns true if the ranks were removed correctly, false if this function was unable to
+     */
+    FROG.Talents.removeTalentRanks = function (actorId, abbr, ranks) {
+        var bOk = false;
+        if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                for (var i=0; i<actor._talents.length; i++) {
+                    var t = actor._talents[i];
+                    if (t.abbr.toLowerCase() == abbr.toLowerCase()) {
+                        t.ranks -= ranks;
+                        bOk = true;
 
-						if (Imported.FROG_LevelBasedTraitsTalent === true) {
-							actor.addTalentTraits();
-						}
-					}
-				}
-			}
-		}
-		return bOk;
-	}
+                        if (Imported.FROG_LevelBasedTraitsTalent === true) {
+                            actor.addTalentTraits();
+                        }
+                    }
+                }
+            }
+        }
+        return bOk;
+    }
 
-	/** Get the number of talent ranks an actor has
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @returns {number} Returns the number of ranks an actor has or -1 if the call didn't work
-	 */
-	FROG.Talents.getTalentRanks = function (actorId, abbr) {
-		var ranks = -1;
-		if (isNaN(actorId) === false && actorId > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				ranks = FROG.Talents._find(actor._talents, "abbr", abbr, "ranks");
-			}
-		}
-		return ranks;
-	}
+    /** Get the number of talent ranks an actor has
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @returns {number} Returns the number of ranks an actor has or -1 if the call didn't work
+     */
+    FROG.Talents.getTalentRanks = function (actorId, abbr) {
+        var ranks = -1;
+        if (isNaN(actorId) === false && actorId > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                ranks = FROG.Talents._find(actor._talents, "abbr", abbr, "ranks");
+            }
+        }
+        return ranks;
+    }
 
-	/** Get the talent score for a Game_Actor or Game_Enemy object. This is primarily used in formulas.
-	 * @param {object} object - An actor or enemy object (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @returns {number} Returns the talent score for an enemy
-	 */
-	FROG.Talents.getTalentScore = function (object, abbr) {
+    /** Get the talent score for a Game_Actor or Game_Enemy object. This is primarily used in formulas.
+     * @param {object} object - An actor or enemy object (required)
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @returns {number} Returns the talent score for an enemy
+     */
+    FROG.Talents.getTalentScore = function (object, abbr) {
         var score = 0;
         if (object && object._talents) {
             if (object._actorId) {
@@ -3313,73 +3313,73 @@ FROG.Talents = FROG.Talents || {};
         return score;
     }
 
-	/** Get the talent score for an actor. The score is the number of ranks plus any bonuses and penalties.
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @returns {number} Returns the talent score for an actor or Decline Check Value if the call didn't work
-	 */
-	FROG.Talents.getActorTalentScore = function (actorId, abbr) {
+    /** Get the talent score for an actor. The score is the number of ranks plus any bonuses and penalties.
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @returns {number} Returns the talent score for an actor or Decline Check Value if the call didn't work
+     */
+    FROG.Talents.getActorTalentScore = function (actorId, abbr) {
         var score = 0;
 
-		if (isNaN(actorId) === false && actorId > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor) {
-				// Ranks
-				score = parseInt(FROG.Talents._find(actor._talents, "abbr", abbr, "ranks")) || 0;
+        if (isNaN(actorId) === false && actorId > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor) {
+                // Ranks
+                score = parseInt(FROG.Talents._find(actor._talents, "abbr", abbr, "ranks")) || 0;
 
-				// Proficiency Bonus
-				if (FROG.Talents._find(actor._talents, "abbr", abbr, "prof") === true) {
-					score += parseInt($dataTalents.settings.proficiencyBonus);
-				}
+                // Proficiency Bonus
+                if (FROG.Talents._find(actor._talents, "abbr", abbr, "prof") === true) {
+                    score += parseInt($dataTalents.settings.proficiencyBonus);
+                }
 
-				// Actor Bonus/Penalty
+                // Actor Bonus/Penalty
                 score += (actor._talentConfig && actor._talentConfig.talentBonus[abbr]) ? actor._talentConfig.talentBonus[abbr] : 0;
 
-				// Racial Bonus/Penalty
+                // Racial Bonus/Penalty
                 if (Imported.FROG_Races === true && actor.raceId() > 0 && $dataRaces[actor.raceId()] &&
-					$dataRaces[actor.raceId()].talentConfig && $dataRaces[actor.raceId()].talentConfig.talentBonus)
-				{
+                    $dataRaces[actor.raceId()].talentConfig && $dataRaces[actor.raceId()].talentConfig.talentBonus)
+                {
                     score += $dataRaces[actor.raceId()].talentConfig.talentBonus[abbr] || 0;
                 }
 
-				// Equipment Bonus
-				for (var i in actor._equips) {
-					var equip = actor._equips[i];
-					if (equip && parseInt(equip._itemId) > 0) {
-						var item = null;
-						switch (equip._dataClass.toLowerCase()) {
-							case "weapon": item = $dataWeapons[equip._itemId]; break;
-							case "armor":  item = $dataArmors[equip._itemId];  break;
-						}
-						score += FROG.Talents.extractMetaBonus(item, abbr);
-					}
-				}
+                // Equipment Bonus
+                for (var i in actor._equips) {
+                    var equip = actor._equips[i];
+                    if (equip && parseInt(equip._itemId) > 0) {
+                        var item = null;
+                        switch (equip._dataClass.toLowerCase()) {
+                            case "weapon": item = $dataWeapons[equip._itemId]; break;
+                            case "armor":  item = $dataArmors[equip._itemId];  break;
+                        }
+                        score += FROG.Talents.extractMetaBonus(item, abbr);
+                    }
+                }
 
-				// Item Bonuses
-				for (var i in $gameParty._items) {
-					if (parseInt($gameParty._items[i]) > 0) {
-						var item = $dataItems[i];
-						score += FROG.Talents.extractMetaBonus(item, abbr);
-					}
-				}
+                // Item Bonuses
+                for (var i in $gameParty._items) {
+                    if (parseInt($gameParty._items[i]) > 0) {
+                        var item = $dataItems[i];
+                        score += FROG.Talents.extractMetaBonus(item, abbr);
+                    }
+                }
 
-				// State Bonuses
-				for (var i in actor._states) {
-					var state = (parseInt(actor._states[i]) > 0) ? $dataStates[parseInt(actor._states[i])] : null;
-					score += FROG.Talents.extractMetaBonus(state, abbr);
-				}
-			}
-		}
+                // State Bonuses
+                for (var i in actor._states) {
+                    var state = (parseInt(actor._states[i]) > 0) ? $dataStates[parseInt(actor._states[i])] : null;
+                    score += FROG.Talents.extractMetaBonus(state, abbr);
+                }
+            }
+        }
 
-		return score;
-	}
+        return score;
+    }
 
-	/** Get the talent score for an enemy.
-	 * @param {number} enemyId - The ID of an enemy (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @returns {number} Returns the talent score for an enemy
-	 */
-	FROG.Talents.getEnemyTalentScore = function (enemyId, abbr) {
+    /** Get the talent score for an enemy.
+     * @param {number} enemyId - The ID of an enemy (required)
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @returns {number} Returns the talent score for an enemy
+     */
+    FROG.Talents.getEnemyTalentScore = function (enemyId, abbr) {
         var score = 0;
         var enemy = $dataEnemies[enemyId];
         if (enemy && enemy.talents) {
@@ -3388,50 +3388,50 @@ FROG.Talents = FROG.Talents || {};
         return score;
     }
 
-	/** Extract talent bonus from a gae object's meta data (Typically weapons, armor, items and states)
-	 * @param {object} gameObj - Any game object that has <TalentBonus> meta data (required)
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @returns {number} Returns the bonus extracted from this obejct
-	 */
-	FROG.Talents.extractMetaBonus = function (gameObj, abbr) {
-		var bonus = 0;
-		if (gameObj && gameObj.meta && gameObj.meta.TalentBonus && gameObj.meta.TalentBonus.indexOf(' ') > -1) {
-			var talentBonus = gameObj.meta.TalentBonus.trim() + ',';
-			for (var i=0; i<4; i++) talentBonus = talentBonus.replace('  ', ' ');
-			var arrList = talentBonus.split(',');
+    /** Extract talent bonus from a gae object's meta data (Typically weapons, armor, items and states)
+     * @param {object} gameObj - Any game object that has <TalentBonus> meta data (required)
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @returns {number} Returns the bonus extracted from this obejct
+     */
+    FROG.Talents.extractMetaBonus = function (gameObj, abbr) {
+        var bonus = 0;
+        if (gameObj && gameObj.meta && gameObj.meta.TalentBonus && gameObj.meta.TalentBonus.indexOf(' ') > -1) {
+            var talentBonus = gameObj.meta.TalentBonus.trim() + ',';
+            for (var i=0; i<4; i++) talentBonus = talentBonus.replace('  ', ' ');
+            var arrList = talentBonus.split(',');
 
-			for (var i in arrList) {
-				var token = arrList[i].trim();
-				if (token && token.indexOf(' ') > -1) {
-					var arrToken = token.split(' ');
-					var t_bonus = eval(arrToken[0]);
-					var t_abbr = arrToken[1].toLowerCase().trim();
-					bonus += (t_abbr == abbr) ? t_bonus : 0;
-				}
-			}
-		}
-		return bonus;
-	}
+            for (var i in arrList) {
+                var token = arrList[i].trim();
+                if (token && token.indexOf(' ') > -1) {
+                    var arrToken = token.split(' ');
+                    var t_bonus = eval(arrToken[0]);
+                    var t_abbr = arrToken[1].toLowerCase().trim();
+                    bonus += (t_abbr == abbr) ? t_bonus : 0;
+                }
+            }
+        }
+        return bonus;
+    }
 
-	/** Get the actor who has the best talent score
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @returns {number} Returns the ID of the actor who has the best talent score
-	 */
-	FROG.Talents.getMostTalented = function (abbr) {
-		var bestScore = -1;
-		var actorId = 0;
-		for (var i in $gameParty._actors) {
-			var actor = $gameActors._data[$gameParty._actors[i]];
-			if (actor) {
-				score = FROG.Talents.getActorTalentScore(actor.actorId(), abbr);
-				if (score > bestScore) {
-					bestScore = score;
-					actorId = actor.actorId();
-				}
-			}
-		}
-		return actorId;
-	}
+    /** Get the actor who has the best talent score
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @returns {number} Returns the ID of the actor who has the best talent score
+     */
+    FROG.Talents.getMostTalented = function (abbr) {
+        var bestScore = -1;
+        var actorId = 0;
+        for (var i in $gameParty._actors) {
+            var actor = $gameActors._data[$gameParty._actors[i]];
+            if (actor) {
+                score = FROG.Talents.getActorTalentScore(actor.actorId(), abbr);
+                if (score > bestScore) {
+                    bestScore = score;
+                    actorId = actor.actorId();
+                }
+            }
+        }
+        return actorId;
+    }
 
     // Check history marked to remember and a clean method to keep the size down
     FROG.Talents.rememberCheck = [];
@@ -3443,7 +3443,7 @@ FROG.Talents = FROG.Talents || {};
     }
 
     /** Processes the target number. Handles named Talent Checks as well.
-	 * @param {variant} target - Target Check name or value
+     * @param {variant} target - Target Check name or value
      * @returns {number} Target Number value converted from its name if needed
      */
     FROG.Talents.getTargetNumber = function (target) {
@@ -3459,7 +3459,7 @@ FROG.Talents = FROG.Talents || {};
     }
 
     /** Processes the modifier and returns the mod value. Handles named modifiers as well.
-	 * @param {variant} mod - Modifier name or value
+     * @param {variant} mod - Modifier name or value
      * @returns {number} Modifier value converted from its name if needed
      */
     FROG.Talents.getModifier = function (mod) {
@@ -3480,61 +3480,61 @@ FROG.Talents = FROG.Talents || {};
         return r;
     }
 
-	/** Perform various types of talent checks
-	 * @param {object} options - The options object (required)
-	 * @param {number} options.var - The variable Id to store the result in (required if view is ask)
-	 * @param {string} options.type - The type of talent check
+    /** Perform various types of talent checks
+     * @param {object} options - The options object (required)
+     * @param {number} options.var - The variable Id to store the result in (required if view is ask)
+     * @param {string} options.type - The type of talent check
      * @param {number} options.aid - Actor ID performing the check or 0 for the most talented one (default best actor)
-	 * @param {string} options.abbr - The abbreviation of the talent being performed (required)
-	 * @param {number} options.target - The target number that needs to be matched or exceeded for success (default 0)
-	 * @param {number} options.mod - Modifier that's added to the talent score after the check is performed (default 0)
-	 * @param {number} options.dieRoll - Simulated die roll (default 20 as in d20)
-	 * @param {number} options.dieCount - Roll multiple dice for different probability curves (default 1)
-	 * @param {string} options.view - View mode that determines how the check is resolved visually
-	 *		NONE = Check happens in the back ground. The player doesn't even know it happened
-	 *		SHOW = Check happens immediately and the player is shown the Talent Check window
-	 *		ASK  = The player is shown the difficulty of the check and is asked if they want to attempt it
+     * @param {string} options.abbr - The abbreviation of the talent being performed (required)
+     * @param {number} options.target - The target number that needs to be matched or exceeded for success (default 0)
+     * @param {number} options.mod - Modifier that's added to the talent score after the check is performed (default 0)
+     * @param {number} options.dieRoll - Simulated die roll (default 20 as in d20)
+     * @param {number} options.dieCount - Roll multiple dice for different probability curves (default 1)
+     * @param {string} options.view - View mode that determines how the check is resolved visually
+     *        NONE = Check happens in the back ground. The player doesn't even know it happened
+     *        SHOW = Check happens immediately and the player is shown the Talent Check window
+     *        ASK  = The player is shown the difficulty of the check and is asked if they want to attempt it
      * @param {string} options.rem - Retries of this check will return the same result until the character gains a level
-	 * @returns {number} Represents level of success or failure (0 = hit target, negative = failed by this much, positive = exceeded by this much)
-	*/
-	FROG.Talents.talentCheck = function (options) {
-		var r = -999;
+     * @returns {number} Represents level of success or failure (0 = hit target, negative = failed by this much, positive = exceeded by this much)
+    */
+    FROG.Talents.talentCheck = function (options) {
+        var r = -999;
         var remResult = -1;
-		var o = options;
-		o.var = parseInt(o.var) || $dataTalents.check.lastCheckVar || 0;
-		o.type = (o.type) ? o.type.toUpperCase() : $dataTalents.check.rollType || "ROLL";
-		o.aid = parseInt(o.aid) || 0;
-		o.abbr = o.abbr || "";
-		o.target = FROG.Talents.getTargetNumber(o.target);
-		o.target += FROG.Talents.getModifier(o.mod);
+        var o = options;
+        o.var = parseInt(o.var) || $dataTalents.check.lastCheckVar || 0;
+        o.type = (o.type) ? o.type.toUpperCase() : $dataTalents.check.rollType || "ROLL";
+        o.aid = parseInt(o.aid) || 0;
+        o.abbr = o.abbr || "";
+        o.target = FROG.Talents.getTargetNumber(o.target);
+        o.target += FROG.Talents.getModifier(o.mod);
         o.target = o.target.clamp(1, 9999);
-		o.die = o.die || $dataTalents.check.dieType || 20;
+        o.die = o.die || $dataTalents.check.dieType || 20;
         o.die = parseInt(o.die.toString().replace("d", ""));
-		o.dcount = parseInt(o.dcount) || $dataTalents.check.dieCount || 1;
-		o.view = (o.view) ? o.view.toUpperCase() : $dataTalents.check.viewType || "ASK";
+        o.dcount = parseInt(o.dcount) || $dataTalents.check.dieCount || 1;
+        o.view = (o.view) ? o.view.toUpperCase() : $dataTalents.check.viewType || "ASK";
         o.rem = (o.rem) ? o.rem.toString() : "";
 
-		if (typeof o.type == "string" && o.type.length > 0 && o.abbr) {
-			// If actor id is 0, use the most talented actor for this check
-			if (o.aid > 0) {
-				var score = FROG.Talents.getActorTalentScore(o.aid, o.abbr);
-			}
-			else {
-				o.aid = FROG.Talents.getMostTalented(o.abbr);
-				var score = FROG.Talents.getActorTalentScore(o.aid, o.abbr);
-			}
+        if (typeof o.type == "string" && o.type.length > 0 && o.abbr) {
+            // If actor id is 0, use the most talented actor for this check
+            if (o.aid > 0) {
+                var score = FROG.Talents.getActorTalentScore(o.aid, o.abbr);
+            }
+            else {
+                o.aid = FROG.Talents.getMostTalented(o.abbr);
+                var score = FROG.Talents.getActorTalentScore(o.aid, o.abbr);
+            }
 
-			switch (o.type) {
-				// Compare max score + modifier to target number
-				case "MAX":
+            switch (o.type) {
+                // Compare max score + modifier to target number
+                case "MAX":
                     r = score - o.target;
-					break;
+                    break;
 
-				// Random 1 through max score, add modifier and compare to target number
-				case "RND":
-					o.die = 0;
-					o.dCount = 0;
-					var rnd = 0;
+                // Random 1 through max score, add modifier and compare to target number
+                case "RND":
+                    o.die = 0;
+                    o.dCount = 0;
+                    var rnd = 0;
                     var actorLvl = $gameActors.actor(o.aid)._level;
 
                     // See if this check has already been done
@@ -3558,11 +3558,11 @@ FROG.Talents = FROG.Talents || {};
                         rnd = Math.floor(Math.random() * score) + 1;
                     }
 
-					// Normalize Target Number
-					if ($dataTalents.check.normalizeTarget === true) {
-						o.target = parseInt(o.target / 2);
-					}
-					r = rnd - o.target;
+                    // Normalize Target Number
+                    if ($dataTalents.check.normalizeTarget === true) {
+                        o.target = parseInt(o.target / 2);
+                    }
+                    r = rnd - o.target;
 
                     // Remember Result
                     if (o.rem && remResult === -1) {
@@ -3573,11 +3573,11 @@ FROG.Talents = FROG.Talents || {};
                             result: rnd
                         });
                     }
-					break;
+                    break;
 
-				// Roll dice, add your score and modifier, and compare to target number
-				case "ROLL":
-					var roll = 0;
+                // Roll dice, add your score and modifier, and compare to target number
+                case "ROLL":
+                    var roll = 0;
                     var actorLvl = $gameActors.actor(o.aid)._level;
 
                     // See if this check has already been done
@@ -3598,16 +3598,16 @@ FROG.Talents = FROG.Talents || {};
                     else {
                         // Run check result
                         for (var i=0; i<o.dcount; i++) {
-    						var rnd = Math.floor(Math.random() * o.die) + 1;
-    						roll += rnd;
-    					}
+                            var rnd = Math.floor(Math.random() * o.die) + 1;
+                            roll += rnd;
+                        }
                     }
 
-					// Normalize Target Number
-					if ($dataTalents.check.normalizeTarget === true) {
-						o.target = parseInt(o.target + Math.floor(((o.die / 2) + 0.5) * o.dcount));
-					}
-					r = roll + score - o.target;
+                    // Normalize Target Number
+                    if ($dataTalents.check.normalizeTarget === true) {
+                        o.target = parseInt(o.target + Math.floor(((o.die / 2) + 0.5) * o.dcount));
+                    }
+                    r = roll + score - o.target;
 
                     // Remember Result
                     if (o.rem && remResult === -1) {
@@ -3618,256 +3618,256 @@ FROG.Talents = FROG.Talents || {};
                             result: roll + score
                         });
                     }
-					break;
+                    break;
 
-				// Min roll possible
-				case "MINROLL":
-					o.view = "NONE";
+                // Min roll possible
+                case "MINROLL":
+                    o.view = "NONE";
                     //r = o.dcount + score + o.mod;
-					r = o.dcount + score;
-					break;
+                    r = o.dcount + score;
+                    break;
 
-				// Max roll possible
-				case "MAXROLL":
-					o.view = "NONE";
+                // Max roll possible
+                case "MAXROLL":
+                    o.view = "NONE";
                     //r = o.dcount * o.die + score + o.mod;
-					r = o.dcount * o.die + score;
-					break;
-			}
+                    r = o.dcount * o.die + score;
+                    break;
+            }
 
-			if (o.view != "NONE") {
-				o.result = r;
-				switch (o.type) {
-					case "MAX":
-					case "RND":
-						o.min = 1;
+            if (o.view != "NONE") {
+                o.result = r;
+                switch (o.type) {
+                    case "MAX":
+                    case "RND":
+                        o.min = 1;
                         //o.max = score + o.mod;
-						o.max = score;
-						break;
+                        o.max = score;
+                        break;
 
-					case "ROLL":
-						var oMinMax = Object.assign({}, options);
-						oMinMax.type = "MINROLL";
-						o.min = FROG.Talents.talentCheck(oMinMax);
-						oMinMax.type = "MAXROLL";
-						o.max = FROG.Talents.talentCheck(oMinMax);
-						break;
-				}
-				this.openTalentCheckResults(options);
-			}
-		}
+                    case "ROLL":
+                        var oMinMax = Object.assign({}, options);
+                        oMinMax.type = "MINROLL";
+                        o.min = FROG.Talents.talentCheck(oMinMax);
+                        oMinMax.type = "MAXROLL";
+                        o.max = FROG.Talents.talentCheck(oMinMax);
+                        break;
+                }
+                this.openTalentCheckResults(options);
+            }
+        }
 
-		// Set Last Check Variable
-		if (o.var > 0) {
-			$gameVariables.setValue(o.var, r);
-		}
+        // Set Last Check Variable
+        if (o.var > 0) {
+            $gameVariables.setValue(o.var, r);
+        }
 
-		// Set Actor Check Variable
+        // Set Actor Check Variable
         var actor = $gameActors.actor(o.aid);
         if (actor && actor._talentConfig && actor._talentConfig.talentCheckVar > 0) {
             $gameVariables.setValue(actor._talentConfig.talentCheckVar, r);
         }
 
-		return r;
-	}
+        return r;
+    }
 
-	/** Get a Target Number from an enemy based on their talent
-	 * @param {object} options - The options object (required)
-	 * @param {number} options.var - The variable Id to store the result in (required if view is ask)
-	 * @param {string} options.type - The type of talent check
+    /** Get a Target Number from an enemy based on their talent
+     * @param {object} options - The options object (required)
+     * @param {number} options.var - The variable Id to store the result in (required if view is ask)
+     * @param {string} options.type - The type of talent check
      * @param {number} options.eid - ID of an enemy
-	 * @param {string} options.abbr - The abbreviation of the talent being performed (required)
-	 * @param {number} options.dieRoll - Simulated die roll (default 20 as in d20)
-	 * @param {number} options.dieCount - Roll multiple dice for different probability curves (default 1)
-	 * @returns {number} Represents level of success or failure (0 = hit target, negative = failed by this much, positive = exceeded by this much)
-	*/
-	FROG.Talents.enemyTargetNumber = function (options) {
-		var r = -999;
-		var o = options;
-		o.var = parseInt(o.var) || $dataTalents.check.targetNumberVar || 0;
-		o.type = (o.type) ? o.type.toUpperCase() : $dataTalents.check.rollType || "ROLL";
-		o.eid = parseInt(o.eid) || 0;
-		o.abbr = o.abbr || "";
-		o.die = o.die || $dataTalents.check.dieType || 20;
+     * @param {string} options.abbr - The abbreviation of the talent being performed (required)
+     * @param {number} options.dieRoll - Simulated die roll (default 20 as in d20)
+     * @param {number} options.dieCount - Roll multiple dice for different probability curves (default 1)
+     * @returns {number} Represents level of success or failure (0 = hit target, negative = failed by this much, positive = exceeded by this much)
+    */
+    FROG.Talents.enemyTargetNumber = function (options) {
+        var r = -999;
+        var o = options;
+        o.var = parseInt(o.var) || $dataTalents.check.targetNumberVar || 0;
+        o.type = (o.type) ? o.type.toUpperCase() : $dataTalents.check.rollType || "ROLL";
+        o.eid = parseInt(o.eid) || 0;
+        o.abbr = o.abbr || "";
+        o.die = o.die || $dataTalents.check.dieType || 20;
         o.die = parseInt(o.die.toString().replace("d", ""));
-		o.dcount = parseInt(o.dcount) || $dataTalents.check.dieCount || 1;
+        o.dcount = parseInt(o.dcount) || $dataTalents.check.dieCount || 1;
 
-		if (typeof o.type == "string" && o.type.length > 0 && o.abbr && o.eid > 0) {
-			var score = FROG.Talents.getEnemyTalentScore(o.eid, o.abbr);
-			if ($dataTalents.check.normalizeTarget === true) {
-				r = score;
-			}
-			else {
-				switch (o.type) {
-					case "MAX":
-						r = score;
-						break;
+        if (typeof o.type == "string" && o.type.length > 0 && o.abbr && o.eid > 0) {
+            var score = FROG.Talents.getEnemyTalentScore(o.eid, o.abbr);
+            if ($dataTalents.check.normalizeTarget === true) {
+                r = score;
+            }
+            else {
+                switch (o.type) {
+                    case "MAX":
+                        r = score;
+                        break;
 
-					case "RND":
-	                    r = parseInt(score / 2);
-						break;
+                    case "RND":
+                        r = parseInt(score / 2);
+                        break;
 
-					case "ROLL":
-	                    r = score + Math.floor(((o.die / 2) + 0.5) * o.dcount);
-						break;
-				}
-			}
-		}
+                    case "ROLL":
+                        r = score + Math.floor(((o.die / 2) + 0.5) * o.dcount);
+                        break;
+                }
+            }
+        }
 
-		// Set Target Number Variable
-		if (o.var > 0) {
-			$gameVariables.setValue(o.var, r);
-		}
+        // Set Target Number Variable
+        if (o.var > 0) {
+            $gameVariables.setValue(o.var, r);
+        }
 
-		return r;
-	}
+        return r;
+    }
 
-	/** Returns the value of an object's property by matching a key/value pair
- 	 * @param {object} object - The array of objecta to search
-	 * @param {string} key - The name of the property that you are matching a value to to indicated the desired record
-	 * @param {variant} val - The value that you are looking for in the key
-	 * @param {string} returnProp - The name of the property that has the data you want to return
-	 * @returns {variant} Returns the value stored in returnProp
-	 */
-	FROG.Talents._find = function (object, key, val, returnProp) {
-		if (!object || !key || !returnProp || val == undefined) return null;
-		for (var i in object) {
-			var obj = (typeof object[i] == "string") ? JSON.parse(object[i]) : object[i];
-			if (obj && obj[key] && obj[key].toString() == val.toString()) {
-				return obj[returnProp];
-			}
-		}
-		return null;
-	}
+    /** Returns the value of an object's property by matching a key/value pair
+      * @param {object} object - The array of objecta to search
+     * @param {string} key - The name of the property that you are matching a value to to indicated the desired record
+     * @param {variant} val - The value that you are looking for in the key
+     * @param {string} returnProp - The name of the property that has the data you want to return
+     * @returns {variant} Returns the value stored in returnProp
+     */
+    FROG.Talents._find = function (object, key, val, returnProp) {
+        if (!object || !key || !returnProp || val == undefined) return null;
+        for (var i in object) {
+            var obj = (typeof object[i] == "string") ? JSON.parse(object[i]) : object[i];
+            if (obj && obj[key] && obj[key].toString() == val.toString()) {
+                return obj[returnProp];
+            }
+        }
+        return null;
+    }
 
-	/** Set an actor's race
-	 * @param {number} actorId - The ID of an actor (required)
-	 * @param {number} race - The Race ID that you want to set (required)
-	 * @returns {string} Returns true if it worked, false if it didn't
-	 */
-	FROG.Talents.setRace = function (actorId, raceId) {
+    /** Set an actor's race
+     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} race - The Race ID that you want to set (required)
+     * @returns {string} Returns true if it worked, false if it didn't
+     */
+    FROG.Talents.setRace = function (actorId, raceId) {
         if (!Imported.FROG_Races) return false;
 
-		var bOk = false;
-		if (isNaN(actorId) === false && actorId > 0 && raceId > 0) {
-			var actor = $gameActors.actor(actorId);
-			if (actor && $dataRaces && $dataRaces[actor.raceId()] && $dataRaces[actor.raceId()].talentConfig) {
+        var bOk = false;
+        if (isNaN(actorId) === false && actorId > 0 && raceId > 0) {
+            var actor = $gameActors.actor(actorId);
+            if (actor && $dataRaces && $dataRaces[actor.raceId()] && $dataRaces[actor.raceId()].talentConfig) {
                 actor._talentPoints += $dataRaces[actor.raceId()].talentConfig.startingBonus;
-				bOk = true;
-			}
-		}
-		return bOk;
-	}
+                bOk = true;
+            }
+        }
+        return bOk;
+    }
 
-	/* ---------------------------------------------------------------*\
-							Plugin Commands
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                            Plugin Commands
+    \* -------------------------------------------------------------- */
 
-	/** Formats plugin parameters so that you can use variables in place of hard-coded values
-	 * @param {string} arg - A plugin parameter (required)
-	 * @returns {string} Returns the argument back but will convert any v[id] to the stored variable value
-	 */
-	FROG.Talents.formatArg = function (arg) {
-		if (arg && arg.substr(0, 2) == "v[") {
-			var varId = parseInt(arg.replace("v[", "").replace("]", ""));
-			if (!isNaN(varId)) {
-				return $gameVariables.value(varId);
-			}
-		}
-		return arg;
-	}
+    /** Formats plugin parameters so that you can use variables in place of hard-coded values
+     * @param {string} arg - A plugin parameter (required)
+     * @returns {string} Returns the argument back but will convert any v[id] to the stored variable value
+     */
+    FROG.Talents.formatArg = function (arg) {
+        if (arg && arg.substr(0, 2) == "v[") {
+            var varId = parseInt(arg.replace("v[", "").replace("]", ""));
+            if (!isNaN(varId)) {
+                return $gameVariables.value(varId);
+            }
+        }
+        return arg;
+    }
 
-	// Add new plugin commands
-	FROG.Talents.Game_Interpreter_PluginCommand = Game_Interpreter.prototype.pluginCommand;
-	Game_Interpreter.prototype.pluginCommand = function (command, args) {
-	    FROG.Talents.Game_Interpreter_PluginCommand.call(this, command, args);
+    // Add new plugin commands
+    FROG.Talents.Game_Interpreter_PluginCommand = Game_Interpreter.prototype.pluginCommand;
+    Game_Interpreter.prototype.pluginCommand = function (command, args) {
+        FROG.Talents.Game_Interpreter_PluginCommand.call(this, command, args);
 
-		if (command && args && args[0]) {
-			if (['TALENT','TALENTS'].indexOf(command.trim().toUpperCase()) > -1) {
-				var ft = FROG.Talents;
-				var tcommand = ft.formatArg(args[0]).toUpperCase();
-				var actorId = (args[1]) ? parseInt(ft.formatArg(args[1])) : 0;
+        if (command && args && args[0]) {
+            if (['TALENT','TALENTS'].indexOf(command.trim().toUpperCase()) > -1) {
+                var ft = FROG.Talents;
+                var tcommand = ft.formatArg(args[0]).toUpperCase();
+                var actorId = (args[1]) ? parseInt(ft.formatArg(args[1])) : 0;
 
-				switch (tcommand) {
-					case "OPEN":
-						SceneManager.push(Scene_Talents);
-						break;
+                switch (tcommand) {
+                    case "OPEN":
+                        SceneManager.push(Scene_Talents);
+                        break;
 
-					case "GETPOINTS":
-						var vid = parseInt(ft.formatArg(args[2]));
-						$gameVariables.setValue(vid, ft.getTalentPoints(actorId));
-						break;
+                    case "GETPOINTS":
+                        var vid = parseInt(ft.formatArg(args[2]));
+                        $gameVariables.setValue(vid, ft.getTalentPoints(actorId));
+                        break;
 
-					case "SETPOINTS":
-						var points = parseInt(ft.formatArg(args[2]));
-						ft.setTalentPoints(actorId, points);
-						break;
+                    case "SETPOINTS":
+                        var points = parseInt(ft.formatArg(args[2]));
+                        ft.setTalentPoints(actorId, points);
+                        break;
 
-					case "ADDPOINTS":
-						var points = parseInt(ft.formatArg(args[2]));
-						ft.addTalentPoints(actorId, points);
-						break;
+                    case "ADDPOINTS":
+                        var points = parseInt(ft.formatArg(args[2]));
+                        ft.addTalentPoints(actorId, points);
+                        break;
 
-					case "REMOVEPOINTS":
-						var points = parseInt(ft.formatArg(args[2]));
-						ft.removeTalentPoints(actorId, points);
-						break;
+                    case "REMOVEPOINTS":
+                        var points = parseInt(ft.formatArg(args[2]));
+                        ft.removeTalentPoints(actorId, points);
+                        break;
 
-					case "GETRANKS":
-						var abbr = ft.formatArg(args[2]);
-						var vid = parseInt(ft.formatArg(args[3]));
-						$gameVariables.setValue(vid, ft.getTalentRanks(actorId, abbr));
-						break;
+                    case "GETRANKS":
+                        var abbr = ft.formatArg(args[2]);
+                        var vid = parseInt(ft.formatArg(args[3]));
+                        $gameVariables.setValue(vid, ft.getTalentRanks(actorId, abbr));
+                        break;
 
-					case "SETRANKS":
-						var abbr = ft.formatArg(args[2]);
-						var ranks = parseInt(ft.formatArg(args[3]));
-						ft.setTalentRanks(actorId, abbr, ranks);
-						break;
+                    case "SETRANKS":
+                        var abbr = ft.formatArg(args[2]);
+                        var ranks = parseInt(ft.formatArg(args[3]));
+                        ft.setTalentRanks(actorId, abbr, ranks);
+                        break;
 
-					case "ADDRANKS":
-						var abbr = ft.formatArg(args[2]);
-						var ranks = parseInt(ft.formatArg(args[3]));
-						ft.addTalentRanks(actorId, abbr, ranks);
-						break;
+                    case "ADDRANKS":
+                        var abbr = ft.formatArg(args[2]);
+                        var ranks = parseInt(ft.formatArg(args[3]));
+                        ft.addTalentRanks(actorId, abbr, ranks);
+                        break;
 
-					case "REMOVERANKS":
-						var abbr = ft.formatArg(args[2]);
-						var ranks = parseInt(ft.formatArg(args[3]));
-						ft.removeTalentRanks(actorId, abbr, ranks);
-						break;
+                    case "REMOVERANKS":
+                        var abbr = ft.formatArg(args[2]);
+                        var ranks = parseInt(ft.formatArg(args[3]));
+                        ft.removeTalentRanks(actorId, abbr, ranks);
+                        break;
 
-					case "ENEMYSCORE":
+                    case "ENEMYSCORE":
                         var enemyId = ft.formatArg(args[1]);
-						var abbr = ft.formatArg(args[2]);
-						var vid = parseInt(ft.formatArg(args[3]));
-						$gameVariables.setValue(vid, ft.getEnemyTalentScore(enemyId, abbr));
-						break;
+                        var abbr = ft.formatArg(args[2]);
+                        var vid = parseInt(ft.formatArg(args[3]));
+                        $gameVariables.setValue(vid, ft.getEnemyTalentScore(enemyId, abbr));
+                        break;
 
-					case "GETSCORE":
-						var abbr = ft.formatArg(args[2]);
-						var vid = parseInt(ft.formatArg(args[3]));
-						$gameVariables.setValue(vid, ft.getActorTalentScore(actorId, abbr));
-						break;
+                    case "GETSCORE":
+                        var abbr = ft.formatArg(args[2]);
+                        var vid = parseInt(ft.formatArg(args[3]));
+                        $gameVariables.setValue(vid, ft.getActorTalentScore(actorId, abbr));
+                        break;
 
-					case "GETBEST":
-						var abbr = ft.formatArg(args[1]);
-						var vid = parseInt(ft.formatArg(args[2]));
-						$gameVariables.setValue(vid, ft.getMostTalented(abbr));
-						break;
+                    case "GETBEST":
+                        var abbr = ft.formatArg(args[1]);
+                        var vid = parseInt(ft.formatArg(args[2]));
+                        $gameVariables.setValue(vid, ft.getMostTalented(abbr));
+                        break;
 
-					case "CHECK":
+                    case "CHECK":
                         var options = this.nameValueParams(args);
                         var vid = parseInt(options.var) || parseInt($dataTalents.check.lastCheckVar);
                         if (vid > 0) {
-							$gameVariables.setValue(options.var, ft.talentCheck(options));
-						}
+                            $gameVariables.setValue(options.var, ft.talentCheck(options));
+                        }
                         else {
                             ft.talentCheck(options);
                         }
-						break;
+                        break;
 
-					case "ENEMYTN":
+                    case "ENEMYTN":
                         var options = this.nameValueParams(args);
                         var vid = parseInt(options.var) || parseInt($dataTalents.check.targetNumberVar);
                         if (vid > 0) {
@@ -3876,18 +3876,18 @@ FROG.Talents = FROG.Talents || {};
                         else {
                             ft.enemyTargetNumber(options);
                         }
-						break;
-				}
-			}
-		}
+                        break;
+                }
+            }
+        }
 
         // arg[0] = actorId, arg[1] = raceId
         if (Imported.FROG_Races === true && $dataRaces) {
-    	    if (command.trim().toUpperCase() === 'SETRACE' && args[0] && args[1]) {
-    			FROG.Talents.setRace(args[0], args[1]);
-    		}
+            if (command.trim().toUpperCase() === 'SETRACE' && args[0] && args[1]) {
+                FROG.Talents.setRace(args[0], args[1]);
+            }
         }
-	}
+    }
 
     /** Creates an object out of name:value paired parameters
      * @param {array} args - Plugin Command parameter args array
@@ -3905,11 +3905,11 @@ FROG.Talents = FROG.Talents || {};
         return options;
     }
 
-	/* ---------------------------------------------------------------*\
-							Talent Requirements
-	\* -------------------------------------------------------------- */
+    /* ---------------------------------------------------------------*\
+                            Talent Requirements
+    \* -------------------------------------------------------------- */
 
-	// Weapons and Armor are not equipable if the actor doesn't have enough talent ranks
+    // Weapons and Armor are not equipable if the actor doesn't have enough talent ranks
     FROG.Talents.Window_EquipItem_Includes = Window_EquipItem.prototype.includes;
     Window_EquipItem.prototype.includes = function (item) {
         var bOk = FROG.Talents.Window_EquipItem_Includes.call(this, item);
@@ -3918,21 +3918,21 @@ FROG.Talents = FROG.Talents || {};
             var talentReq = (item.meta && item.meta.TalentReq) ? item.meta.TalentReq.trim() : "";
 
             if (talentReq && talentReq.indexOf(' ') > -1) {
-				for (var i=0; i<4; i++) talentReq = talentReq.replace('  ', ' ');
-				var arr = talentReq.split(' ');
+                for (var i=0; i<4; i++) talentReq = talentReq.replace('  ', ' ');
+                var arr = talentReq.split(' ');
 
-				if (arr.length >= 3) {
-					var abbr = arr[0].trim();
-					var reqType = arr[1].toLowerCase().trim();
-	                var requiredRanks = parseInt(arr[2].trim());
-					var actorRanks = (reqType == "rank" || reqType == "ranks") ?
-						FROG.Talents.getTalentRanks(this._actor.actorId(), abbr) :
-						FROG.Talents.getActorTalentScore(this._actor.actorId(), abbr);
+                if (arr.length >= 3) {
+                    var abbr = arr[0].trim();
+                    var reqType = arr[1].toLowerCase().trim();
+                    var requiredRanks = parseInt(arr[2].trim());
+                    var actorRanks = (reqType == "rank" || reqType == "ranks") ?
+                        FROG.Talents.getTalentRanks(this._actor.actorId(), abbr) :
+                        FROG.Talents.getActorTalentScore(this._actor.actorId(), abbr);
 
-	                if (actorRanks < requiredRanks) {
-	                    bOk = false;
-	                }
-				}
+                    if (actorRanks < requiredRanks) {
+                        bOk = false;
+                    }
+                }
             }
         }
 
@@ -4003,12 +4003,12 @@ FROG.Talents = FROG.Talents || {};
         return bOk;
     }
 
-	/** Find the actor that meets the talent rank or score requirment and has the highest Pharmacology
-	 * @param {string} abbr - The abbreviation used to identify a talent (required)
-	 * @param {string} reqType - Indicates whether the actor need a certain Rank or Score (required)
-	 * @param {number} requiredVal - The string value that indicated the actor's race (required)
-	 * @returns {object} Returns the Game_Actor object of the actor with the best Pharm and enough ranks or score
-	 */
+    /** Find the actor that meets the talent rank or score requirment and has the highest Pharmacology
+     * @param {string} abbr - The abbreviation used to identify a talent (required)
+     * @param {string} reqType - Indicates whether the actor need a certain Rank or Score (required)
+     * @param {number} requiredVal - The string value that indicated the actor's race (required)
+     * @returns {object} Returns the Game_Actor object of the actor with the best Pharm and enough ranks or score
+     */
     Game_BattlerBase.prototype.bestPharm = function (abbr, reqType, requiredVal) {
         var members = $gameParty.movableMembers();
         var bestActor = members[0];
@@ -4017,8 +4017,8 @@ FROG.Talents = FROG.Talents || {};
         for (var i=0; i<members.length; i++) {
             var actor = members[i];
             var actorVal = (reqType == "rank" || reqType == "ranks") ?
-				FROG.Talents.getTalentRanks(actor.actorId(), abbr) :
-				FROG.Talents.getActorTalentScore(actor.actorId(), abbr);
+                FROG.Talents.getTalentRanks(actor.actorId(), abbr) :
+                FROG.Talents.getActorTalentScore(actor.actorId(), abbr);
 
             if (actorVal >= requiredVal && actor.pha > bestPha) {
                 bestPha = actor.pha;
@@ -4037,34 +4037,34 @@ FROG.Talents = FROG.Talents || {};
         var actor = this;
 
         if (bOk === true && item && actor) {
-    		var talentReq = (item.meta && item.meta.TalentReqGive) ? item.meta.TalentReqGive.trim() : "";
+            var talentReq = (item.meta && item.meta.TalentReqGive) ? item.meta.TalentReqGive.trim() : "";
 
-    		if (talentReq && talentReq.indexOf(' ') > -1) {
-    			for (var i=0; i<4; i++) talentReq = talentReq.replace('  ', ' ');
-    			var arr = talentReq.split(' ');
+            if (talentReq && talentReq.indexOf(' ') > -1) {
+                for (var i=0; i<4; i++) talentReq = talentReq.replace('  ', ' ');
+                var arr = talentReq.split(' ');
 
-    			if (arr.length >= 3) {
-    				var abbr = arr[0].trim();
-    				var reqType = arr[1].toLowerCase().trim();
-    				var requiredRanks = parseInt(arr[2].trim());
+                if (arr.length >= 3) {
+                    var abbr = arr[0].trim();
+                    var reqType = arr[1].toLowerCase().trim();
+                    var requiredRanks = parseInt(arr[2].trim());
 
-    				if ($gameParty.inBattle() === false) {
+                    if ($gameParty.inBattle() === false) {
                         // Find best actor to use this item if not in battle
-    					actor = actor.bestPharm(abbr, reqType, requiredRanks);
-    				}
+                        actor = actor.bestPharm(abbr, reqType, requiredRanks);
+                    }
                     else {
                         // Check to see if actor can use this item while in battle
                         actor = BattleManager.actor();
                     }
 
-    				var actorRanks = (reqType == "rank" || reqType == "ranks") ?
-    					FROG.Talents.getTalentRanks(actor.actorId(), abbr) :
-    					FROG.Talents.getActorTalentScore(actor.actorId(), abbr);
+                    var actorRanks = (reqType == "rank" || reqType == "ranks") ?
+                        FROG.Talents.getTalentRanks(actor.actorId(), abbr) :
+                        FROG.Talents.getActorTalentScore(actor.actorId(), abbr);
 
-    				if (actorRanks < requiredRanks) {
-    					bOk = false;
-    				}
-    			}
+                    if (actorRanks < requiredRanks) {
+                        bOk = false;
+                    }
+                }
             }
         }
 

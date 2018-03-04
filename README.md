@@ -421,10 +421,14 @@ Bonuses and Penalties to Equipment, Items and States
 *Examples (the + is optional):*
 
 Add +3 to Religion
-```<TalentBonus: +3 reli>```
+```
+<TalentBonus: +3 reli>
+```
 
 Add +2 to Nature & -2 to Arcana
-```<TalentBonus: +2 natu, -2 arca>```
+```
+<TalentBonus: +2 natu, -2 arca>
+```
 
 
 ### Talent Requirements
@@ -441,18 +445,26 @@ Some weapons, armor and items are just not usable without extensive training.  M
 *Examples for equipment:*
 
 Equip Wizard’s Cloak requires 7 ranks of Arcana
-```<TalentReq: arca rank 7>```
+```
+<TalentReq: arca rank 7>
+```
 
 Equip an Intelligent Sword requires a Talent Score of 30 in Persuasion
-```<TalentReq: pers score 30>```
+```
+<TalentReq: pers score 30>
+```
 
 *Examples for Item Use*
 
 Hi-potion requires a talent score of 5 Medicine to use on yourself or anyone else
-```<TalentReqGive: medi score 5>```
+```
+<TalentReqGive: medi score 5>
+```
 
 Fire Spell requires a talent rank of 3 Arcana to use on yourself and thus, learn Fire
-```<TalentReqGet: arca rank 3>```
+```
+<TalentReqGet: arca rank 3>
+```
 
 * Note that when an item with a requirement is used, the plugin will find the actor with the best Pharmacology score that meets the requirement when outside of battle.
 

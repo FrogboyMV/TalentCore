@@ -10,7 +10,7 @@ var FROG = FROG || {};
 FROG.Talents = FROG.Talents || {};
 
 /*:
- * @plugindesc FROG_TalentCore v1.0 Talent system that closely resembles Skills in Dungeons & Dragons
+ * @plugindesc FROG_TalentCore v1.0.1 Talent system that closely resembles Skills in Dungeons & Dragons
  * @author Frogboy
  *
  * @help
@@ -852,6 +852,9 @@ FROG.Talents = FROG.Talents || {};
  *
  * Fail Color - This is the color of the Fail Text.
  *
+ * Learn Trait - Text that shows before displaying what trait you'll learn if
+ * you advance your Talent rank to a specific level.
+ *
  *
  * Style
  *
@@ -966,6 +969,7 @@ FROG.Talents = FROG.Talents || {};
  * ============================================================================
  *
  * Version 1.0 - Initial release
+ * Version 1.1 - Talent-based Traits display what you'll gain when adding ranks.
  *
  * ============================================================================
  *
@@ -1015,8 +1019,8 @@ FROG.Talents = FROG.Talents || {};
  * @type boolean
  * @desc Talent abbreviations can be used in formula boxes.
  * @default true
- * @on Show
- * @off Hide
+ * @on Yes
+ * @off No
  *
  * @param Save Talents Object
  * @parent Settings
@@ -1242,6 +1246,12 @@ FROG.Talents = FROG.Talents || {};
  * @type string
  * @desc This is the color of the Fail Text.
  * @default #FF3030
+ *
+ * @param Learn Trait
+ * @parent Text
+ * @type string
+ * @desc If you are using Talent-based Traits, this text tells the player what they will learn by advancing to this score.
+ * @default Learn at this rank\c[17]
  *
  * @param Show Ranks
  * @parent Style
@@ -1599,6 +1609,7 @@ FROG.Talents = FROG.Talents || {};
     FROG.Talents.successColor = FROG.Talents.prm['Success Color'].toString().trim() || "#30FF30";
     FROG.Talents.failText = FROG.Talents.prm['Fail Text'].toString().trim() || "Failed!";
     FROG.Talents.failColor = FROG.Talents.prm['Fail Color'].toString().trim() || "#FF3030";
+    FROG.Talents.learnTrait = FROG.Talents.prm['Learn Trait'].toString().trim() || "";
 
     // Style
     FROG.Talents.showRanks = (FROG.Talents.prm['Show Ranks'] === "true");
@@ -1694,7 +1705,8 @@ FROG.Talents = FROG.Talents || {};
                 successText: ft.successText,
                 successColor: ft.successColor,
                 failText: ft.failText,
-                failColor: ft.failColor
+                failColor: ft.failColor,
+                learnTrait: ft.learnTrait
             },
             style: {
                 showRanks: ft.showRanks,
@@ -2380,6 +2392,11 @@ FROG.Talents = FROG.Talents || {};
                 this._pointsAdded[symbol] = 1;
             }
             this.updatePointsWindow();
+
+            // Talent-based Trait Rewards
+            var abbr = symbol.replace("talent_", "");
+            var ranks = FROG.Talents._find(this._actor._talents, "abbr", abbr, "ranks") + this._pointsAdded[symbol];
+            this.checkTalentBasedTraits(abbr, ranks);
         }
     }
 
@@ -2389,6 +2406,28 @@ FROG.Talents = FROG.Talents || {};
             if (this._pointsAdded[symbol] > 0) {
                 this._pointsAdded[symbol]--;
                 this.updatePointsWindow();
+
+                // Talent-based Trait Rewards
+                var abbr = symbol.replace("talent_", "");
+                var ranks = FROG.Talents._find(this._actor._talents, "abbr", abbr, "ranks") + this._pointsAdded[symbol];
+                this.checkTalentBasedTraits(abbr, ranks);
+            }
+        }
+    }
+
+    // Sets Talent-based Traits
+    Window_Talent.prototype.checkTalentBasedTraits = function (abbr, ranks) {
+        if (Imported.FROG_LevelBasedTraitsTalent === true && $dataTalents.traitRewards && $dataTalents.traitRewards[abbr]) {
+            this.updateHelp();
+            var rewardText = "";
+            for (var i in $dataTalents.traitRewards[abbr]) {
+                var reward = $dataTalents.traitRewards[abbr][i];
+                if (reward && reward.name && reward.rank && ranks == reward.rank) {
+                    rewardText += reward.name + ", ";
+                }
+            }
+            if (rewardText.length) {
+                this._helpWindow.setText($dataTalents.text.learnTrait + String.fromCharCode(10) + rewardText.slice(0, -2));
             }
         }
     }

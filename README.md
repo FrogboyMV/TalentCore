@@ -388,6 +388,8 @@ Congratulations!  You’ve got your Talent system set up now.  All of the parame
 
 **Fail Color** - This is the color of the Fail Text.
 
+**Learn Trait** - If you are using Talent-based Traits, this text tells the player what they will learn by advancing to this score.
+
 
 ### Style
 

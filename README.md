@@ -523,6 +523,6 @@ Credit Frogboy in your work.
 * Version 1.0 - Initial release
 * Version 1.1 - Talent-based Traits display what you'll gain when adding ranks.
 * Version 1.2
-* * Added automatic distribution of points per actor if desired.
-* * Bug fix for class changes.
-* * Now requires FROG_Core
+    * Added automatic distribution of points per actor if desired.
+    * Bug fix for class changes.
+    * Now requires FROG_Core

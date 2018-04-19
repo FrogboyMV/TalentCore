@@ -58,6 +58,12 @@ Later on, you will encounter a setting for Max Type.  By default, this is set to
 
 Take note that Class Signatures override the Starting Ranks.
 
+**Requires Training** - Some talents just can’t be performed without at least the most basic training.  If you know absolutely nothing about the inner-working of a lock, there’s no chance that you can just pick one on intuition alone.  For talents such as these, you’ll want to turn this option on.  Any attempt to attempt perform a talent that requires training will fail unless the actor has spent at least 1 rank in it to acquire some training.
+
+**Synergy Requirement** - Having talent in some areas may open up more advanced talents if you so choose to set your system up this way.  Say you want to have a Ritual talent that Priests use to perform some powerful prayer abilities.  A low level and inexperienced Priest obviously shouldn’t have access to such a powerful talent right away.  What you can do to solve this issue is set your Ritual talent to require a certain number of ranks in Religion before an actor can start adding building it.  You can specify multiple talents and required ranks.  All of the requirements must be met before this talent will become available.
+
+**Synergy Bonuses** - D&D 3.x had a feature called Synergy Bonuses.  If a character builds one talent up to a certain point, usually 5 ranks, they receive a small bonus to one or more other talents.  Most medicine comes from the nature, especially in a medieval setting, so it would make sense to, perhaps, grant a +2 bonus to Medicine if an actor has 5 ranks in Nature.  This property allows you to specify the Talent, Required Ranks and the Bonus received for the associated Talent.
+
 
 **Class Config**
 
@@ -71,12 +77,24 @@ Alright, now you've got all of your talents set up.  It's time for the next impo
 
 **Points Per Level** - Number of talent points gained at each level.  Pretty self-explanatory.  Every time a character levels up, they get this number of points.
 
+**Auto-Distribution** - If an actor with this class has Player Control set to false in Actor Config, point distribution is configured in one of two ways.
+* **Vertical** - Uses patterns defined in Distribution Patterns so that you can easily label the rate of advancement with names such as low, mid, high etc.
+* **Horizontal** - Allows you to specify exactly what talents advance in rank each level and by how much.
+
+**Vertical Distribution** - You can define automatic point distribution with labels such as low, mid, high etc. as defined in the Distribution Patterns parameter.  When an actor levels up, their Talents will go up based on the pattern for each Talent.  This is the easy way to configure auto-distribution but may not work for you if you want distribution to respect Talent Points.
+
+**Horizontal Distribution** - This method is a bit more tedious but it gives you more fine-tuned control.  In here, you will specify exactly which talents advance for each level.  It’s more work but if you need to make sure that the non-player controlled actor’s Talent Ranks match up with the typical Talent Points that their class would receive, this method is easier to manage.  You don’t have to specify every level of advancement.  The distribution will start back over at the first entry if it reaches the end so if you only want to define 5 levels of advancement and have it roll back around for levels 6-10, 11-15 and so on, you can do that.
+
 
 **Actor Config**
 
 This is likely a parameter that you can skip.  I wasn’t even going to include it but I ended up doing so simply for completion.  Typically, the actor has no inherent relationship with talents.  Their class, which is pretty much their profession, and potentially their race are usually what shapes their talent potential.  But say you have four specific actors planned out for your game and each one has a different race tied to them, you can forego setting up Races through this or my Race-based Talents plugins and just tie it to the actor since it’s already set in stone.  Maybe you just want to give different actors an extra advantage and/or disadvantage in some areas because it fits your game.  That can be done here.
 
 **Description** - This is just a short description that you enter in so you see what this entry is at a glance.  It’s not required but it’s useful when you open this section back up and want to find the information you’re looking for.
+
+**Actor Id** - This is the actor that the following parameters apply to.
+
+**Player Control** - If true, player distributes talent points.  If false, distribution is determined in Class Config.  The system is designed to have your players distribute their Talent Points as they wish but there are situations where that might be too much of a chore.  Setting this to false takes that control away from the player for this actor and advances their Talents automatically as determined by their class.
 
 **Point Bonus/Penalty** - Number of talent points this actor gains or loses per level.  Say you have a specific actor whose backstory says that he’s an avid learner who is always trying out new things and learning new skills, maybe you want him to receive an extra +1 Talent Points per level or whatever.  Maybe you have another character who is a real slacker and rarely puts in much effort to learn new things.  He might get -1 Talent Points per level.
 
@@ -95,6 +113,15 @@ This section is if you want to incorporate Races into your game.  Races are a st
 **Point Bonus/Penalty** - Number of talent points this race gains or loses per level.  In D&D, Humans typically don’t have any natural strengths or weaknesses so they tend to not get a lot of bonuses or penalties.  They are sort of the benchmark that all of the other races are based off of.  The one thing that Humans typically do excel in is versatility and because of this, they get an extra +1 Talent Point per level.  You could also use this to give a race a penalty to Talent Points per Level if you wanted.
 
 **Talent Bonus/Penalty** - Natural bonuses or penalties to specific talents.  While it often doesn’t make a lot of sense for actors to have natural bonuses or penalties for certain talents, it usually makes perfect sense for races.  Dwarves, Elves, Gnomes, <insert your own custom race here>, they almost always excel over Humans in some talents and aren’t quite as remarkable in others.  This is where you’ll define these adjustments.
+
+
+**Distribution Patterns**
+
+If you would rather not have your players distribute their points and just have the game do it for you based on the actor’s class, this is where you define how an actor’s Talents will advance.  This is useful for games that have large casts of characters where manual Talent building would be a chore.  It can also be useful for actors who join the party for a short time but aren’t really the player’s responsibility to manage.  Or maybe you just don’t want the player managing their points at all and you want to assign them.  Or maybe still, you give the player the option to choose to manage their ranks or have the game do it for them.  Any actor with Player Control set to false and Auto-Distribution set to Vertical will use these patterns to define how their ranks advance.  Just a word of warning, these distribution patterns don’t respect the normal Talent Point limit as that would just cause way too many implementation issues.
+
+**Name** - This is the name that identifies this pattern of talent advancement.  This name is used in the Auto-Distribution parameter within Class Configuration.
+
+**Pattern** - Repeating pattern used for distributing talent points.  For example, [0, 1, 1] will raise a talent rank 0 at 1st level, 1 at 2nd level, 1 more at 3rd level and then repeat.  So at 4th level, it will start over again at 0 ranks and then grant 1 rank at both 5th and 6th level.  The pattern can be as long as you need, even if that means defining every level up to the max.
 
 
 **Other Settings**
@@ -415,6 +442,10 @@ Congratulations!  You’ve got your Talent system set up now.  All of the parame
 
 **Color List** - If using the Color List option, this is a repeating list of colors that your gauges will use.
 
+**Talent Check Color** - Color of the Talent Check gauge.
+
+**Difficulty Color** - Color of the Talent Check difficulty gauge.
+
 **Font Size** - Font size in the Talents window.  Scaling down the font size in this window arguably looks better.
 
 
@@ -489,4 +520,9 @@ Credit Frogboy in your work.
 
 ## Changelog
 
-Version 1.0 - Initial release
+* Version 1.0 - Initial release
+* Version 1.1 - Talent-based Traits display what you'll gain when adding ranks.
+* Version 1.2
+* * Added automatic distribution of points per actor if desired.
+* * Bug fix for class changes.
+* * Now requires FROG_Core

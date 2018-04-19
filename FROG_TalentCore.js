@@ -8,9 +8,10 @@ Imported.FROG_Talents = true;
 
 var FROG = FROG || {};
 FROG.Talents = FROG.Talents || {};
+if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
 
 /*:
- * @plugindesc FROG_TalentCore v1.0.1 Talent system that closely resembles Skills in Dungeons & Dragons
+ * @plugindesc FROG_TalentCore v1.2 Talent system that closely resembles Skills in Dungeons & Dragons
  * @author Frogboy
  *
  * @help
@@ -181,6 +182,31 @@ FROG.Talents = FROG.Talents || {};
  *
  * Take note that Class Signatures override the Starting Ranks.
  *
+ * Requires Training - Some talents just can’t be performed without at least the
+ * most basic training.  If you know absolutely nothing about the inner-working
+ * of a lock, there’s no chance that you can just pick one on intuition alone.
+ * For talents such as these, you’ll want to turn this option on.  Any attempt
+ * to attempt perform a talent that requires training will fail unless the actor
+ * has spent at least 1 rank in it to acquire some training.
+ *
+ * Synergy Requirement - Having talent in some areas may open up more advanced
+ * talents if you so choose to set your system up this way.  Say you want to
+ * have a Ritual talent that Priests use to perform some powerful prayer
+ * abilities.  A low level and inexperienced Priest obviously shouldn’t have
+ * access to such a powerful talent right away.  What you can do to solve this
+ * issue is set your Ritual talent to require a certain number of ranks in
+ * Religion before an actor can start adding building it.  You can specify
+ * multiple talents and required ranks.  All of the requirements must be met
+ * before this talent will become available.
+ *
+ * Synergy Bonuses - D&D 3.x had a feature called Synergy Bonuses.  If a
+ * character builds one talent up to a certain point, usually 5 ranks, they
+ * receive a small bonus to one or more other talents.  Most medicine comes from
+ * the nature, especially in a medieval setting, so it would make sense to,
+ * perhaps, grant a +2 bonus to Medicine if an actor has 5 ranks in Nature.
+ * This property allows you to specify the Talent, Required Ranks and the Bonus
+ * received for the associated Talent.
+ *
  *
  * Class Config
  *
@@ -199,7 +225,7 @@ FROG.Talents = FROG.Talents || {};
  * you open this section back up and want to find the information you’re
  * looking for.
  *
- * Class - Select the class that you want to grant talent points to.
+ * Class Id - Select the class that you want to grant talent points to.
  *
  * Starting Points - Number of talent points this class starts the game with.
  * In d20, most of the time, your characters start with three times the number
@@ -209,6 +235,30 @@ FROG.Talents = FROG.Talents || {};
  * Points Per Level - Number of talent points gained at each level.  Pretty
  * self-explanatory.  Every time a character levels up, they get this number of
  * points.
+ *
+ * Auto-Distribution - If an actor with this class has Player Control set to
+ * false in Actor Config, point distribution is configured in one of two ways.
+ *     Vertical -   Uses patterns defined in Distribution Patterns so that you
+ *                  can easily label the rate of advancement with names such as
+ *                  low, mid, high etc.
+ *     Horizontal - Allows you to specify exactly what talents advance in rank
+ *                  each level and by how much.
+ *
+ * Vertical Distribution - You can define automatic point distribution with
+ * labels such as low, mid, high etc. as defined in the Distribution Patterns
+ * parameter.  When an actor levels up, their Talents will go up based on the
+ * pattern for each Talent.  This is the easy way to configure auto-distribution
+ * but may not work for you if you want distribution to respect Talent Points.
+ *
+ * Horizontal Distribution - This method is a bit more tedious but it gives you
+ * more fine-tuned control.  In here, you will specify exactly which talents
+ * advance for each level.  It’s more work but if you need to make sure that
+ * the non-player controlled actor’s Talent Ranks match up with the typical
+ * Talent Points that their class would receive, this method is easier to
+ * manage.  You don’t have to specify every level of advancement.  The
+ * distribution will start back over at the first entry if it reaches the end
+ * so if you only want to define 5 levels of advancement and have it roll back
+ * around for levels 6-10, 11-15 and so on, you can do that.
  *
  *
  * Actor Config
@@ -228,6 +278,15 @@ FROG.Talents = FROG.Talents || {};
  * what this entry is at a glance.  It’s not required but it’s useful when you
  * open this section back up and want to find the information you’re looking
  * for.
+ *
+ * Actor Id - This is the actor that the following parameters apply to.
+ *
+ * Player Control - If true, player distributes talent points.  If false,
+ * distribution is determined in Class Config.  The system is designed to have
+ * your players distribute their Talent Points as they wish but there are
+ * situations where that might be too much of a chore.  Setting this to false
+ * takes that control away from the player for this actor and advances their
+ * Talents automatically as determined by their class.
  *
  * Point Bonus/Penalty - Number of talent points this actor gains or loses per
  * level.  Say you have a specific actor whose backstory says that he’s an avid
@@ -265,7 +324,7 @@ FROG.Talents = FROG.Talents || {};
  * world however you’d like.    To use this functionality, you will need to
  * install the FROG_RaceCore plugin and place it above this plugin in the list.
  *
- * Race ID - The ID of the race as defined in the FROG_RaceCore plugin.
+ * Race Id - The Id of the race as defined in the FROG_RaceCore plugin.
  *
  * Point Bonus/Penalty - Number of talent points this race gains or loses per
  * level.  In D&D, Humans typically don’t have any natural strengths or
@@ -281,6 +340,34 @@ FROG.Talents = FROG.Talents || {};
  * races.  Dwarves, Elves, Gnomes, <insert your own custom race here>, they
  * almost always excel over Humans in some talents and aren’t quite as
  * remarkable in others.  This is where you’ll define these adjustments.
+ *
+ *
+ * Distribution Patterns
+ *
+ * If you would rather not have your players distribute their points and just
+ * have the game do it for you based on the actor’s class, this is where you
+ * define how an actor’s Talents will advance.  This is useful for games that
+ * have large casts of characters where manual Talent building would be a chore.
+ * It can also be useful for actors who join the party for a short time but
+ * aren’t really the player’s responsibility to manage.  Or maybe you just don’t
+ * want the player managing their points at all and you want to assign them.
+ * Or maybe still, you give the player the option to choose to manage their
+ * ranks or have the game do it for them.  Any actor with Player Control set
+ * to false and Auto-Distribution set to Vertical will use these patterns to
+ * define how their ranks advance.  Just a word of warning, these distribution
+ * patterns don’t respect the normal Talent Point limit as that would just
+ * cause way too many implementation issues.
+ *
+ * Name - This is the name that identifies this pattern of talent advancement.
+ * This name is used in the Auto-Distribution parameter within Class
+ * Configuration.
+ *
+ * Pattern - Repeating pattern used for distributing talent points.  For
+ * example, [0, 1, 1] will raise a talent rank 0 at 1st level, 1 at 2nd level,
+ * 1 more at 3rd level and then repeat.  So at 4th level, it will start over
+ * again at 0 ranks and then grant 1 rank at both 5th and 6th level. The pattern
+ * can be as long as you need, even if that means defining every level up to
+ * the max.
  *
  *
  * Other Settings
@@ -384,8 +471,8 @@ FROG.Talents = FROG.Talents || {};
  *          potential while still allowing for larger successes and greater
  *          failures.
  *
- * aid - This is the ID of the actor who is performing the talent check.  If no
- * Actor ID is specified, the system will determine who has the best Talent
+ * aid - This is the Id of the actor who is performing the talent check.  If no
+ * Actor Id is specified, the system will determine who has the best Talent
  * Score for the listed talent and they will be the one who performs the check.
  *
  * abbr - The Talent Abbreviation which indicates which talent is being
@@ -478,7 +565,7 @@ FROG.Talents = FROG.Talents || {};
  * levels up, they are then able to make another attempt even if they didn’t
  * raise their ranks.  They have advanced and another attempt is warranted.
  *
- * var - This is the ID of the Variable that you want to store the Talent Check
+ * var - This is the Id of the Variable that you want to store the Talent Check
  * Result into after it is made.  The value stored will be in relation to the
  * Target Number so 0 means that the check result matched exactly and that they
  * barely succeeded.  A negative number means the check failed by that amount
@@ -596,20 +683,20 @@ FROG.Talents = FROG.Talents || {};
  * Examples Plugin Command calls:
  *
  * TALENT CHECK var:5 type:max aid:1 abbr:perc target:4 view:none
- * Actor ID 1 will use their Max Score in the Perception (pct) talent and see
- * if it meets a target of 4 or more.  The result will be stored in Variable ID
+ * Actor Id 1 will use their Max Score in the Perception (pct) talent and see
+ * if it meets a target of 4 or more.  The result will be stored in Variable Id
  * 5.
  *
  * TALENT CHECK var:6 type:rnd aid:2 abbr:jmp target:3 view:ask
- * Actor ID 2 will be asked if they want to attempt a Jump (jmp) check.  The
- * result will be stored in Variable ID 5.
+ * Actor Id 2 will be asked if they want to attempt a Jump (jmp) check.  The
+ * result will be stored in Variable Id 5.
  *
  * TALENT CHECK var:7 type:roll aid:3 abbr:arca mod:2 target:13 view:show
  * dcount:1 die:20
- * Actor ID 3 will be shown whether they know some detail of magical lore
+ * Actor Id 3 will be shown whether they know some detail of magical lore
  * through an Arcana (arca) check.  A roll of 1d20 will be made, +2 will be
  * added to the character’s Arcana Score and the result will be targeting the
- * difficulty of 13.  The result will be stored in Variable ID 7.
+ * difficulty of 13.  The result will be stored in Variable Id 7.
  *
  * TALENT CHECK abbr:lock target:11
  * Your best lockpicker will attempt a check using all of the default values
@@ -619,7 +706,7 @@ FROG.Talents = FROG.Talents || {};
  * TALENT CHECK aid:v[8] abbr:v[9] target:v[10]
  * This is a way that you can more easily run a check through all of the party
  * members by utilizing variables instead of hard-coded values.  You can set
- * variable 8 to the ID of the party leader, variable 9 to the Talent
+ * variable 8 to the Id of the party leader, variable 9 to the Talent
  * Abbreviation and variable 10 to the Target Number.  Run the check, change
  * variable 8 to the next person in the party and run it again.  Do the same
  * for the last couple party members and you’re done.  While you could still
@@ -710,7 +797,7 @@ FROG.Talents = FROG.Talents || {};
  * TALENT GETSCORE [actorId] [abbr] [variableId]
  * FROG.Talents.getActorTalentScore(actorId, abbr);
  *
- * Get the Actor ID that has the highest Talent Score for a given talent
+ * Get the Actor Id that has the highest Talent Score for a given talent
  * TALENT GETBEST [abbr] [variableId]
  * FROG.Talents.getMostTalented(abbr);
  *
@@ -889,6 +976,10 @@ FROG.Talents = FROG.Talents || {};
  * Color List - If using the Color List option, this is a repeating list of
  * colors that your gauges will use.
  *
+ * Talent Check Color - Color of the Talent Check gauge.
+ *
+ * Difficulty Color - Color of the Talent Check difficulty gauge.
+ *
  * Font Size - Font size in the Talents window.  Scaling down the font size in
  * this window arguably looks better.
  *
@@ -970,49 +1061,50 @@ FROG.Talents = FROG.Talents || {};
  *
  * Version 1.0 - Initial release
  * Version 1.1 - Talent-based Traits display what you'll gain when adding ranks.
+ * Version 1.2 - Added automatic distribution of points per actor if desired.
+ *             - Bug fix for class changes.
+ *             - Now requires FROG_Core.
  *
  * ============================================================================
  *
  * @param Settings
  * @desc Set up how the Talent system will work in your game.
- * @param Talent Check Defaults
- * @desc Set up your Talent Check defaults here so that you don't have to specify them for every check.
- * @param Commands
- * @desc Provide the names for all of the menu commands this plugin provides.
- * @param Text
- * @desc Customize the text in the Talent windows.
- * @param Style
- * @desc Customize how thing look.
  *
- * @param Talents
+ * @param Talent Config
  * @parent Settings
  * @type struct<talentStruct>[]
  * @desc Add talents to your game.
- * @default ["{\"Name\":\"Acrobatics\",\"Description\":\"\\\"Avoid pits, traps, damage from long falls, balance on a\\\\nslippery surface or squeeze in tight spaces.\\\"\",\"Abbreviation\":\"acro\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Arcana\",\"Description\":\"\\\"Knowledge of the arcane, identify magical effects and \\\\ndecipher magical runes, tomes and scrolls.\\\"\",\"Abbreviation\":\"arca\",\"Class Proficiencies\":\"[\\\"3\\\"]\",\"Class Signatures\":\"[\\\"3\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Climb\",\"Description\":\"\\\"Your ability to climb ropes, vines, cliffs, city walls\\\\nor run up or down stairs without losing speed.\\\"\",\"Abbreviation\":\"clim\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\"]\",\"Class Signatures\":\"[\\\"2\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Deception\",\"Description\":\"\\\"Fast-talk a guard, con a merchant, make money gambling, \\\\ndisguise yourself or convincingly tell a blatent lie.\\\"\",\"Abbreviation\":\"dece\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"3\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Disable Trap\",\"Description\":\"\\\"Disable traps on doors and treasure chest.\\\"\",\"Abbreviation\":\"disa\",\"Class Proficiencies\":\"[\\\"1\\\"]\",\"Class Signatures\":\"[\\\"1\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"History\",\"Description\":\"\\\"Recall lore about families, events, places and heraldry.\\\\nIdentify the cultural origins of people or objects.\\\"\",\"Abbreviation\":\"hist\",\"Class Proficiencies\":\"[\\\"2\\\",\\\"3\\\",\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Insight\",\"Description\":\"\\\"Identify when someone is being deceitful, notice when\\\\nbeing followed or understanding coded speech.\\\\n\\\"\",\"Abbreviation\":\"insi\",\"Class Proficiencies\":\"[\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Investigation\",\"Description\":\"\\\"Search for clues, gather information at a local tavern\\\\nor read someone's lips from across the room.\\\"\",\"Abbreviation\":\"inve\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"3\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Jump\",\"Description\":\"\\\"Jump across a wide chasm or high up to grab a window \\\\nsill.\\\"\",\"Abbreviation\":\"jump\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\"]\",\"Class Signatures\":\"[\\\"2\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Lockpicking\",\"Description\":\"\\\"The ability to open locked doors and treasure chests.\\\"\",\"Abbreviation\":\"lock\",\"Class Proficiencies\":\"[\\\"1\\\"]\",\"Class Signatures\":\"[\\\"1\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Medicine\",\"Description\":\"\\\"Stablize a dying person, know how to utilze advanced\\\\nmedicine or diagnose a rare illness.\\\"\",\"Abbreviation\":\"medi\",\"Class Proficiencies\":\"[\\\"3\\\",\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Nature\",\"Description\":\"\\\"Knowledge of animals, plants, terrain, weather, poisons\\\\nor survive in the wild.\\\"\",\"Abbreviation\":\"natu\",\"Class Proficiencies\":\"[\\\"2\\\",\\\"3\\\",\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Perception\",\"Description\":\"\\\"See or hear hidden threats, recognize someone far away,\\\\nfind minute details or identify a noise's source.\\\"\",\"Abbreviation\":\"perc\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\",\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Performance\",\"Description\":\"\\\"Sing, dance, tell a compelling story or deliver a good\\\\nspeech.\\\"\",\"Abbreviation\":\"perf\",\"Class Proficiencies\":\"[]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Persuasion\",\"Description\":\"\\\"Convince someone to do what you want, effectively \\\\ndebate, flatter or seduce another.\\\"\",\"Abbreviation\":\"pers\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"4\\\"]\",\"Class Signatures\":\"[\\\"4\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Religion\",\"Description\":\"\\\"Knowledge of lore/beliefs of faiths, deities and their\\\\nfollowers. Perform a ritual according to specification.\\\"\",\"Abbreviation\":\"reli\",\"Class Proficiencies\":\"[\\\"3\\\",\\\"4\\\"]\",\"Class Signatures\":\"[\\\"4\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Sleight of Hand\",\"Description\":\"\\\"Pick somone's pocket, conceal belongings, make a coin\\\\nseem to disappear or gesture messages inconspicuously.\\\"\",\"Abbreviation\":\"slei\",\"Class Proficiencies\":\"[\\\"1\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Stealth\",\"Description\":\"\\\"Hide, move silently, blend in with a crowd or follow\\\\nsomeone without being noticed.\\\"\",\"Abbreviation\":\"stea\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Swim\",\"Description\":\"\\\"Swim through rough waters, hold your breath for a long\\\\ntime or possibly even keep pace with a marine creature.\\\"\",\"Abbreviation\":\"swim\",\"Class Proficiencies\":\"[\\\"2\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\"}","{\"Name\":\"Alignment\",\"Description\":\"\\\"Actor's alignment on a scale of evil to good where 0 is \\\\ncompletely evil and 100 is a pinnacle of righteousness.\\\"\",\"Abbreviation\":\"alignment\",\"Class Proficiencies\":\"[]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"NONE\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"50\"}"]
+ * @default ["{\"Name\":\"Acrobatics\",\"Description\":\"\\\"Avoid pits, traps, damage from long falls, balance on a\\\\nslippery surface or squeeze in tight spaces.\\\"\",\"Abbreviation\":\"acro\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"true\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Arcana\",\"Description\":\"\\\"Knowledge of the arcane, identify magical effects and \\\\ndecipher magical runes, tomes and scrolls.\\\"\",\"Abbreviation\":\"arca\",\"Class Proficiencies\":\"[\\\"3\\\"]\",\"Class Signatures\":\"[\\\"3\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"true\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Climb\",\"Description\":\"\\\"Your ability to climb ropes, vines, cliffs, city walls\\\\nor run up or down stairs without losing speed.\\\"\",\"Abbreviation\":\"clim\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\"]\",\"Class Signatures\":\"[\\\"2\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\"}","{\"Name\":\"Deception\",\"Description\":\"\\\"Fast-talk a guard, con a merchant, make money gambling, \\\\ndisguise yourself or convincingly tell a blatent lie.\\\"\",\"Abbreviation\":\"dece\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"3\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\"}","{\"Name\":\"Disable Trap\",\"Description\":\"\\\"Disable traps on doors and treasure chest.\\\"\",\"Abbreviation\":\"disa\",\"Class Proficiencies\":\"[\\\"1\\\"]\",\"Class Signatures\":\"[\\\"1\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"true\"}","{\"Name\":\"History\",\"Description\":\"\\\"Recall lore about families, events, places and heraldry.\\\\nIdentify the cultural origins of people or objects.\\\"\",\"Abbreviation\":\"hist\",\"Class Proficiencies\":\"[\\\"2\\\",\\\"3\\\",\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\"}","{\"Name\":\"Insight\",\"Description\":\"\\\"Identify when someone is being deceitful, notice when\\\\nbeing followed or understanding coded speech.\\\\n\\\"\",\"Abbreviation\":\"insi\",\"Class Proficiencies\":\"[\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\"}","{\"Name\":\"Investigation\",\"Description\":\"\\\"Search for clues, gather information at a local tavern\\\\nor read someone's lips from across the room.\\\"\",\"Abbreviation\":\"inve\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"3\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Jump\",\"Description\":\"\\\"Jump across a wide chasm or high up to grab a window \\\\nsill.\\\"\",\"Abbreviation\":\"jump\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\"]\",\"Class Signatures\":\"[\\\"2\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Lockpicking\",\"Description\":\"\\\"The ability to open locked doors and treasure chests.\\\"\",\"Abbreviation\":\"lock\",\"Class Proficiencies\":\"[\\\"1\\\"]\",\"Class Signatures\":\"[\\\"1\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"true\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Medicine\",\"Description\":\"\\\"Stablize a dying person, know how to utilze advanced\\\\nmedicine or diagnose a rare illness.\\\"\",\"Abbreviation\":\"medi\",\"Class Proficiencies\":\"[\\\"3\\\",\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"true\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Nature\",\"Description\":\"\\\"Knowledge of animals, plants, terrain, weather, poisons\\\\nor survive in the wild.\\\"\",\"Abbreviation\":\"natu\",\"Class Proficiencies\":\"[\\\"2\\\",\\\"3\\\",\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Perception\",\"Description\":\"\\\"See or hear hidden threats, recognize someone far away,\\\\nfind minute details or identify a noise's source.\\\"\",\"Abbreviation\":\"perc\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\",\\\"4\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Performance\",\"Description\":\"\\\"Sing, dance, tell a compelling story or deliver a good\\\\nspeech.\\\"\",\"Abbreviation\":\"perf\",\"Class Proficiencies\":\"[]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"true\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Persuasion\",\"Description\":\"\\\"Convince someone to do what you want, effectively \\\\ndebate, flatter or seduce another.\\\"\",\"Abbreviation\":\"pers\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"4\\\"]\",\"Class Signatures\":\"[\\\"4\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Religion\",\"Description\":\"\\\"Knowledge of lore/beliefs of faiths, deities and their\\\\nfollowers. Perform a ritual according to specification.\\\"\",\"Abbreviation\":\"reli\",\"Class Proficiencies\":\"[\\\"3\\\",\\\"4\\\"]\",\"Class Signatures\":\"[\\\"4\\\"]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"true\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Sleight of Hand\",\"Description\":\"\\\"Pick somone's pocket, conceal belongings, make a coin\\\\nseem to disappear or gesture messages inconspicuously.\\\"\",\"Abbreviation\":\"slei\",\"Class Proficiencies\":\"[\\\"1\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"true\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Stealth\",\"Description\":\"\\\"Hide, move silently, blend in with a crowd or follow\\\\nsomeone without being noticed.\\\"\",\"Abbreviation\":\"stea\",\"Class Proficiencies\":\"[\\\"1\\\",\\\"2\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Swim\",\"Description\":\"\\\"Swim through rough waters, hold your breath for a long\\\\ntime or possibly even keep pace with a marine creature.\\\"\",\"Abbreviation\":\"swim\",\"Class Proficiencies\":\"[\\\"2\\\"]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"ALL\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"0\",\"Requires Training\":\"false\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}","{\"Name\":\"Alignment\",\"Description\":\"\\\"Actor's alignment on a scale of evil to good where 0 is \\\\ncompletely evil and 100 is a pinnacle of righteousness.\\\"\",\"Abbreviation\":\"alignment\",\"Class Proficiencies\":\"[]\",\"Class Signatures\":\"[]\",\"Visibility Mode\":\"NONE\",\"Class Visibility\":\"[]\",\"Starting Ranks\":\"50\",\"Requires Training\":\"false\",\"Synergy Requirement\":\"[]\",\"Synergy Bonuses\":\"[]\"}"]
  *
  * @param Class Config
  * @parent Settings
  * @type struct<classConfigStruct>[]
  * @desc Configure classes to receive talent points as they level up.
- * @default ["{\"Description\":\"Hero\",\"Class\":\"1\",\"Starting Points\":\"6\",\"Points Per Level\":\"6\"}","{\"Description\":\"Fighter\",\"Class\":\"2\",\"Starting Points\":\"6\",\"Points Per Level\":\"6\"}","{\"Description\":\"Mage\",\"Class\":\"3\",\"Starting Points\":\"6\",\"Points Per Level\":\"6\"}","{\"Description\":\"Priest\",\"Class\":\"4\",\"Starting Points\":\"6\",\"Points Per Level\":\"6\"}"]
+ * @default ["{\"Description\":\"Rogue\",\"Class Id\":\"1\",\"Starting Points\":\"6\",\"Points Per Level\":\"6\",\"Auto-Distribution\":\"Vertical\",\"Vertical Distribution\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"acro\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"arca\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"dece\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"disa\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"hist\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"insi\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"inve\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"lock\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"medi\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"lowest\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"natu\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perf\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"pers\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"reli\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"slei\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"swim\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\"]\",\"Horizontal Distribution\":\"[]\"}","{\"Description\":\"Fighter\",\"Class Id\":\"2\",\"Starting Points\":\"6\",\"Points Per Level\":\"6\",\"Auto-Distribution\":\"Vertical\",\"Vertical Distribution\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"acro\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"arca\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"dece\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"lowest\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"disa\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"hist\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"insi\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"inve\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"lock\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"medi\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"lowest\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"natu\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perf\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"pers\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"reli\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"slei\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"swim\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\"]\",\"Horizontal Distribution\":\"[]\"}","{\"Description\":\"Mage\",\"Class Id\":\"3\",\"Starting Points\":\"6\",\"Points Per Level\":\"6\",\"Auto-Distribution\":\"Vertical\",\"Vertical Distribution\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"acro\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"lowest\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"arca\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"dece\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"disa\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"hist\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"insi\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"inve\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"lowest\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"lock\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"medi\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"natu\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perf\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"pers\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"reli\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"slei\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"swim\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"lowest\\\\\\\"}\\\"]\",\"Horizontal Distribution\":\"[]\"}","{\"Description\":\"Priest\",\"Class Id\":\"4\",\"Starting Points\":\"6\",\"Points Per Level\":\"6\",\"Auto-Distribution\":\"Vertical\",\"Vertical Distribution\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"acro\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"arca\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"dece\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"disa\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"hist\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"high\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"insi\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"inve\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"lock\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"lowest\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"medi\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"natu\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"mid\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perf\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"pers\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"reli\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"full\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"slei\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"none\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"lowest\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"swim\\\\\\\",\\\\\\\"Pattern\\\\\\\":\\\\\\\"low\\\\\\\"}\\\"]\",\"Horizontal Distribution\":\"[]\"}"]
  *
  * @param Actor Config
  * @parent Settings
  * @type struct<actorConfigStruct>[]
  * @desc Configure actors to adjust the talent points they receive on level up.
- * @default ["{\"Description\":\"Harold\",\"Actor\":\"1\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[]\",\"Talent Check Variable\":\"2\"}","{\"Description\":\"Theresa\",\"Actor\":\"2\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[]\",\"Talent Check Variable\":\"3\"}","{\"Description\":\"Marsha\",\"Actor\":\"3\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[]\",\"Talent Check Variable\":\"4\"}","{\"Description\":\"Lucious\",\"Actor\":\"4\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[]\",\"Talent Check Variable\":\"5\"}"]
+ * @default ["{\"Description\":\"Harold\",\"Actor Id\":\"1\",\"Player Control\":\"true\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[]\",\"Talent Check Variable\":\"2\"}","{\"Description\":\"Theresa\",\"Actor Id\":\"2\",\"Player Control\":\"true\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[]\",\"Talent Check Variable\":\"3\"}","{\"Description\":\"Marsha\",\"Actor Id\":\"3\",\"Player Control\":\"true\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[]\",\"Talent Check Variable\":\"4\"}","{\"Description\":\"Lucious\",\"Actor Id\":\"4\",\"Player Control\":\"true\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[]\",\"Talent Check Variable\":\"5\"}"]
  *
  * @param Race Config
  * @parent Settings
  * @type struct<raceConfigStruct>[]
  * @desc Configure races to adjust the talent points they receive on level up.
- * @default ["{\"Description\":\"Human\",\"Race ID\":\"1\",\"Starting Bonus/Penalty\":\"1\",\"Point Bonus/Penalty\":\"1\",\"Talent Bonus/Penalty\":\"[]\"}","{\"Description\":\"Celestial\",\"Race ID\":\"2\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"reli\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Demonic\",\"Race ID\":\"3\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"dece\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Dwarf\",\"Race ID\":\"4\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"swim\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"-2\\\\\\\"}\\\"]\"}","{\"Description\":\"Elf\",\"Race ID\":\"5\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"arca\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Half-dragon\",\"Race ID\":\"6\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"arca\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Half-elf\",\"Race ID\":\"7\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"acro\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Half-orc\",\"Race ID\":\"8\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Halfling\",\"Race ID\":\"9\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"insi\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Gnome\",\"Race ID\":\"10\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"pers\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}"]
+ * @default ["{\"Description\":\"Human\",\"Race Id\":\"1\",\"Starting Bonus/Penalty\":\"1\",\"Point Bonus/Penalty\":\"1\",\"Talent Bonus/Penalty\":\"[]\"}","{\"Description\":\"Celestial\",\"Race Id\":\"2\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"reli\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Demonic\",\"Race Id\":\"3\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"dece\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Dwarf\",\"Race Id\":\"4\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"swim\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"-2\\\\\\\"}\\\"]\"}","{\"Description\":\"Elf\",\"Race Id\":\"5\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"arca\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Half-dragon\",\"Race Id\":\"6\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"arca\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Half-elf\",\"Race Id\":\"7\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"acro\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Half-orc\",\"Race Id\":\"8\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Halfling\",\"Race Id\":\"9\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"insi\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}","{\"Description\":\"Gnome\",\"Race Id\":\"10\",\"Starting Bonus/Penalty\":\"0\",\"Point Bonus/Penalty\":\"0\",\"Talent Bonus/Penalty\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"pers\\\\\\\",\\\\\\\"Bonus/Penalty\\\\\\\":\\\\\\\"2\\\\\\\"}\\\"]\"}"]
  *
  * @param Enemy Config
  * @parent Settings
  * @type struct<enemyConfigStruct>[]
  * @desc Configure enemies to have talents.
- * @default ["{\"Description\":\"Bat\",\"Enemy ID\":\"1\",\"Enemy Talents\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"5\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"7\\\\\\\"}\\\"]\"}","{\"Description\":\"Slime\",\"Enemy ID\":\"2\",\"Enemy Talents\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"5\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"0\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"4\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"swim\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"10\\\\\\\"}\\\"]\"}","{\"Description\":\"Orc\",\"Enemy ID\":\"3\",\"Enemy Talents\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"8\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"8\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"10\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"6\\\\\\\"}\\\"]\"}","{\"Description\":\"Minotaur\",\"Enemy ID\":\"4\",\"Enemy Talents\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"10\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"12\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"15\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"5\\\\\\\"}\\\"]\"}"]
+ * @default ["{\"Description\":\"Bat\",\"Enemy Id\":\"1\",\"Enemy Talents\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"5\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"7\\\\\\\"}\\\"]\"}","{\"Description\":\"Slime\",\"Enemy Id\":\"2\",\"Enemy Talents\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"5\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"0\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"2\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"4\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"swim\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"10\\\\\\\"}\\\"]\"}","{\"Description\":\"Orc\",\"Enemy Id\":\"3\",\"Enemy Talents\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"8\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"8\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"10\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"6\\\\\\\"}\\\"]\"}","{\"Description\":\"Minotaur\",\"Enemy Id\":\"4\",\"Enemy Talents\":\"[\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"clim\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"10\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"jump\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"12\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"perc\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"15\\\\\\\"}\\\",\\\"{\\\\\\\"Talent Abbreviation\\\\\\\":\\\\\\\"stea\\\\\\\",\\\\\\\"Score\\\\\\\":\\\\\\\"5\\\\\\\"}\\\"]\"}"]
+ *
+ * @param Distribution Patterns
+ * @parent Settings
+ * @type struct<patternStruct>[]
+ * @desc Define named auto-distribution patterns for actors that the player doesn't control Talents for.
+ * @default ["{\"Name\":\"none\",\"Pattern\":\"[\\\"0\\\"]\"}","{\"Name\":\"lowest\",\"Pattern\":\"[\\\"0\\\",\\\"0\\\",\\\"0\\\",\\\"0\\\",\\\"1\\\"]\"}","{\"Name\":\"low\",\"Pattern\":\"[\\\"0\\\",\\\"0\\\",\\\"1\\\"]\"}","{\"Name\":\"mid\",\"Pattern\":\"[\\\"0\\\",\\\"1\\\"]\"}","{\"Name\":\"high\",\"Pattern\":\"[\\\"1\\\",\\\"1\\\",\\\"0\\\"]\"}","{\"Name\":\"full\",\"Pattern\":\"[\\\"1\\\"]\"}"]
  *
  * @param Add to Formulas
  * @parent Settings
@@ -1029,6 +1121,18 @@ FROG.Talents = FROG.Talents || {};
  * @default false
  * @on Yes
  * @off No
+ *
+ * @param System Mode
+ * @parent Settings
+ * @type select
+ * @desc Three modes to adjust how your game will use the Talent system
+ * @default FULL
+ * @option Full - Players acquire points and build their talents
+ * @value FULL
+ * @option View - Players can see their talents but not change them
+ * @value VIEW
+ * @option Hidden - All Talent menus and windows are hidden from view
+ * @value HIDE
  *
  * @param Max Type
  * @parent Settings
@@ -1052,284 +1156,29 @@ FROG.Talents = FROG.Talents || {};
  * @desc This is a bonus added to any skill that a class is proficient with as indicated in the Talents parameter.
  * @default 3
  *
- * @param Last Check Variable
- * @parent Talent Check Defaults
- * @type variable
- * @desc Default variable to store the last talent check result.
+ * @param Check Defaults
+ * @parent Settings
+ * @type struct<checkDefaultsStruct>
+ * @desc Define default settings for Talent Checks.
+ * @default {"Last Check Variable":"","Target Number Variable":"","Roll Type":"ROLL","Die Count":"1","Die Type":"d20","View Mode":"ASK","Decline Check Value":"9999","Normalize Target Number":"false","Named Checks":"[\"{\\\"Name\\\":\\\"ClimbVine\\\",\\\"Target Number\\\":\\\"10\\\"}\",\"{\\\"Name\\\":\\\"PitTrap\\\",\\\"Target Number\\\":\\\"12\\\"}\",\"{\\\"Name\\\":\\\"SecretDoor\\\",\\\"Target Number\\\":\\\"15\\\"}\",\"{\\\"Name\\\":\\\"TavernClue\\\",\\\"Target Number\\\":\\\"15\\\"}\"]","Named Modifiers":"[\"{\\\"Name\\\":\\\"Dark\\\",\\\"Modifier\\\":\\\"5\\\"}\",\"{\\\"Name\\\":\\\"Friendly\\\",\\\"Modifier\\\":\\\"-2\\\"}\",\"{\\\"Name\\\":\\\"Icy\\\",\\\"Modifier\\\":\\\"10\\\"}\",\"{\\\"Name\\\":\\\"Invisible\\\",\\\"Modifier\\\":\\\"30\\\"}\",\"{\\\"Name\\\":\\\"Light\\\",\\\"Modifier\\\":\\\"-3\\\"}\",\"{\\\"Name\\\":\\\"Slippery\\\",\\\"Modifier\\\":\\\"2\\\"}\",\"{\\\"Name\\\":\\\"Unfriendly\\\",\\\"Modifier\\\":\\\"2\\\"}\"]","Talent Bar Increment":"0.25","Talent Bar Wait":"15"}
  *
- * @param Target Number Variable
- * @parent Talent Check Defaults
- * @type variable
- * @desc Default variable to store target numbers generated from enemy talents.
+ * @param Commands
+ * @parent Settings
+ * @type struct<commandStruct>
+ * @desc Change command names to fit your game.
+ * @default {"Main Menu":"Talents","Raise Talent":"Raise Talent","View Talent":"View Talent","Exit":"Exit","Finish":"Finish"}
  *
- * @param Roll Type
- * @parent Talent Check Defaults
- * @type select
- * @desc Set the default Roll Type so that you don't specify every time.
- * @default ROLL
- * @option Max Score
- * @value MAX
- * @option Random (1 - Max Score)
- * @value RND
- * @option Roll Dice & Add Score
- * @value ROLL
+ * @param Text
+ * @parent Settings
+ * @type struct<textStruct>
+ * @desc Customize the text.  Theme Talents to fit your game.
+ * @default {"Points Text":"Talent Points","Talents Text":"Talents","Ranks Text":"Ranks","Bonus Text":"Bonus","Score Text":"Score","Difficulty Text":"Difficulty","Talent Check Text":"Talent Check","Success Text":"Success!","Success Color":"#30FF30","Fail Text":"Failed!","Fail Color":"#FF3030","Learn Trait":"Learn at this rank\\c[17]"}
  *
- * @param Die Count
- * @parent Talent Check Defaults
- * @type number
- * @desc The default number of dice you roll to determine a Roll type talent check.
- * @default 1
- *
- * @param Die Type
- * @parent Talent Check Defaults
- * @type combo
- * @desc Set the default Die Type so that you don't specify every time. It'll work with or without the 'd'.
- * @default d20
- * @option d6
- * @option d8
- * @option d10
- * @option d12
- * @option d20
- *
- * @param View Mode
- * @parent Talent Check Defaults
- * @type select
- * @desc Sets the default view modes for talent checks.
- * @default ASK
- * @option None
- * @value NONE
- * @option Show but don't Ask
- * @value SHOW
- * @option Ask and Show
- * @value ASK
- *
- * @param Decline Check Value
- * @parent Talent Check Defaults
- * @type number
- * @desc The number returned if the player chooses not to attempt a Talent Check
- * @default 9999
- *
- * @param Normalize Target Number
- * @parent Talent Check Defaults
- * @type boolean
- * @desc Use the desired Target Score for the Target Number. You can change Talent Check Defaults without having to update TNs.
- * @default false
- * @on Yes
- * @off No
- *
- * @param Named Checks
- * @parent Talent Check Defaults
- * @type struct<namedCheckStruct>[]
- * @desc Names for commonly used Talent Checks.
- * @default ["{\"Name\":\"ClimbVine\",\"Target Number\":\"10\"}","{\"Name\":\"PitTrap\",\"Target Number\":\"12\"}","{\"Name\":\"SecretDoor\",\"Target Number\":\"15\"}","{\"Name\":\"TavernClue\",\"Target Number\":\"15\"}"]
- *
- * @param Named Modifiers
- * @parent Talent Check Defaults
- * @type struct<namedModifierStruct>[]
- * @desc Names for commonly used Talent Check Modifiers.
- * @default ["{\"Name\":\"Dark\",\"Modifier\":\"5\"}","{\"Name\":\"Friendly\",\"Modifier\":\"-2\"}","{\"Name\":\"Icy\",\"Modifier\":\"10\"}","{\"Name\":\"Invisible\",\"Modifier\":\"30\"}","{\"Name\":\"Light\",\"Modifier\":\"-3\"}","{\"Name\":\"Slippery\",\"Modifier\":\"2\"}","{\"Name\":\"Unfriendly\",\"Modifier\":\"2\"}"]
- *
- * @param System Mode
- * @parent Commands
- * @type select
- * @desc Three modes to adjust how your game will use the Talent system
- * @default FULL
- * @option Full - Players acquire points and build their talents
- * @value FULL
- * @option View - Players can see their talents but not change them
- * @value VIEW
- * @option Hidden - All Talent menus and windows are hidden from view
- * @value HIDE
- *
- * @param Talent Bar Increment
- * @parent Talent Check Defaults
- * @type number
- * @decimals 2
- * @min 0
- * @desc When a Talent Check is shown, this is the amount by which the Check gauge increases.
- * @default 0.25
- *
- * @param Talent Bar Wait
- * @parent Talent Check Defaults
- * @type number
- * @min 0
- * @max 1000
- * @desc This is the wait in milliseconds between redraws when the Talent Check bar is rising to its Talent Check score.
- * @default 15
- *
- * @param Main Menu
- * @parent Commands
- * @type string
- * @desc This is the name of the command that will display in the main menu.
- * @default Talents
- *
- * @param Talents Menu
- * @parent Commands
- * @type string
- * @desc This is the name of the command that will display in the talents menu.
- * @default Raise Talent
- *
- * @param Exit
- * @parent Commands
- * @type string
- * @desc This is the name of the command that exits the user from the talents menu.
- * @default Exit
- *
- * @param Finish
- * @parent Commands
- * @type string
- * @desc This is the name of the command that commits your changes after apllying your talent points.
- * @default Finish
- *
- * @param Points Text
- * @parent Text
- * @type string
- * @desc This is the text that shows up in the Points box
- * @default Talent Points
- *
- * @param Talents Text
- * @parent Text
- * @type string
- * @desc This is the header text that shows up in the Talents window
- * @default Talents
- *
- * @param Ranks Text
- * @parent Text
- * @type string
- * @desc This is the header text that shows up in the Talents window
- * @default Ranks
- *
- * @param Bonus Text
- * @parent Text
- * @type string
- * @desc This is the header text that shows up in the Talents window
- * @default Bonus
- *
- * @param Score Text
- * @parent Text
- * @type string
- * @desc This is the header text that shows up in the Talents window
- * @default Score
- *
- * @param Difficulty Text
- * @parent Text
- * @type string
- * @desc This is the text that is displayed on the Difficulty gauge when a Talent Check is performed.
- * @default Difficulty
- *
- * @param Talent Check Text
- * @parent Text
- * @type string
- * @desc This is the text that is displayed on the Talent Check gauge when a Talent Check is performed.
- * @default Talent Check
- *
- * @param Success Text
- * @parent Text
- * @type string
- * @desc This is the text that is displayed when a Talent Check succeeds.
- * @default Success!
- *
- * @param Success Color
- * @parent Text
- * @type string
- * @desc This is the color of the Success Text.
- * @default #30FF30
- *
- * @param Fail Text
- * @parent Text
- * @type string
- * @desc This is the text that is displayed when a Talent Check fails.
- * @default Failed!
- *
- * @param Fail Color
- * @parent Text
- * @type string
- * @desc This is the color of the Fail Text.
- * @default #FF3030
- *
- * @param Learn Trait
- * @parent Text
- * @type string
- * @desc If you are using Talent-based Traits, this text tells the player what they will learn by advancing to this score.
- * @default Learn at this rank\c[17]
- *
- * @param Show Ranks
- * @parent Style
- * @type boolean
- * @desc Show or hide the Ranks column in the Talents window
- * @default true
- * @on Show
- * @off Hide
- *
- * @param Show Bonus
- * @parent Style
- * @type boolean
- * @desc Show or hide the Bonus column in the Talents window
- * @default true
- * @on Show
- * @off Hide
- *
- * @param Show Score
- * @parent Style
- * @type boolean
- * @desc Show or hide the Score column in the Talents window
- * @default true
- * @on Show
- * @off Hide
- *
- * @param Show Check Numbers
- * @parent Style
- * @type boolean
- * @desc Show or hide the Difficulty and Talent Check numbers.
- * @default true
- * @on Show
- * @off Hide
- *
- * @param Gauge Height
- * @parent Style
- * @type number
- * @desc Pixel height of the gauges on the Talents screens.
- * @default 15
- *
- * @param Gauge Color Type
- * @parent Style
- * @type select
- * @desc Color code your gauges for proficient/non-proficient or a rolling series of colors.
- * @default Proficiency
- * @option Color List
- * @value Color List
- * @option Proficiency
- * @value Proficiency
- *
- * @param Color List
- * @parent Style
- * @type struct<colorStruct>[]
- * @desc If using the Color List option, this is a repeating list of colors that your gauges will use.
- * @default ["{\"Start Color\":\"#B00000\",\"End Color\":\"#FF3030\"}","{\"Start Color\":\"#0000B0\",\"End Color\":\"#3030FF\"}","{\"Start Color\":\"#008000\",\"End Color\":\"#00FF00\"}","{\"Start Color\":\"#900090\",\"End Color\":\"#FF00FF\"}","{\"Start Color\":\"#008080\",\"End Color\":\"#00D0D0\"}","{\"Start Color\":\"#A08000\",\"End Color\":\"#FFC000\"}"]
- *
- * @param Proficient Color
- * @parent Style
- * @type struct<colorStruct>
- * @desc If using the Proficiency option, this is the color of talent gauges that an actor is proficient with.
- * @default {"Start Color":"#0000FF","End Color":"#6666FF"}
- *
- * @param Non-proficient Color
- * @parent Style
- * @type struct<colorStruct>
- * @desc If using the Proficiency option, this is the color of talent gauges that an actor is not proficient with.
- * @default {"Start Color":"#EA7000","End Color":"#FFA655"}
- *
- * @param Signature Color
- * @parent Style
- * @type struct<colorStruct>
- * @desc If using the Proficiency option, this is the color of signature talent gauges.
- * @default {"Start Color":"#00B000","End Color":"#00FF00"}
- *
- * @param Font Size
- * @parent Style
- * @type number
- * @desc Font size in the Talents window.
- * @default 26
+ * @param Style
+ * @parent Settings
+ * @type struct<styleStruct>
+ * @desc Define how things look
+ * @default {"Show Ranks":"true","Show Bonus":"true","Show Score":"true","Show Check Numbers":"true","Gauge Height":"15","Gauge Color Type":"Proficiency","Color List":"[\"{\\\"Start Color\\\":\\\"#B00000\\\",\\\"End Color\\\":\\\"#FF3030\\\"}\",\"{\\\"Start Color\\\":\\\"#0000B0\\\",\\\"End Color\\\":\\\"#3030FF\\\"}\",\"{\\\"Start Color\\\":\\\"#008000\\\",\\\"End Color\\\":\\\"#00FF00\\\"}\",\"{\\\"Start Color\\\":\\\"#900090\\\",\\\"End Color\\\":\\\"#FF00FF\\\"}\",\"{\\\"Start Color\\\":\\\"#008080\\\",\\\"End Color\\\":\\\"#00D0D0\\\"}\",\"{\\\"Start Color\\\":\\\"#A08000\\\",\\\"End Color\\\":\\\"#FFC000\\\"}\"]","Proficient Color":"{\"Start Color\":\"#0000FF\",\"End Color\":\"#6666FF\"}","Non-proficient Color":"{\"Start Color\":\"#EA7000\",\"End Color\":\"#FFA655\"}","Signature Color":"{\"Start Color\":\"#00B000\",\"End Color\":\"#00FF00\"}","Font Size":"26"}
  */
 /*~struct~talentStruct:
  * @param Name
@@ -1413,13 +1262,58 @@ FROG.Talents = FROG.Talents || {};
  * @desc Number of ranks all actors start the game with.
  * @default 0
  * @min 0
+ *
+ * @param Requires Training
+ * @type boolean
+ * @desc Some talents require training to use.  If true, the actor must have at least 1 rank to use this talent or receive bonuses.
+ * @default false
+ * @on Yes
+ * @off No
+ *
+ * @param Synergy Requirement
+ * @type struct<synergyReqStruct>[]
+ * @desc This talent is hidden until it's synergy requirements are met.
+ * @default []
+ *
+ * @param Synergy Bonuses
+ * @type struct<synergyBonusStruct>[]
+ * @desc This talent gets a bonus if it's synergy requirements are met.
+ * @default []
+ */
+/*~struct~synergyReqStruct:
+ * @param Talent Abbreviation
+ * @type string
+ * @desc This is the abbreviated name of the talent.
+ *
+ * @param Required Ranks
+ * @type number
+ * @desc Number of talent ranks needed to unlock this synergy.
+ * @default 5
+ * @min 0
+ */
+/*~struct~synergyBonusStruct:
+ * @param Talent Abbreviation
+ * @type string
+ * @desc This is the abbreviated name of the talent.
+ *
+ * @param Required Ranks
+ * @type number
+ * @desc Number of talent ranks needed to unlock this synergy.
+ * @default 5
+ * @min 0
+ *
+ * @param Bonus
+ * @type number
+ * @desc Bonus received when required ranks are acquired.
+ * @default 2
+ * @min 0
  */
 /*~struct~classConfigStruct:
  * @param Description
  * @type string
  * @desc Description so you know what this entry is. Recommended but not required.
  *
- * @param Class
+ * @param Class Id
  * @type class
  * @desc Class that gains points to improve talents.
  * @default 1
@@ -1435,16 +1329,99 @@ FROG.Talents = FROG.Talents || {};
  * @desc Number of talent points gained at each level.
  * @default 0
  * @min 0
+ *
+ * @param Auto-Distribution
+ * @type select
+ * @desc If an actor with this class has Player Control set to false, their stats can be assigned automatically.
+ * @default Vertical
+ * @option Vertical - Use Distribution Patterns to signify rates of progression for each talent.
+ * @value Vertical
+ * @option Horizontal - Assign exactly which talents gain points at each level.
+ * @value Horizontal
+ *
+ * @param Vertical Distribution
+ * @type struct<vertDistributeStruct>[]
+ * @desc List distribution patterns for each talent.
+ * @default []
+ *
+ * @param Horizontal Distribution
+ * @type struct<horizDistributeStruct>[]
+ * @desc Define how talents increase on a level by level basis.
+ * @default []
+ */
+/*~struct~vertDistributeStruct:
+ * @param Talent Abbreviation
+ * @type string
+ * @desc This is the abbreviated name of the talent that this actor or race gains a bonus/penalty to.
+ *
+ * @param Pattern
+ * @type string
+ * @desc This is the name of the pattern used for advancement.
+ */
+/*~struct~horizDistributeStruct:
+ * @param Advancement
+ * @type struct<horizAdvanceStruct>[]
+ * @desc Advancement for this level.  Advancement starts over when it reaches the end of this list.
+ * @default []
+ */
+/*~struct~horizAdvanceStruct:
+ * @param Abbr
+ * @type string
+ * @desc Abbreviated name of the talent.
+ *
+ * @param Ranks
+ * @type number
+ * @desc Number of ranks applied for this advancement.
+ */
+/*~struct~patternStruct:
+ * @param Vertical Patterns
+ * @type struct<autoVerticalStruct>[]
+ * @desc Specify the rate of increase for each talent.
+ * @default []
+ *
+ * @param Horizontal Patterns
+ * @type struct<autoHorizontalStruct>[]
+ * @desc Specify the rate of increase for each talent.
+ * @default []
+ */
+/*~struct~autoVerticalStruct:
+ * @param Name
+ * @type string
+ * @desc Name that identifies this pattern of talent advancement.
+ *
+ * @param Pattern
+ * @type number[]
+ * @desc Repeating pattern used for distributing talent points.  For example, [0, 1] will raise this talents rank every other level.
+ * @default []
+ * @min 0
+ */
+/*~struct~autoVerticalStruct:
+ * @param Name
+ * @type string
+ * @desc Name that identifies this pattern of talent advancement.
+ *
+ * @param Pattern
+ * @type number[]
+ * @desc Repeating pattern used for distributing talent points.  For example, [0, 1] will raise this talents rank every other level.
+ * @default []
+ * @min 0
  */
 /*~struct~actorConfigStruct:
  * @param Description
  * @type string
  * @desc Description so you know what this entry is. Recommended but not required.
  *
- * @param Actor
+ * @param Actor Id
  * @type actor
  * @desc Actor that gains points to improve talents.
  * @default 1
+ *
+ * @param Player Control
+ * @type boolean
+ * @desc If true, player distributes talent points.  If false, distribution is determined in Class Config.
+ * @default true
+ * @on Yes
+ * @off No
  *
  * @param Starting Bonus/Penalty
  * @type number
@@ -1472,9 +1449,9 @@ FROG.Talents = FROG.Talents || {};
  * @type string
  * @desc Description so you know what this entry is. Recommended but not required.
  *
- * @param Race ID
+ * @param Race Id
  * @type number
- * @desc Race ID as defined in the FROG_RaceCore plugin.
+ * @desc Race Id as defined in the FROG_RaceCore plugin.
  * @default 1
  *
  * @param Starting Bonus/Penalty
@@ -1499,7 +1476,7 @@ FROG.Talents = FROG.Talents || {};
  * @type string
  * @desc Description so you know what this entry is. Recommended but not required.
  *
- * @param Enemy ID
+ * @param Enemy Id
  * @type enemy
  * @desc Enemy that has talents.
  * @default 1
@@ -1551,6 +1528,258 @@ FROG.Talents = FROG.Talents || {};
  * @default 0
  * @min 0
  */
+/*~struct~checkDefaultsStruct:
+ * @param Last Check Variable
+ * @type variable
+ * @desc Default variable to store the last talent check result.
+ *
+ * @param Target Number Variable
+ * @type variable
+ * @desc Default variable to store target numbers generated from enemy talents.
+ *
+ * @param Roll Type
+ * @type select
+ * @desc Set the default Roll Type so that you don't specify every time.
+ * @default ROLL
+ * @option Max Score
+ * @value MAX
+ * @option Random (1 - Max Score)
+ * @value RND
+ * @option Roll Dice & Add Score
+ * @value ROLL
+ *
+ * @param Die Count
+ * @type number
+ * @desc The default number of dice you roll to determine a Roll type talent check.
+ * @default 1
+ *
+ * @param Die Type
+ * @type combo
+ * @desc Set the default Die Type so that you don't specify every time. It'll work with or without the 'd'.
+ * @default d20
+ * @option d6
+ * @option d8
+ * @option d10
+ * @option d12
+ * @option d20
+ *
+ * @param View Mode
+ * @type select
+ * @desc Sets the default view modes for talent checks.
+ * @default ASK
+ * @option None
+ * @value NONE
+ * @option Show but don't Ask
+ * @value SHOW
+ * @option Ask and Show
+ * @value ASK
+ *
+ * @param Decline Check Value
+ * @type number
+ * @desc The number returned if the player chooses not to attempt a Talent Check
+ * @default 9999
+ *
+ * @param Normalize Target Number
+ * @type boolean
+ * @desc Use the desired Target Score for the Target Number. You can change Talent Check Defaults without having to update TNs.
+ * @default false
+ * @on Yes
+ * @off No
+ *
+ * @param Named Checks
+ * @type struct<namedCheckStruct>[]
+ * @desc Names for commonly used Talent Checks.
+ * @default ["{\"Name\":\"ClimbVine\",\"Target Number\":\"10\"}","{\"Name\":\"PitTrap\",\"Target Number\":\"12\"}","{\"Name\":\"SecretDoor\",\"Target Number\":\"15\"}","{\"Name\":\"TavernClue\",\"Target Number\":\"15\"}"]
+ *
+ * @param Named Modifiers
+ * @type struct<namedModifierStruct>[]
+ * @desc Names for commonly used Talent Check Modifiers.
+ * @default ["{\"Name\":\"Dark\",\"Modifier\":\"5\"}","{\"Name\":\"Friendly\",\"Modifier\":\"-2\"}","{\"Name\":\"Icy\",\"Modifier\":\"10\"}","{\"Name\":\"Invisible\",\"Modifier\":\"30\"}","{\"Name\":\"Light\",\"Modifier\":\"-3\"}","{\"Name\":\"Slippery\",\"Modifier\":\"2\"}","{\"Name\":\"Unfriendly\",\"Modifier\":\"2\"}"]
+ *
+ * @param Talent Bar Increment
+ * @type number
+ * @decimals 2
+ * @min 0
+ * @desc When a Talent Check is shown, this is the amount by which the Check gauge increases.
+ * @default 0.25
+ *
+ * @param Talent Bar Wait
+ * @type number
+ * @min 0
+ * @max 1000
+ * @desc This is the wait in milliseconds between redraws when the Talent Check bar is rising to its Talent Check score.
+ * @default 15
+ */
+/*~struct~commandStruct:
+ * @param Main Menu
+ * @parent Commands
+ * @type string
+ * @desc This is the name of the command that will display in the main menu.
+ * @default Talents
+ *
+ * @param Raise Talent
+ * @parent Commands
+ * @type string
+ * @desc This is the name of the command that will display in the talents menu when System Mode is FULL and Player Control is true.
+ * @default Raise Talent
+ *
+ * @param View Talent
+ * @parent Commands
+ * @type string
+ * @desc This is the name of the command that will display in the talents menu when System Mode is not FULL or Player Control is false.
+ * @default View Talent
+ *
+ * @param Exit
+ * @parent Commands
+ * @type string
+ * @desc This is the name of the command that exits the user from the talents menu.
+ * @default Exit
+ *
+ * @param Finish
+ * @parent Commands
+ * @type string
+ * @desc This is the name of the command that commits your changes after apllying your talent points.
+ * @default Finish
+ */
+/*~struct~textStruct:
+ * @param Points Text
+ * @type string
+ * @desc This is the text that shows up in the Points box
+ * @default Talent Points
+ *
+ * @param Talents Text
+ * @type string
+ * @desc This is the header text that shows up in the Talents window
+ * @default Talents
+ *
+ * @param Ranks Text
+ * @type string
+ * @desc This is the header text that shows up in the Talents window
+ * @default Ranks
+ *
+ * @param Bonus Text
+ * @type string
+ * @desc This is the header text that shows up in the Talents window
+ * @default Bonus
+ *
+ * @param Score Text
+ * @type string
+ * @desc This is the header text that shows up in the Talents window
+ * @default Score
+ *
+ * @param Difficulty Text
+ * @type string
+ * @desc This is the text that is displayed on the Difficulty gauge when a Talent Check is performed.
+ * @default Difficulty
+ *
+ * @param Talent Check Text
+ * @type string
+ * @desc This is the text that is displayed on the Talent Check gauge when a Talent Check is performed.
+ * @default Talent Check
+ *
+ * @param Success Text
+ * @type string
+ * @desc This is the text that is displayed when a Talent Check succeeds.
+ * @default Success!
+ *
+ * @param Success Color
+ * @type string
+ * @desc This is the color of the Success Text.
+ * @default #30FF30
+ *
+ * @param Fail Text
+ * @type string
+ * @desc This is the text that is displayed when a Talent Check fails.
+ * @default Failed!
+ *
+ * @param Fail Color
+ * @type string
+ * @desc This is the color of the Fail Text.
+ * @default #FF3030
+ *
+ * @param Learn Trait
+ * @type string
+ * @desc If you are using Talent-based Traits, this text tells the player what they will learn by advancing to this score.
+ * @default Learn at this rank\c[17]
+ */
+/*~struct~styleStruct:
+ * @param Show Ranks
+ * @type boolean
+ * @desc Show or hide the Ranks column in the Talents window
+ * @default true
+ * @on Show
+ * @off Hide
+ *
+ * @param Show Bonus
+ * @type boolean
+ * @desc Show or hide the Bonus column in the Talents window
+ * @default true
+ * @on Show
+ * @off Hide
+ *
+ * @param Show Score
+ * @type boolean
+ * @desc Show or hide the Score column in the Talents window
+ * @default true
+ * @on Show
+ * @off Hide
+ *
+ * @param Show Check Numbers
+ * @type boolean
+ * @desc Show or hide the Difficulty and Talent Check numbers.
+ * @default true
+ * @on Show
+ * @off Hide
+ *
+ * @param Gauge Height
+ * @type number
+ * @desc Pixel height of the gauges on the Talents screens.
+ * @default 15
+ *
+ * @param Gauge Color Type
+ * @type select
+ * @desc Color code your gauges for proficient/non-proficient or a rolling series of colors.
+ * @default Proficiency
+ * @option Color List
+ * @value Color List
+ * @option Proficiency
+ * @value Proficiency
+ *
+ * @param Color List
+ * @type struct<colorStruct>[]
+ * @desc If using the Color List option, this is a repeating list of colors that your gauges will use.
+ * @default ["{\"Start Color\":\"#B00000\",\"End Color\":\"#FF3030\"}","{\"Start Color\":\"#0000B0\",\"End Color\":\"#3030FF\"}","{\"Start Color\":\"#008000\",\"End Color\":\"#00FF00\"}","{\"Start Color\":\"#900090\",\"End Color\":\"#FF00FF\"}","{\"Start Color\":\"#008080\",\"End Color\":\"#00D0D0\"}","{\"Start Color\":\"#A08000\",\"End Color\":\"#FFC000\"}"]
+ *
+ * @param Proficient Color
+ * @type struct<colorStruct>
+ * @desc If using the Proficiency option, this is the color of talent gauges that an actor is proficient with.
+ * @default {"Start Color":"#0000FF","End Color":"#6666FF"}
+ *
+ * @param Non-proficient Color
+ * @type struct<colorStruct>
+ * @desc If using the Proficiency option, this is the color of talent gauges that an actor is not proficient with.
+ * @default {"Start Color":"#EA7000","End Color":"#FFA655"}
+ *
+ * @param Signature Color
+ * @type struct<colorStruct>
+ * @desc If using the Proficiency option, this is the color of signature talent gauges.
+ * @default {"Start Color":"#00B000","End Color":"#00FF00"}
+ *
+ * @param Talent Check Color
+ * @type struct<colorStruct>
+ * @desc Color of the Talent Check gauge.
+ * @default {"Start Color":"#4080c0","End Color":"#40c0f0"}
+ *
+ * @param Difficulty Color
+ * @type struct<colorStruct>
+ * @desc Color of the Talent Check difficulty gauge.
+ * @default {"Start Color":"#e08040","End Color":"#f0c040"}
+ *
+ * @param Font Size
+ * @type number
+ * @desc Font size in the Talents window.
+ * @default 26
+ */
 /*~struct~colorStruct:
  * @param Start Color
  * @type string
@@ -1563,66 +1792,8 @@ FROG.Talents = FROG.Talents || {};
  var $dataTalents = {};
 
 (function () {
-    // Settings
-    FROG.Talents.prm = PluginManager.parameters('FROG_TalentCore');
-    FROG.Talents.talents = (FROG.Talents.prm['Talents']) ? JSON.parse(FROG.Talents.prm['Talents']) : [];
-    FROG.Talents.classConfig = (FROG.Talents.prm['Class Config']) ? JSON.parse(FROG.Talents.prm['Class Config']) : [];
-    FROG.Talents.actorConfig = (FROG.Talents.prm['Actor Config']) ? JSON.parse(FROG.Talents.prm['Actor Config']) : [];
-    FROG.Talents.raceConfig = (FROG.Talents.prm['Race Config']) ? JSON.parse(FROG.Talents.prm['Race Config']) : [];
-    FROG.Talents.enemyConfig = (FROG.Talents.prm['Enemy Config']) ? JSON.parse(FROG.Talents.prm['Enemy Config']) : [];
-    FROG.Talents.addToFormulas = (FROG.Talents.prm['Add to Formulas'] === "true");
-    FROG.Talents.saveTalentsObject = (FROG.Talents.prm['Save Talents Object'] === "true");
-    FROG.Talents.maxType = FROG.Talents.prm['Max Type'].toString().trim() || "LEVEL";
-    FROG.Talents.maxRanks = parseInt(FROG.Talents.prm['Max Ranks']) || 0;
-    FROG.Talents.proficiencyBonus = parseInt(FROG.Talents.prm['Proficiency Bonus']) || 0;
-    FROG.Talents.talentBarIncrement = parseFloat(FROG.Talents.prm['Talent Bar Increment']) || 0.2;
-    FROG.Talents.talentBarWait = parseInt(FROG.Talents.prm['Talent Bar Wait']) || 20;
-
-    // Default Checks
-    FROG.Talents.lastCheckVar = parseInt(FROG.Talents.prm['Last Check Variable']) || 0;
-    FROG.Talents.targetNumberVar = parseInt(FROG.Talents.prm['Target Number Variable']) || 0;
-    FROG.Talents.rollType = FROG.Talents.prm['Roll Type'].toString().trim() || "ROLL";
-    FROG.Talents.dieCount = parseInt(FROG.Talents.prm['Die Count']) || 1;
-    FROG.Talents.dieType = parseInt(FROG.Talents.prm['Die Type'].replace("d", "")) || 20;
-    FROG.Talents.viewType = FROG.Talents.prm['View Mode'].toString().trim() || "ASK";
-    FROG.Talents.declineCheckVal = parseInt(FROG.Talents.prm['Decline Check Value']) || 9999;
-    FROG.Talents.normalizeTarget = (FROG.Talents.prm['Normalize Target Number'] === "true");
-    FROG.Talents.namedChecks = (FROG.Talents.prm['Named Checks']) ? JSON.parse(FROG.Talents.prm['Named Checks']) : [];
-    FROG.Talents.namedModifiers = (FROG.Talents.prm['Named Modifiers']) ? JSON.parse(FROG.Talents.prm['Named Modifiers']) : [];
-
-    // Commands
-    FROG.Talents.systemMode = FROG.Talents.prm['System Mode'].toString().trim() || "FULL";
-    FROG.Talents.mainMenuCommand = FROG.Talents.prm['Main Menu'].toString().trim() || "Talents";
-    FROG.Talents.talentsMenuCommand = FROG.Talents.prm['Talents Menu'].toString().trim() || "Raise Talent";
-    FROG.Talents.exitCommand = FROG.Talents.prm['Exit'].toString().trim() || "Exit";
-    FROG.Talents.finishCommand = FROG.Talents.prm['Finish'].toString().trim() || "Finish";
-
-    // Text
-    FROG.Talents.pointsText = FROG.Talents.prm['Points Text'].toString().trim() || "Talent Points";
-    FROG.Talents.talentsText = FROG.Talents.prm['Talents Text'].toString().trim() || "Talents";
-    FROG.Talents.ranksText = FROG.Talents.prm['Ranks Text'].toString().trim() || "Ranks";
-    FROG.Talents.bonusText = FROG.Talents.prm['Bonus Text'].toString().trim() || "Bonus";
-    FROG.Talents.scoreText = FROG.Talents.prm['Score Text'].toString().trim() || "Score";
-    FROG.Talents.difficultyText = FROG.Talents.prm['Difficulty Text'].toString().trim() || "Difficulty";
-    FROG.Talents.talentCheckText = FROG.Talents.prm['Talent Check Text'].toString().trim() || "Talent Check";
-    FROG.Talents.successText = FROG.Talents.prm['Success Text'].toString().trim() || "Success!";
-    FROG.Talents.successColor = FROG.Talents.prm['Success Color'].toString().trim() || "#30FF30";
-    FROG.Talents.failText = FROG.Talents.prm['Fail Text'].toString().trim() || "Failed!";
-    FROG.Talents.failColor = FROG.Talents.prm['Fail Color'].toString().trim() || "#FF3030";
-    FROG.Talents.learnTrait = FROG.Talents.prm['Learn Trait'].toString().trim() || "";
-
-    // Style
-    FROG.Talents.showRanks = (FROG.Talents.prm['Show Ranks'] === "true");
-    FROG.Talents.showBonus = (FROG.Talents.prm['Show Bonus'] === "true");
-    FROG.Talents.showScore = (FROG.Talents.prm['Show Score'] === "true");
-    FROG.Talents.showCheckNumbers = (FROG.Talents.prm['Show Check Numbers'] === "true");
-    FROG.Talents.gaugeHeight = parseInt(FROG.Talents.prm['Gauge Height']) || 12;
-    FROG.Talents.gaugeColorType = FROG.Talents.prm['Gauge Color Type'].toString().trim() || "Proficiency";
-    FROG.Talents.proficientColor = (FROG.Talents.prm['Proficient Color']) ? JSON.parse(FROG.Talents.prm['Proficient Color']) : {"Start Color":"#0000FF","End Color":"#6666FF"};
-    FROG.Talents.nonProficientColor = (FROG.Talents.prm['Non-proficient Color']) ? JSON.parse(FROG.Talents.prm['Non-proficient Color']) : {"Start Color":"#EA7000","End Color":"#FFA655"};
-    FROG.Talents.signatureColor = (FROG.Talents.prm['Signature Color']) ? JSON.parse(FROG.Talents.prm['Signature Color']) : {"Start Color":"#00B000","End Color":"#00FF00"};
-    FROG.Talents.colorList = (FROG.Talents.prm['Color List']) ? JSON.parse(FROG.Talents.prm['Color List']) : ["{\"Start Color\":\"#B00000\",\"End Color\":\"#FF3030\"}","{\"Start Color\":\"#0000B0\",\"End Color\":\"#3030FF\"}","{\"Start Color\":\"#008000\",\"End Color\":\"#00FF00\"}","{\"Start Color\":\"#900090\",\"End Color\":\"#FF00FF\"}","{\"Start Color\":\"#008080\",\"End Color\":\"#00D0D0\"}","{\"Start Color\":\"#A08000\",\"End Color\":\"#FFC000\"}"];
-    FROG.Talents.fontSize = parseInt(FROG.Talents.prm['Font Size']) || 26;
+    FROG.Talents.talents = (PluginManager.parameters('FROG_TalentCore')['Talent Config']) ? JSON.parse(PluginManager.parameters('FROG_TalentCore')['Talent Config']) : [];
+    FROG.Talents.addToFormulas = (PluginManager.parameters('FROG_TalentCore')['Add to Formulas'] === "true");
 
     /* ---------------------------------------------------------------*\
                             Add to Formulas
@@ -1645,7 +1816,7 @@ FROG.Talents = FROG.Talents || {};
         }
         evalStr = evalStr.slice(0, -1) + " });";
         eval(evalStr);
-        i = evalStr = talParam = undefined;
+        i = evalStr = talParam = FROG.Talents.talents = undefined;
     }
 
     /* ---------------------------------------------------------------*\
@@ -1655,208 +1826,8 @@ FROG.Talents = FROG.Talents || {};
     FROG.Talents.DataManager_IsDatabaseLoaded = DataManager.isDatabaseLoaded;
     DataManager.isDatabaseLoaded = function () {
         if (!FROG.Talents.DataManager_IsDatabaseLoaded.call(this)) return false;
-
-        // Construct $dataTalents object
-        var ft = FROG.Talents;
-        var colorList = [];
-        for (var i in ft.colorList) {
-            var obj = JSON.parse(ft.colorList[i]);
-            colorList.push({
-                startColor: obj["Start Color"],
-                endColor: obj["End Color"]
-            });
-        }
-
-        $dataTalents = {
-            settings: {
-                maxType: ft.maxType,
-                maxRanks: ft.maxRanks,
-                proficiencyBonus: ft.proficiencyBonus,
-                talentBarIncrement: ft.talentBarIncrement,
-                talentBarWait: ft.talentBarWait
-            },
-            check: {
-                lastCheckVar: ft.lastCheckVar,
-                targetNumberVar: ft.targetNumberVar,
-                rollType: ft.rollType,
-                dieCount: ft.dieCount,
-                dieType: ft.dieType,
-                viewType: ft.viewType,
-                declineCheckVal: ft.declineCheckVal,
-                normalizeTarget: ft.normalizeTarget,
-                namedChecks: [],
-                namedModifiers: []
-            },
-            commands: {
-                systemMode: ft.systemMode,
-                mainMenuCommand: ft.mainMenuCommand,
-                talentsMenuCommand: ft.talentsMenuCommand,
-                exitCommand: ft.exitCommand,
-                finishCommand: ft.finishCommand
-            },
-            text: {
-                pointsText: ft.pointsText,
-                talentsText: ft.talentsText,
-                ranksText: ft.ranksText,
-                bonusText: ft.bonusText,
-                scoreText: ft.scoreText,
-                difficultyText: ft.difficultyText,
-                talentCheckText: ft.talentCheckText,
-                successText: ft.successText,
-                successColor: ft.successColor,
-                failText: ft.failText,
-                failColor: ft.failColor,
-                learnTrait: ft.learnTrait
-            },
-            style: {
-                showRanks: ft.showRanks,
-                showBonus: ft.showBonus,
-                showScore: ft.showScore,
-                showCheckNumbers: ft.showCheckNumbers,
-                gaugeHeight: ft.gaugeHeight,
-                gaugeColorType: ft.gaugeColorType,
-                proficientColor: {
-                    startColor: ft.proficientColor["Start Color"],
-                    endColor: ft.proficientColor["End Color"]
-                },
-                nonProficientColor: {
-                    startColor: ft.nonProficientColor["Start Color"],
-                    endColor: ft.nonProficientColor["End Color"]
-                },
-                signatureColor: {
-                    startColor: ft.signatureColor["Start Color"],
-                    endColor: ft.signatureColor["End Color"]
-                },
-                colorList: colorList,
-                fontSize: ft.fontSize
-            }
-        };
-
-        $dataTalents.talents = [];
-        $dataTalents.talents.push(null);
-        for (var i in ft.talents) {
-            var obj = JSON.parse(ft.talents[i]);
-            if (obj && obj["Abbreviation"].trim() && obj["Name"].trim()) {
-                var tobj = {
-                    name: obj["Name"].trim(),
-                    abbreviation: obj["Abbreviation"].toLowerCase().trim(),
-                    description: obj["Description"].replace(/\\n/g, String.fromCharCode(10)).slice(1, -1),
-                    classProficiencies: (obj["Class Proficiencies"]) ? JSON.parse(obj["Class Proficiencies"]).map(Number) : [],
-                    classSignatures: (obj["Class Signatures"]) ? JSON.parse(obj["Class Signatures"]).map(Number) : [],
-                    visibilityMode: (obj["Visibility Mode"]) ? obj["Visibility Mode"].toUpperCase().trim() : "ALL",
-                    classVisibility: (obj["Class Visibility"]) ? JSON.parse(obj["Class Visibility"]).map(Number) : [],
-                    startingRanks: parseInt(obj["Starting Ranks"]) || 0
-                }
-                $dataTalents.talents.push(tobj);
-            }
-        }
-
-        // Named Checks
-        for (var i in ft.namedChecks) {
-            var obj = JSON.parse(ft.namedChecks[i]);
-            if (obj && obj["Name"].trim()) {
-                var tobj = {
-                    name: obj["Name"].toLowerCase().trim(),
-                    target: parseInt(obj["Target Number"]) || 0
-                }
-                $dataTalents.check.namedChecks.push(tobj);
-            }
-        }
-
-        // Named Modifiers
-        for (var i in ft.namedModifiers) {
-            var obj = JSON.parse(ft.namedModifiers[i]);
-            if (obj && obj["Name"].trim()) {
-                var tobj = {
-                    name: obj["Name"].toLowerCase().trim(),
-                    mod: parseInt(obj["Modifier"])
-                }
-                $dataTalents.check.namedModifiers.push(tobj);
-            }
-        }
-
-        // Add to $dataClasses
-        for (var i in ft.classConfig) {
-            var obj = JSON.parse(ft.classConfig[i]) || 0;
-            var classId = parseInt(obj["Class"]) || 0;
-            var clas = $dataClasses[classId];
-            if (clas) {
-                clas.talentConfig = {
-                    startingPoints: parseInt(obj["Starting Points"]) || 0,
-                    pointsPerLevel: parseInt(obj["Points Per Level"]) || 0
-                };
-            }
-        }
-
-        // Add to $dataActors
-        for (var i in ft.actorConfig) {
-            var obj = JSON.parse(ft.actorConfig[i]);
-            var actor = $dataActors[parseInt(obj["Actor"]) || 0];
-            if (actor) {
-                actor.talentConfig = {
-                    pointBonus: parseInt(obj["Point Bonus/Penalty"]) || 0,
-                    startingBonus: parseInt(obj["Starting Bonus/Penalty"]) || 0,
-                    talentCheckVar: parseInt(obj["Talent Check Variable"]) || 0,
-                    talentBonus: {}
-                };
-
-                if (obj["Talent Bonus/Penalty"]) {
-                    for (var j in JSON.parse(obj["Talent Bonus/Penalty"])) {
-                        var obj2 = JSON.parse(JSON.parse(obj["Talent Bonus/Penalty"])[j]);
-                        if (obj2 && obj2["Talent Abbreviation"].trim()) {
-                            actor.talentConfig.talentBonus[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Bonus/Penalty"]);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Add to $dataRaces
-        if (Imported.FROG_Races === true && $dataRaces) {
-            for (var i in ft.raceConfig) {
-                var obj = JSON.parse(ft.raceConfig[i]);
-                var id = parseInt(obj["Race ID"]) || 0;
-
-                if (id > 0) {
-                    var tobj = {
-                        pointBonus: parseInt(obj["Point Bonus/Penalty"]) || 0,
-                        startingBonus: parseInt(obj["Starting Bonus/Penalty"]) || 0,
-                        talentBonus: {}
-                    };
-
-                    if (obj["Talent Bonus/Penalty"]) {
-                        for (var j in JSON.parse(obj["Talent Bonus/Penalty"])) {
-                            var obj2 = JSON.parse(JSON.parse(obj["Talent Bonus/Penalty"])[j]);
-                            if (obj2 && obj2["Talent Abbreviation"].trim()) {
-                                tobj.talentBonus[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Bonus/Penalty"]) || 0;
-                            }
-                        }
-                    }
-                    if ($dataRaces[id]) {
-                        $dataRaces[id].talentConfig = tobj;
-                    }
-                }
-            }
-        }
-
-        // Add to $dataEnemies
-        for (var i in ft.enemyConfig) {
-            var obj = JSON.parse(ft.enemyConfig[i]);
-            var id = parseInt(obj["Enemy ID"]) || 0;
-            if ($dataEnemies[id]) {
-                $dataEnemies[id].talents = {};
-                //var enemyTalObj = (obj["Enemy Talents"]) ? JSON.parse(obj["Enemy Talents"]) : ;
-                if (obj["Enemy Talents"]) {
-                    for (var j in JSON.parse(obj["Enemy Talents"])) {
-                        var obj2 = JSON.parse(JSON.parse(obj["Enemy Talents"])[j]);
-                        if (obj2 && obj2["Talent Abbreviation"].trim()) {
-                            $dataEnemies[id].talents[obj2["Talent Abbreviation"].trim()] = parseInt(obj2["Score"]) || 0;
-                        }
-                    }
-                }
-            }
-        }
-
+        FROG.Core.jsonParams(PluginManager.parameters('FROG_TalentCore'), $dataTalents);
+        //console.log($dataTalents);
         return true;
     }
 
@@ -1864,7 +1835,7 @@ FROG.Talents = FROG.Talents || {};
     FROG.Talents.DataManager_MakeSaveContents = DataManager.makeSaveContents;
     DataManager.makeSaveContents = function() {
         var contents = FROG.Talents.DataManager_MakeSaveContents.call(this);
-        if (FROG.Talents.saveTalentsObject === true) {
+        if ($dataTalents.saveTalentsObject === true) {
             contents.talents = $dataTalents;
         }
         return contents;
@@ -1874,7 +1845,7 @@ FROG.Talents = FROG.Talents || {};
     FROG.Talents.DataManager_ExtractSaveContents = DataManager.extractSaveContents;
     DataManager.extractSaveContents = function(contents) {
         FROG.Talents.DataManager_ExtractSaveContents.call(this, contents);
-        if (FROG.Talents.saveTalentsObject === true) {
+        if ($dataTalents.saveTalentsObject === true) {
             $dataTalents = contents.talents;
         }
     }
@@ -1889,10 +1860,15 @@ FROG.Talents = FROG.Talents || {};
         FROG.Talents.Game_Enemy_setup.call(this, enemyId, x, y);
 
         // Set up talents
-        this._talents = [];
+        this._talents = {};
         var enemy = $dataEnemies[enemyId];
-        if (enemy) {
-            this._talents = enemy.talents;
+        if (enemy && $dataTalents.enemyConfig) {
+            for (var i=0; i<$dataTalents.enemyConfig.length; i++) {
+                var config = $dataTalents.enemyConfig[i];
+                if (config.enemyId === enemy._enemyId) {
+                    this._talents[config.talentAbbreviation.trim()] = parseInt(config.score) || 0;
+                }
+            }
         }
     }
 
@@ -1904,38 +1880,48 @@ FROG.Talents = FROG.Talents || {};
     FROG.Talents.Game_Actor_setup = Game_Actor.prototype.setup;
     Game_Actor.prototype.setup = function (actorId) {
         FROG.Talents.Game_Actor_setup.call(this, actorId);
+        this.initializeTalents();
+    }
 
-        // Set up talents
-        this._talents = [];
-        var actor = $dataActors[actorId];
-        if (actor) {
-            this._talentConfig = actor.talentConfig;
+    // Initialize Actor Talents
+    Game_Actor.prototype.initializeTalents = function () {
+        var self = this;
+        this._talents = {};
+        this._talentControl = true;
+
+        if (!FROG.Core.isEmpty($dataTalents.actorConfig)) {
+            var actorConfig = $dataTalents.actorConfig.filter(function (config) {
+                return config.actorId == self.actorId();
+            })[0];
+            this._talentControl = (actorConfig && actorConfig.playerControl === false) ? false : true;
         }
 
-        // Add talents to this actor
-        for (var i in $dataTalents.talents) {
-            var talent = $dataTalents.talents[i];
-            if (talent) {
-                var ranks = talent.startingRanks;
+        for (var i=0; i<$dataTalents.talentConfig.length; i++) {
+            var talent = $dataTalents.talentConfig[i];
+            if (talent && talent.abbreviation) {
+                var ranks = talent.startingRanks || 0;
 
                 // Class Signature Initialization
-                if (talent.classSignatures.length > 0 && talent.classSignatures.indexOf(this._classId) > -1) {
+                if (this._talentControl && talent.classSignatures.length > 0 && talent.classSignatures.indexOf(this._classId) > -1) {
                     ranks = this._level;
-                    if ($dataTalents.settings.maxType == "LEVEL") {
-                        ranks += $dataTalents.settings.maxRanks;
+                    if ($dataTalents.maxType == "LEVEL") {
+                        ranks += $dataTalents.maxRanks || 0;
                     }
                 }
 
+                // Assign ranks if Player Control is false
+                ranks += FROG.Talents.getAutoRanks(this, talent.abbreviation, true) || 0;
+
                 // Push talent ranks
-                this._talents.push({
+                this._talents[talent.abbreviation] = {
                     name: talent.name,
                     desc: talent.description,
-                    abbr: talent.abbreviation,
                     prof: (talent.classProficiencies.indexOf(this._classId) > -1) ? true : false,
                     sig: (talent.classSignatures.indexOf(this._classId) > -1) ? true : false,
                     vis: (talent.visibilityMode == "ALL" || (talent.visibilityMode == "CLASS" && talent.classVisibility.indexOf(this._classId) > -1)) ? true : false,
-                    ranks: ranks
-                });
+                    ranks: ranks,
+                    trained: talent.requiresTraining
+                };
             }
         }
 
@@ -1944,15 +1930,83 @@ FROG.Talents = FROG.Talents || {};
         this.addTalentPoints(true);
     }
 
+    /** Gets auto-distributed points for an actor at their current level.
+     * @param {object} actor - The actor
+     * @param {string} abbr - Talent abbreviation
+     * @param {number} Returns the ranks gained at this level.
+     */
+    FROG.Talents.getAutoRanks = function (actor, abbr, initialize) {
+        var ranks = 0;
+
+        if (!FROG.Core.isEmpty($dataTalents.classConfig)) {
+            var classConfig = $dataTalents.classConfig.filter(function (config) {
+                return config.classId == actor._classId;
+            })[0] || {};
+
+            if (!actor._talentControl && !FROG.Core.isEmpty(classConfig)) {
+                classConfig.autoDistribution = classConfig.autoDistribution || "Vertical";
+                classConfig.verticalDistribution = classConfig.verticalDistribution || [];
+                classConfig.horizontalDistribution = classConfig.horizontalDistribution || [];
+                $dataTalents.distributionPatterns = $dataTalents.distributionPatterns || [];
+
+                switch (classConfig.autoDistribution) {
+                    // Vertical Distribution
+                    case "Vertical":
+                        if (classConfig.verticalDistribution.length) {
+                            var vDist = classConfig.verticalDistribution.filter(function (v) {
+                                return v.talentAbbreviation == abbr;
+                            })[0] || null;
+                            var patternName = (vDist && vDist.pattern) ? vDist.pattern : "";
+
+                            var distributionPatterns = $dataTalents.distributionPatterns.filter(function (d) {
+                                return d.name == patternName;
+                            })[0] || null;
+                            var pattern = (distributionPatterns && distributionPatterns.pattern) ? distributionPatterns.pattern : "";
+
+                            if (pattern && pattern.length) {
+                                if (initialize) {
+                                    for (var i=1; i<=actor._level; i++) {
+                                        ranks += pattern[i % pattern.length];
+                                    }
+                                }
+                                else {
+                                    ranks += pattern[actor._level % pattern.length];
+                                }
+                            }
+                        }
+                        break;
+
+                    // Horizontal Distribution
+                    case "Horizontal":
+                        if (classConfig.horizontalDistribution.length) {
+                            var index = actor._level % classConfig.horizontalDistribution.length;
+                            var hDist = classConfig.horizontalDistribution[index].advancement;
+                            for (var j=0; j<hDist.length; j++) {
+                                var advance = hDist[j];
+                                if (advance.abbr == abbr) {
+                                    ranks += advance.ranks;
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        return ranks;
+    }
+
     // Reset starting talent points if class changes at initial level
     //        Used for when the player chooses their character's classes
     FROG.Talents.Game_Actor_ChangeClass = Game_Actor.prototype.changeClass;
     Game_Actor.prototype.changeClass = function (classId, keepExp) {
         FROG.Talents.Game_Actor_ChangeClass.call(this, classId, keepExp);
+        this.initializeTalents();
 
-        if (this._level <= $dataActors[this.actorId()].initialLevel) {
-            this._talentPoints = 0;
-            this.addTalentPoints(true);
+        // Add points per level
+        var levels = this._level - $dataActors[this.actorId()].initialLevel;
+        for (var i=0; i<levels; i++) {
+            this.addTalentPoints(false);
         }
     }
 
@@ -1960,38 +2014,60 @@ FROG.Talents = FROG.Talents || {};
      * @param {boolean} initialize - Will add the starting points instead of the points per level
      */
     Game_Actor.prototype.addTalentPoints = function (initialize) {
-        if (initialize) {
-            this._talentPoints = 0;
+        var self = this;
+        if (!FROG.Core.isEmpty($dataTalents.classConfig)) {
+            var classConfig = $dataTalents.classConfig.filter(function (config) {
+                return config.classId == self._classId;
+            })[0] || {};
+        }
+
+        if (this._talentControl && $dataTalents.systemMode != "HIDE") {
+            if (initialize) {
+                this._talentPoints = 0;
+            }
 
             // Class Starting Points
-            if ($dataClasses[this._classId] && $dataClasses[this._classId].talentConfig) {
-                this._talentPoints += $dataClasses[this._classId].talentConfig.startingPoints || 0;
+            if (!FROG.Core.isEmpty($dataTalents.classConfig)) {
+                var classConfig = $dataTalents.classConfig.filter(function (config) {
+                    return config.classId == self._classId;
+                })[0];
+
+                if (initialize) {
+                    this._talentPoints += (classConfig && classConfig.startingPoints) ? classConfig.startingPoints : 0;
+                }
+                else {
+                    this._talentPoints += (classConfig && classConfig.pointsPerLevel) ? classConfig.pointsPerLevel : 0;
+                }
             }
 
             // Actor Starting Points
-            if (this._talentConfig) {
-                this._talentPoints += this._talentConfig.startingBonus || 0;
+            if (!FROG.Core.isEmpty($dataTalents.actorConfig)) {
+                var actorConfig = $dataTalents.actorConfig.filter(function (config) {
+                    return config.actorId == self.actorId();
+                })[0];
+
+                if (initialize) {
+                    this._talentPoints += (actorConfig && actorConfig.startingBonusPenalty) ? actorConfig.startingBonusPenalty : 0;
+                }
+                else {
+                    this._talentPoints += (actorConfig && actorConfig.pointBonusPenalty) ? actorConfig.pointBonusPenalty : 0;
+                }
             }
 
             // Race Starting Points
-            if (Imported.FROG_Races === true && $dataRaces && this.raceId() && $dataRaces[this.raceId()] && $dataRaces[this.raceId()].talentConfig) {
-                this._talentPoints += $dataRaces[this.raceId()].talentConfig.startingBonus || 0;
-            }
-        }
-        else {
-            // Class Points Per Level
-            if ($dataClasses[this._classId] && $dataClasses[this._classId].talentConfig) {
-                this._talentPoints += $dataClasses[this._classId].talentConfig.pointsPerLevel || 0;
-            }
+            if (Imported.FROG_Races === true && $dataRaces && this.raceId() && $dataRaces[this.raceId()]) {
+                if (!FROG.Core.isEmpty($dataTalents.raceConfig)) {
+                    var raceConfig = $dataTalents.raceConfig.filter(function (config) {
+                        return config.raceId == self.raceId();
+                    })[0];
 
-            // Actor Points Per Level
-            if (this._talentConfig) {
-                this._talentPoints += this._talentConfig.pointBonus || 0;
-            }
-
-            // Race Points Per Level
-            if (Imported.FROG_Races === true && $dataRaces && this.raceId() && $dataRaces[this.raceId()] && $dataRaces[this.raceId()].talentConfig) {
-                this._talentPoints += $dataRaces[this.raceId()].talentConfig.pointBonus || 0;
+                    if (initialize) {
+                        this._talentPoints += (raceConfig && raceConfig.startingBonusPenalty) ? raceConfig.startingBonusPenalty : 0;
+                    }
+                    else {
+                        this._talentPoints += (raceConfig && raceConfig.pointBonusPenalty) ? raceConfig.pointBonusPenalty : 0;
+                    }
+                }
             }
         }
     }
@@ -2003,10 +2079,16 @@ FROG.Talents = FROG.Talents || {};
         this.addTalentPoints(false);
 
         // Class Signature Talents (Add 1 rank to each so that these stay maxed out)
-        for (var i in $dataTalents.talents) {
-            var talent = $dataTalents.talents[i];
-            if (talent && talent.classSignatures && talent.classSignatures.indexOf(this._classId) > -1) {
-                FROG.Talents.addTalentRanks(this.actorId(), talent.abbreviation, 1);
+        for (var i=0; i<$dataTalents.talentConfig.length; i++) {
+            var talent = $dataTalents.talentConfig[i];
+            if (this._talentControl) {
+                if (talent && talent.classSignatures && talent.classSignatures.indexOf(this._classId) > -1) {
+                    FROG.Talents.addTalentRanks(this.actorId(), talent.abbreviation, 1);
+                }
+            }
+            else {
+                var ranks = FROG.Talents.getAutoRanks(this, talent.abbreviation, false) || 0;
+                FROG.Talents.addTalentRanks(this.actorId(), talent.abbreviation, ranks);
             }
         }
     }
@@ -2019,8 +2101,8 @@ FROG.Talents = FROG.Talents || {};
     FROG.Talents.Window_MenuCommand_AddOriginalCommands = Window_MenuCommand.prototype.addOriginalCommands;
     Window_MenuCommand.prototype.addOriginalCommands = function () {
         FROG.Talents.Window_MenuCommand_AddOriginalCommands.call(this);
-        if ($dataTalents.commands.systemMode != "HIDE") {
-            this.addCommand($dataTalents.commands.mainMenuCommand, 'talents', true);
+        if ($dataTalents.systemMode != "HIDE") {
+            this.addCommand($dataTalents.commands.mainMenu, 'talents', true);
         }
     }
 
@@ -2067,9 +2149,7 @@ FROG.Talents = FROG.Talents || {};
         this.createHelpWindow();
         this.createCommandWindow();
         this.createStatusWindow();
-        if ($dataTalents.commands.systemMode == "FULL") {
-            this.createPointsWindow();
-        }
+        this.createPointsWindow();
         this.createTalentsWindow();
         this.refreshActor();
     }
@@ -2125,9 +2205,7 @@ FROG.Talents = FROG.Talents || {};
         this._talentsWindow = new Window_Talent(wx, wy, ww, wh);
         this._talentsWindow.setHelpWindow(this._helpWindow);
         this._talentsWindow.setStatusWindow(this._statusWindow);
-        if (this._pointsWindow) {
-            this._talentsWindow.setPointsWindow(this._pointsWindow);
-        }
+        this._talentsWindow.setPointsWindow(this._pointsWindow);
         this._talentsWindow.setHandler("finish", this.commandTalentFinish.bind(this));
         this._talentsWindow.setHandler("cancel", this.commandTalentCancel.bind(this));
         this.addWindow(this._talentsWindow);
@@ -2138,9 +2216,7 @@ FROG.Talents = FROG.Talents || {};
         var actor = this.actor();
         this._commandWindow.setActor(actor);
         this._statusWindow.setActor(actor);
-        if (this._pointsWindow) {
-            this._pointsWindow.setActor(actor);
-        }
+        this._pointsWindow.setActor(actor);
         this._talentsWindow.setActor(actor);
     }
 
@@ -2164,10 +2240,9 @@ FROG.Talents = FROG.Talents || {};
             this._commandWindow.activate();
             this._commandWindow.refresh();
             this._talentsWindow.setPoints(this._actor._talentPoints);
-            if (this._pointsWindow) {
-                this._pointsWindow.setPoints(this._actor._talentPoints);
-            }
+            this._pointsWindow.setPoints(this._actor._talentPoints);
             this._helpWindow.setText("Your changes were saved.");
+            this.refreshActor();
         }
         else {
             this.refreshActor();
@@ -2180,7 +2255,7 @@ FROG.Talents = FROG.Talents || {};
         this._talentsWindow.deselect();
         this._commandWindow.activate();
         if (this._talentsWindow.totalPointsAdded() > 0) {
-            this._helpWindow.setText("Changes you made were not saved.\nSelect the " + $dataTalents.commands.finishCommand + " command to save your changes.");
+            this._helpWindow.setText("Changes you made were not saved.\nSelect the " + $dataTalents.commands.finish + " command to save your changes.");
         }
     }
 
@@ -2202,10 +2277,7 @@ FROG.Talents = FROG.Talents || {};
 
     // Returns the number of commands in the Talent command window
     Window_TalentsCommand.prototype.numVisibleRows = function () {
-        if ($dataTalents.commands.systemMode == "FULL") {
-            return 2;
-        }
-        return 1;
+        return 2;
     }
 
     // Set Actor
@@ -2218,10 +2290,13 @@ FROG.Talents = FROG.Talents || {};
 
     // Add Raise Talents and Exit commands to  the Talents scene manu
     Window_TalentsCommand.prototype.makeCommandList = function () {
-        if ($dataTalents.commands.systemMode == "FULL") {
-            this.addCommand($dataTalents.commands.talentsMenuCommand, 'addpoints');
+        if ($dataTalents.systemMode == "FULL" && (!this._actor || this._actor._talentControl)) {
+            this.addCommand($dataTalents.commands.raiseTalent, 'addpoints');
         }
-        this.addCommand($dataTalents.commands.exitCommand, 'exit');
+        else {
+            this.addCommand($dataTalents.commands.viewTalent, 'addpoints');
+        }
+        this.addCommand($dataTalents.commands.exit, 'exit');
     }
 
     /* ---------------------------------------------------------------*\
@@ -2295,6 +2370,12 @@ FROG.Talents = FROG.Talents || {};
     Window_TalentPoints.prototype.setActor = function (actor) {
         if (this._actor !== actor) {
             this._actor = actor;
+            if ($dataTalents.systemMode == "FULL" && actor._talentControl) {
+                this.show();
+            }
+            else {
+                this.hide();
+            }
             this.setPoints(this._actor._talentPoints);
             this.refresh();
         }
@@ -2319,13 +2400,25 @@ FROG.Talents = FROG.Talents || {};
     // Refresh Points window
     Window_TalentPoints.prototype.refresh = function () {
         this.contents.clear();
-        if (this._actor) {
+        if (this._actor && $dataTalents.systemMode == "FULL" && this._actor._talentControl) {
             var ww = this.contentsWidth();
             this.changeTextColor(this.systemColor());
             this.drawText($dataTalents.text.pointsText, 0, 0, ww * .75);
             this.resetTextColor();
             this.drawText(this.points(), ww * .75, 0, ww * .25, 'right');
         }
+    }
+
+    // Shows the Points window
+    Window_TalentPoints.prototype.show = function () {
+        this.opacity = 255;
+        this.backOpacity = this.standardBackOpacity();
+    }
+
+    // Hides the Points window
+    Window_TalentPoints.prototype.hide = function () {
+        this.opacity = 0;
+        this.backOpacity = 0;
     }
 
     /* ---------------------------------------------------------------*\
@@ -2384,7 +2477,10 @@ FROG.Talents = FROG.Talents || {};
 
     // Add point to a particular talent
     Window_Talent.prototype.addPoint = function (symbol) {
+        var proficiencyBonus = 0;
+
         if (this._actor) {
+            var abbr = symbol.replace("talent_", "");
             if (this._pointsAdded[symbol]) {
                 this._pointsAdded[symbol]++;
             }
@@ -2394,8 +2490,7 @@ FROG.Talents = FROG.Talents || {};
             this.updatePointsWindow();
 
             // Talent-based Trait Rewards
-            var abbr = symbol.replace("talent_", "");
-            var ranks = FROG.Talents._find(this._actor._talents, "abbr", abbr, "ranks") + this._pointsAdded[symbol];
+            var ranks = this._actor._talents[abbr].ranks + this._pointsAdded[symbol];
             this.checkTalentBasedTraits(abbr, ranks);
         }
     }
@@ -2409,7 +2504,7 @@ FROG.Talents = FROG.Talents || {};
 
                 // Talent-based Trait Rewards
                 var abbr = symbol.replace("talent_", "");
-                var ranks = FROG.Talents._find(this._actor._talents, "abbr", abbr, "ranks") + this._pointsAdded[symbol];
+                var ranks = this._actor._talents[abbr].ranks + this._pointsAdded[symbol];
                 this.checkTalentBasedTraits(abbr, ranks);
             }
         }
@@ -2467,21 +2562,13 @@ FROG.Talents = FROG.Talents || {};
 
     // Set actor
     Window_Talent.prototype.setActor = function (actor) {
-        if (this._actor !== actor) {
-            this._actor = actor;
-            this._maxRanks = FROG.Talents.getMaxRanks(actor);
-            this._maxScore = FROG.Talents.getMaxScore(actor);
-            this._maxGauge = FROG.Talents.getMaxGauge(actor);
-            this.clearInfo();
-            this.setPoints(this._actor._talentPoints);
-            this.refresh();
-        }
-    }
-
-    // Refresh everything
-    Window_Talent.prototype.restartInfo = function () {
-        this.refreshEverything();
+        this._actor = actor;
+        this._maxRanks = FROG.Talents.getMaxRanks(actor);
+        this._maxScore = FROG.Talents.getMaxScore(actor);
+        this._maxGauge = FROG.Talents.getMaxGauge(actor);
         this.clearInfo();
+        this.setPoints(this._actor._talentPoints);
+        this.refresh();
     }
 
     // Set text in the Help window
@@ -2501,10 +2588,8 @@ FROG.Talents = FROG.Talents || {};
 
     // Set points for the Points window
     Window_Talent.prototype.updatePointsWindow = function () {
-        if (this._pointsWindow) {
-            this._pointsWindow.clear();
-            this._pointsWindow.setPoints(this.pointsLeft());
-        }
+        this._pointsWindow.clear();
+        this._pointsWindow.setPoints(this.pointsLeft());
     }
 
     // Handle action button press on a selected talent
@@ -2520,19 +2605,24 @@ FROG.Talents = FROG.Talents || {};
 
     // Add points to the selected talent
     Window_Talent.prototype.applyPoints = function () {
+        var self = this;
+        var unappliedPoints = 0;
         if (this._actor) {
-            for (var key in this._pointsAdded) {
-                var points = parseInt(this._pointsAdded[key]);
-                for (var i=0; i<this._actor._talents.length; i++) {
-                    var t = this._actor._talents[i];
-                    if (t.abbr == key.replace("talent_", "")) {
-                        t.ranks += points;
-                    }
+            Object.keys(this._pointsAdded).forEach(function(key, index) {
+                var points = parseInt(self._pointsAdded[key]);
+                var abbr = key.replace("talent_", "");
+                if (self.isSynergyVisible(abbr, self._pointsAdded)) {
+                    self._actor._talents[abbr].ranks += points;
                 }
-            }
-            this._actor._talentPoints -= this.totalPointsAdded();
+                else {
+                    unappliedPoints += points;
+                }
+            });
+
+            this._actor._talentPoints -= this.totalPointsAdded() - unappliedPoints;
             this.clearInfo();
 
+            // Talent-based Traits
             if (Imported.FROG_LevelBasedTraitsTalent === true) {
                 this._actor.addTalentTraits();
             }
@@ -2541,28 +2631,52 @@ FROG.Talents = FROG.Talents || {};
 
     // Build a command list that consists of all of the talents
     Window_Talent.prototype.makeCommandList = function () {
+        var self = this;
         this.addCommand("Header", "header");
         this._list[this._list.length - 1].active = false;
 
-        if (this._actor) {
-            for (var i in this._actor._talents) {
-                var t = this._actor._talents[i];
-                if (t.vis === true) {
-                    this.addCommand(t.name, "talent_" + t.abbr);
-                    this._list[this._list.length - 1].active = true;
-                    this._list[this._list.length - 1].abbr = t.abbr;
-                    this._list[this._list.length - 1].desc = t.desc;
-                    this._list[this._list.length - 1].prof = t.prof;
-                    this._list[this._list.length - 1].ranks = t.ranks;
-                    this._list[this._list.length - 1].sig = t.sig;
+        if (this._actor && this._actor._talents) {
+            Object.keys(this._actor._talents).forEach(function(key, index) {
+                var t = self._actor._talents[key];
+                if (t && t.vis === true && self.isSynergyVisible(key, self._pointsAdded)) {
+                    self.addCommand(t.name, "talent_" + key);
+                    self._list[self._list.length - 1].abbr = key;
+                    self._list[self._list.length - 1].active = true;
+                    self._list[self._list.length - 1].desc = t.desc;
+                    self._list[self._list.length - 1].prof = t.prof;
+                    self._list[self._list.length - 1].ranks = t.ranks;
+                    self._list[self._list.length - 1].sig = t.sig;
+                }
+            });
+
+            if ($dataTalents.systemMode == "FULL" && this._actor._talentControl) {
+                this.addCommand($dataTalents.commands.finish, "finish");
+                this._list[this._list.length - 1].active = false;
+            }
+        }
+    }
+
+    // Checks to see if this Talent is meets the requirements for visibility
+    Window_Talent.prototype.isSynergyVisible = function (abbr, pointsAdded) {
+        pointsAdded = pointsAdded || {};
+        var isVis = true;
+        var talent = $dataTalents.talentConfig.filter(function (config) {
+            return config.abbreviation == abbr;
+        })[0] || null;
+
+        if (talent && talent.synergyRequirement) {
+            for (var i=0; i<talent.synergyRequirement.length; i++) {
+                var synergy = talent.synergyRequirement[i] || null;
+                if (synergy && synergy.talentAbbreviation && synergy.requiredRanks && this._actor && this._actor._talents) {
+                    var tal = this._actor._talents[synergy.talentAbbreviation] || {};
+                    if (synergy.requiredRanks > tal.ranks + (pointsAdded["talent_" + synergy.talentAbbreviation] || 0)) {
+                        isVis = false;
+                    }
                 }
             }
         }
 
-        if ($dataTalents.commands.systemMode == "FULL") {
-            this.addCommand($dataTalents.commands.finishCommand, "finish");
-            this._list[this._list.length - 1].active = false;
-        }
+        return isVis;
     }
 
     // Draw a talent or the Finish command
@@ -2581,7 +2695,7 @@ FROG.Talents = FROG.Talents || {};
         var rect = this.itemRectForText(index);
         var align = this.itemTextAlign();
         this.changeTextColor(this.systemColor());
-        this.contents.fontSize = $dataTalents.style.fontSize - 4;
+        this.contents.fontSize = ($dataTalents.style.fontSize || 26) - 4;
         this.drawText($dataTalents.text.talentsText, rect.x + 5, rect.y, rect.width * 0.5 - 5, align);
 
         var slot = {
@@ -2608,7 +2722,7 @@ FROG.Talents = FROG.Talents || {};
         }
 
         this.resetTextColor();
-        this.contents.fontSize = $dataTalents.style.fontSize;
+        this.contents.fontSize = $dataTalents.style.fontSize || 26;
     }
 
     // Draw the name, ranks, score and gauge for a talent
@@ -2621,10 +2735,10 @@ FROG.Talents = FROG.Talents || {};
         var rect = this.itemRectForText(index);
         var align = this.itemTextAlign();
         var addedPoints = this.getPointsAdded(symbol);
-        var rate = parseFloat((FROG.Talents.getActorTalentScore(this._actor.actorId(), this._list[index].abbr) + addedPoints) / this._maxGauge).toFixed(2);
+        var rate = parseFloat(FROG.Talents.getActorTalentScore(this._actor.actorId(), this._list[index].abbr, this._pointsAdded) / this._maxGauge).toFixed(2);
 
         if ($dataTalents.style.gaugeColorType == "Color List") {
-            for (var i in $dataTalents.style.colorList) {
+            for (var i=0; i<$dataTalents.style.colorList.length; i++) {
                 if (i == index % $dataTalents.style.colorList.length) {
                     var colors = $dataTalents.style.colorList[i];
                     var color1 = colors.startColor;
@@ -2633,30 +2747,35 @@ FROG.Talents = FROG.Talents || {};
             }
         }
         else {
-            var colors = $dataTalents.style.nonProficientColor;
-            if (this._list[index].sig === true) {
-                colors = $dataTalents.style.signatureColor;
+            var colors = $dataTalents.style.nonproficientColor;
+            if (colors) {
+                if (this._list[index].sig === true) {
+                    colors = $dataTalents.style.signatureColor;
+                }
+                else if (this._list[index].prof === true) {
+                    colors = $dataTalents.style.proficientColor;
+                }
+                var color1 = colors.startColor;
+                var color2 = colors.endColor;
             }
-            else if (this._list[index].prof === true) {
-                colors = $dataTalents.style.proficientColor;
-            }
-            var color1 = colors.startColor;
-            var color2 = colors.endColor;
         }
 
         //this.changeTextColor(this.systemColor());
         this.resetTextColor();
         this.changePaintOpacity(this.isCommandEnabled(index));
         this.drawGauge(rect.x, rect.y, rect.width, rate, color1, color2);
-        this.contents.fontSize = $dataTalents.style.fontSize;
+        this.contents.fontSize = $dataTalents.style.fontSize || 26;
         this.drawText(this.commandName(index), rect.x + 5, rect.y, rect.width * 0.5 - 5, align);
         this.drawTalentItemNumbers(index, rect.x + rect.width * 0.5, rect.width * 0.5 - 5, rect);
     }
 
     // Draw talent gauge
     Window_Talent.prototype.drawGauge = function (x, y, width, rate, color1, color2) {
+        color1 = color1 || FROG.Core.badGaugeStartColor;
+        color2 = color2 || FROG.Core.badGaugeEndColor;
+        rate = rate || 0;
         var fillW = Math.floor(width * rate);
-        var height = $dataTalents.style.gaugeHeight;
+        var height = $dataTalents.style.gaugeHeight || 15;
         var gaugeY = y + this.lineHeight() - height;
         this.contents.fillRect(x, gaugeY, width, height, this.gaugeBackColor());
         this.contents.gradientFillRect(x, gaugeY, fillW, height, color1, color2);
@@ -2667,7 +2786,7 @@ FROG.Talents = FROG.Talents || {};
         var symbol = this.commandSymbol(index);
         var addedPoints = this.getPointsAdded(symbol);
         var ranks = this._list[index].ranks + addedPoints;
-        var score = FROG.Talents.getActorTalentScore(this._actor.actorId(), this._list[index].abbr) + addedPoints;
+        var score = FROG.Talents.getActorTalentScore(this._actor.actorId(), this._list[index].abbr, this._pointsAdded);
         var bonus = score - ranks;
         if (bonus >= 0) bonus = "+" + bonus;
         if (addedPoints > 0) this.changeTextColor("#80FF80");
@@ -2695,7 +2814,7 @@ FROG.Talents = FROG.Talents || {};
             this.setSlot(slot, false);
             this.drawText(ranks.toString(), slot.x, rect.y, slot.w, 'right');
         }
-        this.contents.fontSize = $dataTalents.style.fontSize;
+        this.contents.fontSize = $dataTalents.style.fontSize || 26;
     }
 
     // Returns the coordinates of the numbers slot
@@ -2728,7 +2847,7 @@ FROG.Talents = FROG.Talents || {};
         const isEnabled = (this.totalPointsAdded() > 0);
         this.resetTextColor();
         this.changePaintOpacity(isEnabled);
-        this.contents.fontSize = $dataTalents.style.fontSize;
+        this.contents.fontSize = $dataTalents.style.fontSize || 26;
         this.drawText(this.commandName(index), rect.x, rect.y, rect.width, 'center');
         this.resetFontSettings();
     }
@@ -2736,7 +2855,7 @@ FROG.Talents = FROG.Talents || {};
     // Increase ranks when the Right direction is pressed
     Window_Talent.prototype.cursorRight = function (wrap) {
         var item = this._list[this.index()];
-        if (item.active === true && (item.ranks + this.getPointsAdded(item.symbol)) < FROG.Talents.getMaxRanks(this._actor) && this.pointsLeft() > 0) {
+        if ($dataTalents.systemMode == "FULL" && this._actor._talentControl && item.active === true && (item.ranks + this.getPointsAdded(item.symbol)) < FROG.Talents.getMaxRanks(this._actor) && this.pointsLeft() > 0) {
             this.addPoint(item.symbol);
             SoundManager.playCursor();
             this.updatePointsWindow();
@@ -2747,7 +2866,7 @@ FROG.Talents = FROG.Talents || {};
     // Increase ranks when the Left direction is pressed
     Window_Talent.prototype.cursorLeft = function (wrap) {
         var item = this._list[this.index()];
-        if (item.active === true && this.getPointsAdded(item.symbol) > 0) {
+        if ($dataTalents.systemMode == "FULL" && this._actor._talentControl && item.active === true && this.getPointsAdded(item.symbol) > 0) {
             this.remPoint(item.symbol);
             SoundManager.playCursor();
             this.updatePointsWindow();
@@ -2820,8 +2939,8 @@ FROG.Talents = FROG.Talents || {};
         this._statusWindow._mod = o.mod;
         this._statusWindow._die = o.die;
         this._statusWindow._dcount = o.dcount;
-        this._statusWindow._min = o.min;
-        this._statusWindow._max = o.max;
+        this._statusWindow._min = Math.max(1, o.min);
+        this._statusWindow._max = Math.max(1, o.max);
         this._statusWindow._view = o.view;
         this.addWindow(this._statusWindow);
     }
@@ -2855,7 +2974,7 @@ FROG.Talents = FROG.Talents || {};
 
     // Called when the player chooses to not attempt a talent
     Scene_TalentCheckResults.prototype.commandPass = function () {
-        $gameVariables.setValue(parseInt(this._var), $dataTalents.check.declineCheckVal)
+        $gameVariables.setValue(parseInt(this._var), $dataTalents.checkDefaults.declineCheckValue)
         this.popScene();
     }
 
@@ -2905,7 +3024,7 @@ FROG.Talents = FROG.Talents || {};
             this.addCommand("Pass", 'pass');
         }
         else {
-            this.addCommand($dataTalents.commands.exitCommand, 'exit');
+            this.addCommand($dataTalents.commands.exit, 'exit');
         }
     }
 
@@ -2956,19 +3075,20 @@ FROG.Talents = FROG.Talents || {};
             var resultColor = "#000000";
             var resultText = "";
         }
-        else if (this._result >= 0) {
-            var resultColor = $dataTalents.text.successColor;
-            var resultText = $dataTalents.text.successText;
-        }
-        else {
-            var resultColor = $dataTalents.text.failColor;
-            var resultText = $dataTalents.text.failText;
+        else if ($dataTalents.text) {
+            if (this._result >= 0) {
+                var resultColor = $dataTalents.text.successColor;
+                var resultText = $dataTalents.text.successText;
+            }
+            else {
+                var resultColor = $dataTalents.text.failColor;
+                var resultText = $dataTalents.text.failText;
+            }
         }
 
         // Draw check name
-        var talentName = FROG.Talents._find($dataTalents.talents, "abbreviation", this._abbr, "name");
         this.resetTextColor();
-        this.drawText(talentName, wx, wy, ww, "center");
+        this.drawText(this._actor._talents[this._abbr].name, wx, wy, ww, "center");
         wy += lineHeight;
         this.drawHorzLine(lineHeight);
         wy += lineHeight;
@@ -2985,7 +3105,7 @@ FROG.Talents = FROG.Talents || {};
 
         // Draw target number
         this.drawTargetNumber(this._actor, wx, wy, ww);
-        wy += lineHeight + $dataTalents.style.gaugeHeight;
+        wy += lineHeight + $dataTalents.style.gaugeHeight || 15;
 
         // Draw check result
         this.drawResult(this._actor, wx, wy, ww);
@@ -3002,8 +3122,10 @@ FROG.Talents = FROG.Talents || {};
     // Draw target number
     Window_TalentCheckResults.prototype.drawTargetNumber = function (actor, x, y, width) {
         width = width || 186;
-        var color1 = this.hpGaugeColor1();
-        var color2 = this.hpGaugeColor2();
+        if ($dataTalents.style && $dataTalents.style.difficultyColor) {
+            var color1 = $dataTalents.style.difficultyColor.startColor;
+            var color2 = $dataTalents.style.difficultyColor.endColor;
+        }
         var min = (this._min < this._target) ? this._min : this._target;
         var max = (this._max > this._target) ? this._max : this._target;
         var rate = ((this._target - min + 1) / (max - min + 1)).toFixed(2);
@@ -3019,8 +3141,10 @@ FROG.Talents = FROG.Talents || {};
     // Draw talent check result
     Window_TalentCheckResults.prototype.drawResult = function (actor, x, y, width) {
         width = width || 186;
-        var color1 = this.mpGaugeColor1();
-        var color2 = this.mpGaugeColor2();
+        if ($dataTalents.style && $dataTalents.style.talentCheckColor) {
+            var color1 = $dataTalents.style.talentCheckColor.startColor;
+            var color2 = $dataTalents.style.talentCheckColor.endColor;
+        }
         var min = (this._min < this._target) ? this._min : this._target;
         var max = (this._max > this._target) ? this._max : this._target;
         var rate = (this._done === false) ?
@@ -3034,11 +3158,11 @@ FROG.Talents = FROG.Talents || {};
         if (this._view != "ASK") {
             // Handles the bar growth and refresh
             if (this._resultCounter.toFixed(2) < parseInt(this._target + this._result)) {
-                this._resultCounter += $dataTalents.settings.talentBarIncrement;
+                this._resultCounter += $dataTalents.checkDefaults.talentBarIncrement;
                 var self = this;
                 setTimeout(function () {
                     self.refresh();
-                }, $dataTalents.settings.talentBarWait);
+                }, $dataTalents.checkDefaults.talentBarWait);
             }
             else {
                 // Bar is done growing. Refresh one more time to draw the final results
@@ -3062,10 +3186,12 @@ FROG.Talents = FROG.Talents || {};
 
     // Draw gauge
     Window_TalentCheckResults.prototype.drawGauge = function (x, y, width, rate, color1, color2) {
+        color1 = color1 || FROG.Core.badGaugeStartColor;
+        color2 = color2 || FROG.Core.badGaugeEndColor;
         var fillW = Math.floor(width * rate);
         var gaugeY = y + this.lineHeight() - 8;
-        this.contents.fillRect(x, gaugeY, width, $dataTalents.style.gaugeHeight, this.gaugeBackColor());
-        this.contents.gradientFillRect(x, gaugeY, fillW, $dataTalents.style.gaugeHeight, color1, color2);
+        this.contents.fillRect(x, gaugeY, width, $dataTalents.style.gaugeHeight || 15, this.gaugeBackColor());
+        this.contents.gradientFillRect(x, gaugeY, fillW, $dataTalents.style.gaugeHeight || 15, color1, color2);
     }
 
     // Open talent check scene
@@ -3089,8 +3215,8 @@ FROG.Talents = FROG.Talents || {};
      */
     FROG.Talents.getMaxRanks = function (actor) {
         if (actor) {
-            var max = $dataTalents.settings.maxRanks;
-            if ($dataTalents.settings.maxType == "LEVEL") {
+            var max = $dataTalents.maxRanks;
+            if ($dataTalents.maxType == "LEVEL") {
                 max += actor._level;
             }
             return max;
@@ -3103,16 +3229,19 @@ FROG.Talents = FROG.Talents || {};
      * @returns {number} Returns the max ranks for the actor
      */
     FROG.Talents.getMaxScore = function (actor) {
+        var self = this;
         var maxScore = 0;
-        if (actor) {
-            for (var i in actor._talents) {
-                var t = actor._talents[i];
-                var score = this.getActorTalentScore(actor.actorId(), t.abbr);
+
+        if (actor && actor._talents) {
+            Object.keys(actor._talents).forEach(function(key, index) {
+                //var talent = actor._talents[key];
+                var score = self.getActorTalentScore(actor.actorId(), key);
                 if (score > maxScore) {
                     maxScore = score;
                 }
-            }
+            });
         }
+
         return maxScore;
     }
 
@@ -3121,57 +3250,58 @@ FROG.Talents = FROG.Talents || {};
      * @returns {number} Returns the max ranks for the actor
      */
     FROG.Talents.getMaxGauge = function (actor) {
+        var self = this;
         var maxGauge = 0;
-        if (actor) {
-            for (var i in actor._talents) {
-                var t = actor._talents[i];
-                var maxRanks = this.getMaxRanks(actor);
-                var ranks = this.getTalentRanks(actor.actorId(), t.abbr);
-                var score = this.getActorTalentScore(actor.actorId(), t.abbr);
+
+        if (actor && actor._talents) {
+            Object.keys(actor._talents).forEach(function(key, index) {
+                var talent = actor._talents[key];
+                var maxRanks = self.getMaxRanks(actor);
+                var ranks = self.getTalentRanks(actor.actorId(), key);
+                var score = self.getActorTalentScore(actor.actorId(), key);
                 var gauge = score + (maxRanks - ranks);
 
                 if (gauge > maxGauge) {
                     maxGauge = gauge;
                 }
-            }
+            });
         }
+
         return maxGauge;
     }
 
     /** Is an actor proficient with a talent
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {string} abbr - The abbreviation used to identify a talent
      * @returns {boolean} Does the actor have proficiency with the talent
      */
     FROG.Talents.isActorProficientWithTalent = function (actorId, abbr) {
         if (isNaN(actorId) === false && actorId > 0) {
             var actor = $gameActors.actor(actorId);
-            if (actor) {
-                for (var i=0; i<actor._talents.length; i++) {
-                    return actor._talents[i].prof;
-                }
+            if (actor && actor._talents && actor._talents[abbr]) {
+                return actor._talents[abbr].prof || false;
             }
         }
         return false;
     }
 
     /** Get unspent talent points for a given actor
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @returns {number} Return points remaining
      */
     FROG.Talents.getTalentPoints = function (actorId) {
-        var p = -1;
         if (isNaN(actorId) === false && actorId > 0) {
             var actor = $gameActors.actor(actorId);
             if (actor) {
-                p = actor._talentPoints;
+                return actor._talentPoints || 0;
             }
         }
-        return p;
+
+        return 0;
     }
 
     /** Gets the total talent points accumulated by the given actor
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @returns {number} Returns the total number of points, spent and unspent
      */
     FROG.Talents.getTotalTalentPoints = function (actorId) {
@@ -3180,10 +3310,9 @@ FROG.Talents = FROG.Talents || {};
             var actor = $gameActors.actor(actorId);
             if (actor) {
                 p = 0;
-                for (var i=0; i<actor._talents.length; i++) {
-                    var t = actor._talents[i];
-                    p += t.ranks;
-                }
+                Object.keys(actor._talents).forEach(function(key, index) {
+                    p += actor._talents[key].ranks || 0;
+                });
                 p += actor._talentPoints;
             }
         }
@@ -3191,7 +3320,7 @@ FROG.Talents = FROG.Talents || {};
     }
 
     /** Manually set the number of talent points for an actor
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {number} points - The point total that the actor will be set to (required)
      * @returns {boolean} Returns true if the points were set correctly, false if this function was unable to
      */
@@ -3208,7 +3337,7 @@ FROG.Talents = FROG.Talents || {};
     }
 
     /** Add a given number of talent points to an actor
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {number} points - The number of points that will be added to the actor (required)
      * @returns {boolean} Returns true if the points were added correctly, false if this function was unable to
      */
@@ -3225,7 +3354,7 @@ FROG.Talents = FROG.Talents || {};
     }
 
     /** Remove a given number of talent points from an actor
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {number} points - The number of points that will be subtracted from the actor (required)
      * @returns {boolean} Returns true if the points were removed correctly, false if this function was unable to
      */
@@ -3242,96 +3371,89 @@ FROG.Talents = FROG.Talents || {};
     }
 
     /** Set the number of ranks for a specific talent. This will overwrite any ranks the actor currently has.
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {string} abbr - The abbreviation used to identify a talent (required)
      * @param {number} ranks - The number of ranks to set the actor to (required)
      * @returns {boolean} Returns true if the ranks were set correctly, false if this function was unable to
      */
     FROG.Talents.setTalentRanks = function (actorId, abbr, ranks) {
         var bOk = false;
-        if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
+
+        if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false) {
             var actor = $gameActors.actor(actorId);
-            if (actor) {
-                for (var i=0; i<actor._talents.length; i++) {
-                    var t = actor._talents[i];
-                    if (t.abbr.toLowerCase() == abbr.toLowerCase() && t.ranks < FROG.Talents.getMaxRanks(actor)) {
-                        t.ranks = ranks.clamp(0, FROG.Talents.getMaxRanks(actor));
-                        bOk = true;
-                    }
-                }
+            if (actor && actor._talents && actor._talents[abbr]) {
+                actor._talents[abbr].ranks = ranks.clamp(0, FROG.Talents.getMaxRanks(actor));
+                bOk = true;
             }
         }
+
         return bOk;
     }
 
     /** Add a number of talent ranks to an actor
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {string} abbr - The abbreviation used to identify a talent (required)
      * @param {number} ranks - The number of ranks to add (required)
      * @returns {boolean} Returns true if the ranks were added correctly, false if this function was unable to
      */
     FROG.Talents.addTalentRanks = function (actorId, abbr, ranks) {
         var bOk = false;
+
         if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
             var actor = $gameActors.actor(actorId);
-            if (actor) {
-                for (var i in actor._talents) {
-                    var t = actor._talents[i];
-                    if (t.abbr.toLowerCase() == abbr.toLowerCase()) {
-                        t.ranks += ranks;
-                        bOk = true;
+            if (actor && actor._talents && actor._talents[abbr]) {
+                actor._talents[abbr].ranks += ranks;
+                bOk = true;
 
-                        if (Imported.FROG_LevelBasedTraitsTalent === true) {
-                            actor.addTalentTraits();
-                        }
-                    }
+                // Talent-based Traits
+                if (Imported.FROG_LevelBasedTraitsTalent === true) {
+                    actor.addTalentTraits();
                 }
             }
         }
+
         return bOk;
     }
 
     /** Remove a number of talent ranks from an actor
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {string} abbr - The abbreviation used to identify a talent (required)
      * @param {number} ranks - The number of ranks to subtract (required)
      * @returns {boolean} Returns true if the ranks were removed correctly, false if this function was unable to
      */
     FROG.Talents.removeTalentRanks = function (actorId, abbr, ranks) {
         var bOk = false;
+
         if (isNaN(actorId) === false && actorId > 0 && isNaN(ranks) === false && parseInt(ranks) > 0) {
             var actor = $gameActors.actor(actorId);
-            if (actor) {
-                for (var i=0; i<actor._talents.length; i++) {
-                    var t = actor._talents[i];
-                    if (t.abbr.toLowerCase() == abbr.toLowerCase()) {
-                        t.ranks -= ranks;
-                        bOk = true;
+            if (actor && actor._talents && actor._talents[abbr]) {
+                actor._talents[abbr].ranks -= ranks;
+                bOk = true;
 
-                        if (Imported.FROG_LevelBasedTraitsTalent === true) {
-                            actor.addTalentTraits();
-                        }
-                    }
+                // Talent-based Traits
+                if (Imported.FROG_LevelBasedTraitsTalent === true) {
+                    actor.addTalentTraits();
                 }
             }
         }
+
         return bOk;
     }
 
     /** Get the number of talent ranks an actor has
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {string} abbr - The abbreviation used to identify a talent (required)
      * @returns {number} Returns the number of ranks an actor has or -1 if the call didn't work
      */
     FROG.Talents.getTalentRanks = function (actorId, abbr) {
-        var ranks = -1;
         if (isNaN(actorId) === false && actorId > 0) {
             var actor = $gameActors.actor(actorId);
-            if (actor) {
-                ranks = FROG.Talents._find(actor._talents, "abbr", abbr, "ranks");
+            if (actor && actor._talents && actor._talents[abbr]) {
+                return actor._talents[abbr].ranks || 0;
             }
         }
-        return ranks;
+
+        return -1;
     }
 
     /** Get the talent score for a Game_Actor or Game_Enemy object. This is primarily used in formulas.
@@ -3353,59 +3475,105 @@ FROG.Talents = FROG.Talents || {};
     }
 
     /** Get the talent score for an actor. The score is the number of ranks plus any bonuses and penalties.
-     * @param {number} actorId - The ID of an actor (required)
+     * @param {number} actorId - The Id of an actor (required)
      * @param {string} abbr - The abbreviation used to identify a talent (required)
      * @returns {number} Returns the talent score for an actor or Decline Check Value if the call didn't work
      */
-    FROG.Talents.getActorTalentScore = function (actorId, abbr) {
+    FROG.Talents.getActorTalentScore = function (actorId, abbr, pointsAdded) {
+        pointsAdded = pointsAdded || {};
         var score = 0;
 
         if (isNaN(actorId) === false && actorId > 0) {
             var actor = $gameActors.actor(actorId);
-            if (actor) {
-                // Ranks
-                score = parseInt(FROG.Talents._find(actor._talents, "abbr", abbr, "ranks")) || 0;
+            if (actor && actor._talents && actor._talents[abbr]) {
+                var talent = actor._talents[abbr];
+                score = talent.ranks || 0;
+                score += pointsAdded["talent_" + abbr] || 0;
 
-                // Proficiency Bonus
-                if (FROG.Talents._find(actor._talents, "abbr", abbr, "prof") === true) {
-                    score += parseInt($dataTalents.settings.proficiencyBonus);
-                }
+                // Can only use if actor has ranks or talent doesn't require training
+                if (talent && (!talent.trained || score > 0)) {
+                    // Proficiency Bonus
+                    if (talent.prof === true) {
+                        score += parseInt($dataTalents.proficiencyBonus) || 0;
+                    }
 
-                // Actor Bonus/Penalty
-                score += (actor._talentConfig && actor._talentConfig.talentBonus[abbr]) ? actor._talentConfig.talentBonus[abbr] : 0;
+                    // Actor Bonus/Penalty
+                    if (!FROG.Core.isEmpty($dataTalents.actorConfig)) {
+                        var actorConfig = $dataTalents.actorConfig.filter(function (config) {
+                            return config.actorId == actor.actorId();
+                        })[0];
 
-                // Racial Bonus/Penalty
-                if (Imported.FROG_Races === true && actor.raceId() > 0 && $dataRaces[actor.raceId()] &&
-                    $dataRaces[actor.raceId()].talentConfig && $dataRaces[actor.raceId()].talentConfig.talentBonus)
-                {
-                    score += $dataRaces[actor.raceId()].talentConfig.talentBonus[abbr] || 0;
-                }
-
-                // Equipment Bonus
-                for (var i in actor._equips) {
-                    var equip = actor._equips[i];
-                    if (equip && parseInt(equip._itemId) > 0) {
-                        var item = null;
-                        switch (equip._dataClass.toLowerCase()) {
-                            case "weapon": item = $dataWeapons[equip._itemId]; break;
-                            case "armor":  item = $dataArmors[equip._itemId];  break;
+                        if (!FROG.Core.isEmpty(actorConfig) && actorConfig.talentBonusPenalty) {
+                            for (var i=0; i<actorConfig.talentBonusPenalty.length; i++) {
+                                var bonus = actorConfig.talentBonusPenalty[i];
+                                if (!FROG.Core.isEmpty(bonus) && bonus.talentAbbreviation == abbr) {
+                                    score += bonus.bonusPenalty;
+                                }
+                            }
                         }
-                        score += FROG.Talents.extractMetaBonus(item, abbr);
                     }
-                }
 
-                // Item Bonuses
-                for (var i in $gameParty._items) {
-                    if (parseInt($gameParty._items[i]) > 0) {
-                        var item = $dataItems[i];
-                        score += FROG.Talents.extractMetaBonus(item, abbr);
+                    // Racial Bonus/Penalty
+                    if (Imported.FROG_Races === true && actor.raceId() > 0 && $dataRaces[actor.raceId()]) {
+                        if (!FROG.Core.isEmpty($dataTalents.raceConfig)) {
+                            var raceConfig = $dataTalents.raceConfig.filter(function (config) {
+                                return config.raceId == actor.raceId();
+                            })[0];
+
+                            if (!FROG.Core.isEmpty(raceConfig) && raceConfig.talentBonusPenalty) {
+                                for (var i=0; i<raceConfig.talentBonusPenalty.length; i++) {
+                                    var bonus = raceConfig.talentBonusPenalty[i];
+                                    if (!FROG.Core.isEmpty(bonus) && bonus.talentAbbreviation == abbr) {
+                                        score += bonus.bonusPenalty;
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
 
-                // State Bonuses
-                for (var i in actor._states) {
-                    var state = (parseInt(actor._states[i]) > 0) ? $dataStates[parseInt(actor._states[i])] : null;
-                    score += FROG.Talents.extractMetaBonus(state, abbr);
+                    // Equipment Bonus
+                    for (var i=0; i<actor._equips.length; i++) {
+                        var equip = actor._equips[i];
+                        if (equip && parseInt(equip._itemId) > 0) {
+                            var item = null;
+                            switch (equip._dataClass.toLowerCase()) {
+                                case "weapon": item = $dataWeapons[equip._itemId]; break;
+                                case "armor":  item = $dataArmors[equip._itemId];  break;
+                            }
+                            score += FROG.Core.extractMetaBonus(item, "TalentBonus", abbr);
+                        }
+                    }
+
+                    // Item Bonuses
+                    Object.keys($gameParty._items).forEach(function(key, index) {
+                        if ($gameParty._items[key] > 0) {
+                            var item = $dataItems[key];
+                            score += FROG.Core.extractMetaBonus(item, "TalentBonus", abbr);
+                        }
+                    });
+
+                    // State Bonuses
+                    for (var i=0; i<actor._states.length; i++) {
+                        var state = (parseInt(actor._states[i]) > 0) ? $dataStates[parseInt(actor._states[i])] : null;
+                        score += FROG.Core.extractMetaBonus(state, "TalentBonus", abbr);
+                    }
+
+                    // Synergy Bonuses
+                    var talentConfig = $dataTalents.talentConfig.filter(function (config) {
+                        return config.abbreviation == abbr;
+                    })[0];
+
+                    if (!FROG.Core.isEmpty(talentConfig) && !FROG.Core.isEmpty(talentConfig.synergyBonuses)) {
+                        for (var i=0; i<talentConfig.synergyBonuses.length; i++) {
+                            var synergy = talentConfig.synergyBonuses[i] || {};
+                            if (!FROG.Core.isEmpty(synergy)) {
+                                var rnks = actor._talents[synergy.talentAbbreviation].ranks + (pointsAdded["talent_" + synergy.talentAbbreviation] || 0);
+                                if (rnks >= synergy.requiredRanks) {
+                                    score += synergy.bonus;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -3414,47 +3582,28 @@ FROG.Talents = FROG.Talents || {};
     }
 
     /** Get the talent score for an enemy.
-     * @param {number} enemyId - The ID of an enemy (required)
+     * @param {number} enemyId - The Id of an enemy (required)
      * @param {string} abbr - The abbreviation used to identify a talent (required)
      * @returns {number} Returns the talent score for an enemy
      */
     FROG.Talents.getEnemyTalentScore = function (enemyId, abbr) {
-        var score = 0;
-        var enemy = $dataEnemies[enemyId];
-        if (enemy && enemy.talents) {
-            score = (enemy.talents[abbr]) ? enemy.talents[abbr] : 0;
-        }
-        return score;
-    }
-
-    /** Extract talent bonus from a gae object's meta data (Typically weapons, armor, items and states)
-     * @param {object} gameObj - Any game object that has <TalentBonus> meta data (required)
-     * @param {string} abbr - The abbreviation used to identify a talent (required)
-     * @returns {number} Returns the bonus extracted from this obejct
-     */
-    FROG.Talents.extractMetaBonus = function (gameObj, abbr) {
-        var bonus = 0;
-        if (gameObj && gameObj.meta && gameObj.meta.TalentBonus && gameObj.meta.TalentBonus.indexOf(' ') > -1) {
-            var talentBonus = gameObj.meta.TalentBonus.trim() + ',';
-            for (var i=0; i<4; i++) talentBonus = talentBonus.replace('  ', ' ');
-            var arrList = talentBonus.split(',');
-
-            for (var i in arrList) {
-                var token = arrList[i].trim();
-                if (token && token.indexOf(' ') > -1) {
-                    var arrToken = token.split(' ');
-                    var t_bonus = eval(arrToken[0]);
-                    var t_abbr = arrToken[1].toLowerCase().trim();
-                    bonus += (t_abbr == abbr) ? t_bonus : 0;
+        for (var i=0; i<$dataTalents.enemyConfig.length; i++) {
+            var config = $dataTalents.enemyConfig[i];
+            if (config.enemyId == enemyId) {
+                for (var j=0; j<config.enemyTalents.length; j++) {
+                    var talent = config.enemyTalents[j];
+                    if (talent.talentAbbreviation == abbr) {
+                        return talent.score || 0;
+                    }
                 }
             }
         }
-        return bonus;
+        return 0;
     }
 
     /** Get the actor who has the best talent score
      * @param {string} abbr - The abbreviation used to identify a talent (required)
-     * @returns {number} Returns the ID of the actor who has the best talent score
+     * @returns {number} Returns the Id of the actor who has the best talent score
      */
     FROG.Talents.getMostTalented = function (abbr) {
         var bestScore = -1;
@@ -3487,9 +3636,14 @@ FROG.Talents = FROG.Talents || {};
      */
     FROG.Talents.getTargetNumber = function (target) {
         var r = 0;
-        if (isNaN(target) === true) {
-            var targetVal = FROG.Talents._find($dataTalents.check.namedChecks, "name", target.toLowerCase().trim(), "target");
-            r = parseInt(targetVal) || 0;
+        if (isNaN(target) === true && $dataTalents.checkDefaults && $dataTalents.checkDefaults.namedChecks) {
+            for (var i=0; i<$dataTalents.checkDefaults.namedChecks.length; i++) {
+                var namedCheck = $dataTalents.checkDefaults.namedChecks[i];
+                if (namedCheck.name == target) {
+                    r = parseInt(namedCheck.targetNumber) || 0;
+                    break;
+                }
+            }
         }
         else {
             r = parseInt(target) || 0;
@@ -3505,11 +3659,13 @@ FROG.Talents = FROG.Talents || {};
         var r = 0;
         if (isNaN(mod) === true) {
             var arrMod = (mod + ",").split(",");
-            for (var i in arrMod) {
+            for (var i=0; i<arrMod.length; i++) {
                 var modName = arrMod[i];
-                if (modName) {
-                    var modVal = FROG.Talents._find($dataTalents.check.namedModifiers, "name", modName.toLowerCase().trim(), "mod");
-                    r += parseInt(modVal) || 0;
+                if (modName && $dataTalents.checkDefaults && $dataTalents.checkDefaults.namedModifiers) {
+                    var modVal = $dataTalents.checkDefaults.namedModifiers.filter(function (mv) {
+                        return mv.name == modName;
+                    })[0] || {};
+                    r += parseInt(modVal.modifier) || 0;
                 }
             }
         }
@@ -3523,7 +3679,7 @@ FROG.Talents = FROG.Talents || {};
      * @param {object} options - The options object (required)
      * @param {number} options.var - The variable Id to store the result in (required if view is ask)
      * @param {string} options.type - The type of talent check
-     * @param {number} options.aid - Actor ID performing the check or 0 for the most talented one (default best actor)
+     * @param {number} options.aid - Actor Id performing the check or 0 for the most talented one (default best actor)
      * @param {string} options.abbr - The abbreviation of the talent being performed (required)
      * @param {number} options.target - The target number that needs to be matched or exceeded for success (default 0)
      * @param {number} options.mod - Modifier that's added to the talent score after the check is performed (default 0)
@@ -3537,20 +3693,20 @@ FROG.Talents = FROG.Talents || {};
      * @returns {number} Represents level of success or failure (0 = hit target, negative = failed by this much, positive = exceeded by this much)
     */
     FROG.Talents.talentCheck = function (options) {
-        var r = -999;
         var remResult = -1;
+        var r = -999;
         var o = options;
-        o.var = parseInt(o.var) || $dataTalents.check.lastCheckVar || 0;
-        o.type = (o.type) ? o.type.toUpperCase() : $dataTalents.check.rollType || "ROLL";
+        o.var = parseInt(o.var) || $dataTalents.checkDefaults.lastCheckVariable || 0;
+        o.type = (o.type) ? o.type.toUpperCase() : $dataTalents.checkDefaults.rollType || "ROLL";
         o.aid = parseInt(o.aid) || 0;
         o.abbr = o.abbr || "";
-        o.target = FROG.Talents.getTargetNumber(o.target);
-        o.target += FROG.Talents.getModifier(o.mod);
+        o.target = FROG.Talents.getTargetNumber(o.target) || 0;
+        o.target += FROG.Talents.getModifier(o.mod) || 0;
         o.target = o.target.clamp(1, 9999);
-        o.die = o.die || $dataTalents.check.dieType || 20;
+        o.die = o.die || $dataTalents.checkDefaults.dieType || 20;
         o.die = parseInt(o.die.toString().replace("d", ""));
-        o.dcount = parseInt(o.dcount) || $dataTalents.check.dieCount || 1;
-        o.view = (o.view) ? o.view.toUpperCase() : $dataTalents.check.viewType || "ASK";
+        o.dcount = parseInt(o.dcount) || $dataTalents.checkDefaults.dieCount || 1;
+        o.view = (o.view) ? o.view.toUpperCase() : $dataTalents.checkDefaults.viewType || "ASK";
         o.rem = (o.rem) ? o.rem.toString() : "";
 
         if (typeof o.type == "string" && o.type.length > 0 && o.abbr) {
@@ -3563,6 +3719,9 @@ FROG.Talents = FROG.Talents || {};
                 var score = FROG.Talents.getActorTalentScore(o.aid, o.abbr);
             }
 
+            var actor = $gameActors.actor(o.aid);
+            var canPerform = (actor && actor._talents && actor._talents[o.abbr] && (!actor._talents[o.abbr].trained || actor._talents[o.abbr].ranks));
+
             switch (o.type) {
                 // Compare max score + modifier to target number
                 case "MAX":
@@ -3574,7 +3733,8 @@ FROG.Talents = FROG.Talents || {};
                     o.die = 0;
                     o.dCount = 0;
                     var rnd = 0;
-                    var actorLvl = $gameActors.actor(o.aid)._level;
+                    //var actorLvl = $gameActors.actor(o.aid)._level;
+                    var actorLvl = actor._level;
 
                     // See if this check has already been done
                     if (o.rem) {
@@ -3594,11 +3754,13 @@ FROG.Talents = FROG.Talents || {};
                     }
                     else {
                         // Run check result
-                        rnd = Math.floor(Math.random() * score) + 1;
+                        if (canPerform) {
+                            rnd = Math.floor(Math.random() * score) + 1;
+                        }
                     }
 
                     // Normalize Target Number
-                    if ($dataTalents.check.normalizeTarget === true) {
+                    if ($dataTalents.checkDefaults.normalizeTargetNumber === true) {
                         o.target = parseInt(o.target / 2);
                     }
                     r = rnd - o.target;
@@ -3617,7 +3779,7 @@ FROG.Talents = FROG.Talents || {};
                 // Roll dice, add your score and modifier, and compare to target number
                 case "ROLL":
                     var roll = 0;
-                    var actorLvl = $gameActors.actor(o.aid)._level;
+                    var actorLvl = actor._level;
 
                     // See if this check has already been done
                     if (o.rem) {
@@ -3634,7 +3796,7 @@ FROG.Talents = FROG.Talents || {};
                         // Check result has already been made. Use it.
                         score = remResult;
                     }
-                    else {
+                    else if (canPerform) {
                         // Run check result
                         for (var i=0; i<o.dcount; i++) {
                             var rnd = Math.floor(Math.random() * o.die) + 1;
@@ -3643,7 +3805,7 @@ FROG.Talents = FROG.Talents || {};
                     }
 
                     // Normalize Target Number
-                    if ($dataTalents.check.normalizeTarget === true) {
+                    if ($dataTalents.checkDefaults.normalizeTargetNumber === true) {
                         o.target = parseInt(o.target + Math.floor(((o.die / 2) + 0.5) * o.dcount));
                     }
                     r = roll + score - o.target;
@@ -3662,15 +3824,13 @@ FROG.Talents = FROG.Talents || {};
                 // Min roll possible
                 case "MINROLL":
                     o.view = "NONE";
-                    //r = o.dcount + score + o.mod;
-                    r = o.dcount + score;
+                    r = (canPerform) ? o.dcount + score : 0 - o.target;
                     break;
 
                 // Max roll possible
                 case "MAXROLL":
                     o.view = "NONE";
-                    //r = o.dcount * o.die + score + o.mod;
-                    r = o.dcount * o.die + score;
+                    r = (canPerform) ? o.dcount * o.die + score : 0 - o.target;
                     break;
             }
 
@@ -3703,8 +3863,14 @@ FROG.Talents = FROG.Talents || {};
 
         // Set Actor Check Variable
         var actor = $gameActors.actor(o.aid);
-        if (actor && actor._talentConfig && actor._talentConfig.talentCheckVar > 0) {
-            $gameVariables.setValue(actor._talentConfig.talentCheckVar, r);
+        if (actor) {
+            for (var i=0; i<$dataTalents.actorConfig.length; i++) {
+                var config = $dataTalents.actorConfig[i];
+                if (config.actorId = actor.actorId() && config.talentCheckVariable) {
+                    $gameVariables.setValue(config.talentCheckVariable, r);
+                    break;
+                }
+            }
         }
 
         return r;
@@ -3714,7 +3880,7 @@ FROG.Talents = FROG.Talents || {};
      * @param {object} options - The options object (required)
      * @param {number} options.var - The variable Id to store the result in (required if view is ask)
      * @param {string} options.type - The type of talent check
-     * @param {number} options.eid - ID of an enemy
+     * @param {number} options.eid - Id of an enemy
      * @param {string} options.abbr - The abbreviation of the talent being performed (required)
      * @param {number} options.dieRoll - Simulated die roll (default 20 as in d20)
      * @param {number} options.dieCount - Roll multiple dice for different probability curves (default 1)
@@ -3723,17 +3889,17 @@ FROG.Talents = FROG.Talents || {};
     FROG.Talents.enemyTargetNumber = function (options) {
         var r = -999;
         var o = options;
-        o.var = parseInt(o.var) || $dataTalents.check.targetNumberVar || 0;
-        o.type = (o.type) ? o.type.toUpperCase() : $dataTalents.check.rollType || "ROLL";
+        o.var = parseInt(o.var) || $dataTalents.checkDefaults.targetNumberVariable || 0;
+        o.type = (o.type) ? o.type.toUpperCase() : $dataTalents.checkDefaults.rollType || "ROLL";
         o.eid = parseInt(o.eid) || 0;
         o.abbr = o.abbr || "";
-        o.die = o.die || $dataTalents.check.dieType || 20;
+        o.die = o.die || $dataTalents.checkDefaults.dieType || 20;
         o.die = parseInt(o.die.toString().replace("d", ""));
-        o.dcount = parseInt(o.dcount) || $dataTalents.check.dieCount || 1;
+        o.dcount = parseInt(o.dcount) || $dataTalents.checkDefaults.dieCount || 1;
 
         if (typeof o.type == "string" && o.type.length > 0 && o.abbr && o.eid > 0) {
             var score = FROG.Talents.getEnemyTalentScore(o.eid, o.abbr);
-            if ($dataTalents.check.normalizeTarget === true) {
+            if ($dataTalents.checkDefaults.normalizeTargetNumber === true) {
                 r = score;
             }
             else {
@@ -3761,27 +3927,9 @@ FROG.Talents = FROG.Talents || {};
         return r;
     }
 
-    /** Returns the value of an object's property by matching a key/value pair
-      * @param {object} object - The array of objecta to search
-     * @param {string} key - The name of the property that you are matching a value to to indicated the desired record
-     * @param {variant} val - The value that you are looking for in the key
-     * @param {string} returnProp - The name of the property that has the data you want to return
-     * @returns {variant} Returns the value stored in returnProp
-     */
-    FROG.Talents._find = function (object, key, val, returnProp) {
-        if (!object || !key || !returnProp || val == undefined) return null;
-        for (var i in object) {
-            var obj = (typeof object[i] == "string") ? JSON.parse(object[i]) : object[i];
-            if (obj && obj[key] && obj[key].toString() == val.toString()) {
-                return obj[returnProp];
-            }
-        }
-        return null;
-    }
-
     /** Set an actor's race
-     * @param {number} actorId - The ID of an actor (required)
-     * @param {number} race - The Race ID that you want to set (required)
+     * @param {number} actorId - The Id of an actor (required)
+     * @param {number} race - The Race Id that you want to set (required)
      * @returns {string} Returns true if it worked, false if it didn't
      */
     FROG.Talents.setRace = function (actorId, raceId) {
@@ -3897,7 +4045,7 @@ FROG.Talents = FROG.Talents || {};
 
                     case "CHECK":
                         var options = this.nameValueParams(args);
-                        var vid = parseInt(options.var) || parseInt($dataTalents.check.lastCheckVar);
+                        var vid = parseInt(options.var) || parseInt($dataTalents.checkDefaults.lastCheckVariable);
                         if (vid > 0) {
                             $gameVariables.setValue(options.var, ft.talentCheck(options));
                         }
@@ -3908,7 +4056,7 @@ FROG.Talents = FROG.Talents || {};
 
                     case "ENEMYTN":
                         var options = this.nameValueParams(args);
-                        var vid = parseInt(options.var) || parseInt($dataTalents.check.targetNumberVar);
+                        var vid = parseInt(options.var) || parseInt($dataTalents.checkDefaults.targetNumberVariable);
                         if (vid > 0) {
                             $gameVariables.setValue(vid, ft.enemyTargetNumber(options));
                         }
@@ -3932,7 +4080,7 @@ FROG.Talents = FROG.Talents || {};
      * @param {array} args - Plugin Command parameter args array
      * @returns {object} Assembles an object into the appropriate name/value pairs
      */
-    Game_Interpreter.prototype.nameValueParams = function (args) {
+    /*Game_Interpreter.prototype.nameValueParams = function (args) {
         var options = {};
         for (var i=1; i<args.length; i++) {
             if (args[i].indexOf(':') > 0) {
@@ -3942,7 +4090,7 @@ FROG.Talents = FROG.Talents || {};
             }
         }
         return options;
-    }
+    }*/
 
     /* ---------------------------------------------------------------*\
                             Talent Requirements

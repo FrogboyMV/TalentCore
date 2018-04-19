@@ -488,5 +488,5 @@ Credit Frogboy in your work.
 
 
 ## Changelog
-
-Version 1.0 - Initial release
+* Version 1.0 - Initial release
+* Version 1.1 - Talent-based Traits display what you'll gain when adding ranks.

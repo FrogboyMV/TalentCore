@@ -526,3 +526,4 @@ Credit Frogboy in your work.
     * Added automatic distribution of points per actor if desired.
     * Bug fix for class changes.
     * Now requires FROG_Core
+* Version 1.21 - Removed localized namespace.

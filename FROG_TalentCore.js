@@ -11,7 +11,7 @@ FROG.Talents = FROG.Talents || {};
 if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
 
 /*:
- * @plugindesc FROG_TalentCore v1.21 Talent system that closely resembles Skills in Dungeons & Dragons
+ * @plugindesc FROG_TalentCore v1.3 Talent system that closely resembles Skills in Dungeons & Dragons
  * @author Frogboy
  *
  * @help
@@ -207,6 +207,17 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * This property allows you to specify the Talent, Required Ranks and the Bonus
  * received for the associated Talent.
  *
+ * Required Item - Some talents may require one or more of an item to perform.
+ * It might be difficult to pick a lock without a set of lockpicks.  Fixing the
+ * warp reactor would be equally impossible without engine parts.  This option
+ * will allow you to choose a specified number of a single item as a requirement
+ * to perform this talent check.
+ *
+ *    Item Id - The item that is required.
+ *    Count   - The number of this item you need to to perform this check.
+ *    Consume - If set to true, the required item(s) are consumed when the
+ *              check is performed whether the check is successful or not.
+ *
  *
  * Class Config
  *
@@ -390,6 +401,13 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * game is loaded.  This is usually what you’ll want.  If, for some reason,
  * you need need to alter this data in-game and have those changes persist
  * until the end of the game, you’ll need to turn this option on.
+ *
+ * Class Change Reset - Setting this to true will refund all of an actor's
+ * talent points if they change class.  This may be needed if different classes
+ * have unique talents as the player could have spent points on talents that
+ * the actor no longer has access to.  By default, this is set to false which
+ * will retain the points spent but only if the Save Level option is used.  If
+ * and actor is reverted back to their initial level, the reset always occurs.
  *
  * Max Type - There are two options here that will allow you to customize how
  * your players assign their talents.
@@ -983,6 +1001,12 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * Font Size - Font size in the Talents window.  Scaling down the font size in
  * this window arguably looks better.
  *
+ * Show Required Item - Configure how the Required Item for a talent check is
+ * displayed.
+ *    Name - Only the item name and count are shown
+ *    Item - Only the item icon and count are shown
+ *    Both - Both the item name and icon are shown
+ *
  *
  * Note Tags
  *
@@ -1065,6 +1089,9 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  *              - Bug fix for class changes.
  *              - Now requires FROG_Core.
  * Version 1.21 - Removed the localized namespace.
+ * Version 1.3  - Added Class Change Reset option.
+ *              - Added Required Items to perform a check.
+ *              - Fixed bugs.
  *
  * ============================================================================
  *
@@ -1119,6 +1146,14 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * @parent Settings
  * @type boolean
  * @desc Changes to $dataTalents can be changed in-game and are persisted.
+ * @default false
+ * @on Yes
+ * @off No
+ *
+ * @param Class Change Reset
+ * @parent Settings
+ * @type boolean
+ * @desc Reset actor's points when changing class.  If false, the reset will still happen if Save Level is unchecked.
  * @default false
  * @on Yes
  * @off No
@@ -1179,7 +1214,7 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * @parent Settings
  * @type struct<styleStruct>
  * @desc Define how things look
- * @default {"Show Ranks":"true","Show Bonus":"true","Show Score":"true","Show Check Numbers":"true","Gauge Height":"15","Gauge Color Type":"Proficiency","Color List":"[\"{\\\"Start Color\\\":\\\"#B00000\\\",\\\"End Color\\\":\\\"#FF3030\\\"}\",\"{\\\"Start Color\\\":\\\"#0000B0\\\",\\\"End Color\\\":\\\"#3030FF\\\"}\",\"{\\\"Start Color\\\":\\\"#008000\\\",\\\"End Color\\\":\\\"#00FF00\\\"}\",\"{\\\"Start Color\\\":\\\"#900090\\\",\\\"End Color\\\":\\\"#FF00FF\\\"}\",\"{\\\"Start Color\\\":\\\"#008080\\\",\\\"End Color\\\":\\\"#00D0D0\\\"}\",\"{\\\"Start Color\\\":\\\"#A08000\\\",\\\"End Color\\\":\\\"#FFC000\\\"}\"]","Proficient Color":"{\"Start Color\":\"#0000FF\",\"End Color\":\"#6666FF\"}","Non-proficient Color":"{\"Start Color\":\"#EA7000\",\"End Color\":\"#FFA655\"}","Signature Color":"{\"Start Color\":\"#00B000\",\"End Color\":\"#00FF00\"}","Font Size":"26"}
+ * @default {"Show Ranks":"true","Show Bonus":"true","Show Score":"true","Show Check Numbers":"true","Gauge Height":"15","Gauge Color Type":"Proficiency","Color List":"[\"{\\\"Start Color\\\":\\\"#B00000\\\",\\\"End Color\\\":\\\"#FF3030\\\"}\",\"{\\\"Start Color\\\":\\\"#0000B0\\\",\\\"End Color\\\":\\\"#3030FF\\\"}\",\"{\\\"Start Color\\\":\\\"#008000\\\",\\\"End Color\\\":\\\"#00FF00\\\"}\",\"{\\\"Start Color\\\":\\\"#900090\\\",\\\"End Color\\\":\\\"#FF00FF\\\"}\",\"{\\\"Start Color\\\":\\\"#008080\\\",\\\"End Color\\\":\\\"#00D0D0\\\"}\",\"{\\\"Start Color\\\":\\\"#A08000\\\",\\\"End Color\\\":\\\"#FFC000\\\"}\"]","Proficient Color":"{\"Start Color\":\"#0000FF\",\"End Color\":\"#6666FF\"}","Non-proficient Color":"{\"Start Color\":\"#EA7000\",\"End Color\":\"#FFA655\"}","Signature Color":"{\"Start Color\":\"#00B000\",\"End Color\":\"#00FF00\"}","Talent Check Color":"{\"Start Color\":\"#4080c0\",\"End Color\":\"#40c0f0\"}","Difficulty Color":"{\"Start Color\":\"#e08040\",\"End Color\":\"#f0c040\"}","Font Size":"26"}
  */
 /*~struct~talentStruct:
  * @param Name
@@ -1280,6 +1315,30 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * @type struct<synergyBonusStruct>[]
  * @desc This talent gets a bonus if it's synergy requirements are met.
  * @default []
+ *
+ * @param Required Item
+ * @type struct<requiredItemStruct>
+ * @desc This talent gets a bonus if it's synergy requirements are met.
+ * @default {}
+ */
+/*~struct~requiredItemStruct:
+ * @param Item Id
+ * @type item
+ * @desc An item that is required in order to perform this Talent.
+ * @default
+ *
+ * @param Count
+ * @type number
+ * @desc Number of the item required to perform this Talent Check.
+ * @default 1
+ * @min 0
+ *
+ * @param Consume
+ * @type boolean
+ * @desc Consume item(s) when check is performed.
+ * @default false
+ * @on Yes
+ * @off No
  */
 /*~struct~synergyReqStruct:
  * @param Talent Abbreviation
@@ -1780,6 +1839,17 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * @type number
  * @desc Font size in the Talents window.
  * @default 26
+ *
+ * @param Show Required Item
+ * @type select
+ * @desc Configure how the Required Item for a talent check is displayed.
+ * @default Name
+ * @option Item Name
+ * @value Name
+ * @option Item Icon
+ * @value Icon
+ * @option Both Item Name and Icon
+ * @value Both
  */
 /*~struct~colorStruct:
  * @param Start Color
@@ -1802,7 +1872,7 @@ FROG.Talents.addToFormulas = (PluginManager.parameters('FROG_TalentCore')['Add t
 // Add properties to Game_BattlerBase so that talents can be used in formulas
 if (FROG.Talents.addToFormulas === true) {
     var evalStr = "Object.defineProperties (Game_BattlerBase.prototype, {";
-    for (var i in FROG.Talents.talents) {
+    for (var i=0, j=FROG.Talents.talents.length; i<j; i++) {
         var talParam = JSON.parse(FROG.Talents.talents[i]).Abbreviation;
         if (talParam) {
             evalStr += "" +
@@ -1920,7 +1990,12 @@ Game_Actor.prototype.initializeTalents = function () {
                 sig: (talent.classSignatures.indexOf(this._classId) > -1) ? true : false,
                 vis: (talent.visibilityMode == "ALL" || (talent.visibilityMode == "CLASS" && talent.classVisibility.indexOf(this._classId) > -1)) ? true : false,
                 ranks: ranks,
-                trained: talent.requiresTraining
+                trained: talent.requiresTraining,
+                requiredItem: {
+                    itemId: (talent.requiredItem && talent.requiredItem.itemId) ? talent.requiredItem.itemId : 0,
+                    count: (talent.requiredItem && talent.requiredItem.count) ? talent.requiredItem.count : 0,
+                    consume: (talent.requiredItem && talent.requiredItem.consume) ? true : false
+                }
             };
         }
     }
@@ -2001,12 +2076,16 @@ FROG.Talents.getAutoRanks = function (actor, abbr, initialize) {
 FROG.Talents.Game_Actor_ChangeClass = Game_Actor.prototype.changeClass;
 Game_Actor.prototype.changeClass = function (classId, keepExp) {
     FROG.Talents.Game_Actor_ChangeClass.call(this, classId, keepExp);
-    this.initializeTalents();
 
-    // Add points per level
-    var levels = this._level - $dataActors[this.actorId()].initialLevel;
-    for (var i=0; i<levels; i++) {
-        this.addTalentPoints(false);
+    // Reset talent points
+    if ($dataTalents.classChangeReset || !keepExp) {
+        this.initializeTalents();
+
+        // Add points per level
+        var levels = this._level - $dataActors[this.actorId()].initialLevel;
+        for (var i=0; i<levels; i++) {
+            this.addTalentPoints(false);
+        }
     }
 }
 
@@ -2515,7 +2594,7 @@ Window_Talent.prototype.checkTalentBasedTraits = function (abbr, ranks) {
     if (Imported.FROG_LevelBasedTraitsTalent === true && $dataTalents.traitRewards && $dataTalents.traitRewards[abbr]) {
         this.updateHelp();
         var rewardText = "";
-        for (var i in $dataTalents.traitRewards[abbr]) {
+        for (var i=0, j=$dataTalents.traitRewards[abbr].length; i<j; i++) {
             var reward = $dataTalents.traitRewards[abbr][i];
             if (reward && reward.name && reward.rank && ranks == reward.rank) {
                 rewardText += reward.name + ", ";
@@ -2956,6 +3035,7 @@ Scene_TalentCheckResults.prototype.createCommandWindow = function () {
     this._commandWindow.setHandler('exit', this.popScene.bind(this));
     this._commandWindow.setHandler('cancel', this.popScene.bind(this));
     this._commandWindow._view = this._options.view;
+    this._commandWindow._abbr = this._options.abbr;
     this.addWindow(this._commandWindow);
 }
 
@@ -2968,6 +3048,17 @@ Scene_TalentCheckResults.prototype.refreshActor = function () {
 
 // Called when the player chooses the Attempt command to attempt a talent
 Scene_TalentCheckResults.prototype.commandAttempt = function () {
+    // Remove required items if set to consume
+    var actor = $gameActors.actor(this._options.aid);
+    var abbr = this._options.abbr;
+    if (actor && abbr) {
+        var requiredItem = actor._talents[abbr].requiredItem;
+        if (requiredItem && requiredItem.itemId && requiredItem.count && requiredItem.consume && $dataItems[requiredItem.itemId]) {
+            var item = $dataItems[requiredItem.itemId];
+            $gameParty.gainItem(item, requiredItem.count * -1)
+        }
+    }
+
     this._statusWindow._view = "SHOW";
     this._statusWindow.refresh();
 }
@@ -3019,8 +3110,23 @@ Window_TalentCheckCommand.prototype.setActor = function (actor) {
 
 // Talent Check commands
 Window_TalentCheckCommand.prototype.makeCommandList = function () {
+    // Check for required item(s)
+    var hasRequiredItem = true;
+    if (this._actor && this._abbr) {
+        var requiredItem = this._actor._talents[this._abbr].requiredItem;
+        if (requiredItem && requiredItem.itemId && requiredItem.count && $dataItems[requiredItem.itemId]) {
+            var item = $dataItems[requiredItem.itemId];
+            if (!$gameParty.hasItem(item) || $gameParty.numItems(item) < requiredItem.count) {
+                hasRequiredItem = false;
+            }
+        }
+    }
+
+    // Make commands
     if (this._view == "ASK") {
-        this.addCommand("Attempt", 'attempt');
+        if (hasRequiredItem) {
+            this.addCommand("Attempt", 'attempt');
+        }
         this.addCommand("Pass", 'pass');
     }
     else {
@@ -3069,20 +3175,32 @@ Window_TalentCheckResults.prototype.drawCheckResults = function () {
     var wx = 0;
     var wy = 0;
     var ww = this.contentsWidth();
+    var resultColor = "#000000";
+    var resultText = "";
+    var hasRequiredItem = true;
+    var reqItem = null;
 
     // Manage result text and colors
     if (this._done === false) {
-        var resultColor = "#000000";
-        var resultText = "";
+        var requiredItem = this._actor._talents[this._abbr].requiredItem;
+        if (requiredItem && requiredItem.itemId && requiredItem.count && $dataItems[requiredItem.itemId]) {
+            var reqItem = $dataItems[requiredItem.itemId];
+            resultColor = $dataTalents.text.successColor;
+            resultText = (requiredItem.count > 1) ? requiredItem.count + "x " + reqItem.name : reqItem.name;
+            if (!$gameParty.hasItem(reqItem) || $gameParty.numItems(reqItem) < requiredItem.count) {
+                hasRequiredItem = false;
+                resultColor = $dataTalents.text.failColor;
+            }
+        }
     }
     else if ($dataTalents.text) {
         if (this._result >= 0) {
-            var resultColor = $dataTalents.text.successColor;
-            var resultText = $dataTalents.text.successText;
+            resultColor = $dataTalents.text.successColor;
+            resultText = $dataTalents.text.successText;
         }
         else {
-            var resultColor = $dataTalents.text.failColor;
-            var resultText = $dataTalents.text.failText;
+            resultColor = $dataTalents.text.failColor;
+            resultText = $dataTalents.text.failText;
         }
     }
 
@@ -3096,7 +3214,29 @@ Window_TalentCheckResults.prototype.drawCheckResults = function () {
     // Draw actor name and success/fail
     this.drawActorName(this._actor, wx, wy, ww / 2);
     this.changeTextColor(resultColor);
-    this.drawText(resultText, ww / 2, wy, ww / 2, "right");
+
+    if (this._done === false && reqItem && $dataTalents.style && $dataTalents.style.showRequiredItem) {
+        // Draw required item(s)
+        switch ($dataTalents.style.showRequiredItem) {
+            case "Name":
+                this.drawText(resultText, ww / 2, wy, ww / 2, "right");
+                break;
+            case "Icon":
+                this.drawIcon(reqItem.iconIndex, ww - Window_Base._iconWidth, wy);
+                if (requiredItem.count > 1) {
+                    this.drawText(requiredItem.count + "x", ww / 2, wy, ww / 2 - Window_Base._iconWidth - 4, "right");
+                }
+                break;
+            case "Both":
+                this.drawIcon(reqItem.iconIndex, ww - Window_Base._iconWidth, wy);
+                this.drawText(resultText, ww / 2, wy, ww / 2 - Window_Base._iconWidth - 4, "right");
+                break;
+        }
+    }
+    else {
+        // Draw success/fail
+        this.drawText(resultText, ww / 2, wy, ww / 2, "right");
+    }
     wy += lineHeight;
 
     // Draw face
@@ -3566,7 +3706,7 @@ FROG.Talents.getActorTalentScore = function (actorId, abbr, pointsAdded) {
                 if (!FROG.Core.isEmpty(talentConfig) && !FROG.Core.isEmpty(talentConfig.synergyBonuses)) {
                     for (var i=0; i<talentConfig.synergyBonuses.length; i++) {
                         var synergy = talentConfig.synergyBonuses[i] || {};
-                        if (!FROG.Core.isEmpty(synergy)) {
+                        if (!FROG.Core.isEmpty(synergy) && actor._talents[synergy.talentAbbreviation]) {
                             var rnks = actor._talents[synergy.talentAbbreviation].ranks + (pointsAdded["talent_" + synergy.talentAbbreviation] || 0);
                             if (rnks >= synergy.requiredRanks) {
                                 score += synergy.bonus;
@@ -3608,7 +3748,7 @@ FROG.Talents.getEnemyTalentScore = function (enemyId, abbr) {
 FROG.Talents.getMostTalented = function (abbr) {
     var bestScore = -1;
     var actorId = 0;
-    for (var i in $gameParty._actors) {
+    for (var i=0, j=$gameParty._actors.length; i<j; i++) {
         var actor = $gameActors._data[$gameParty._actors[i]];
         if (actor) {
             score = FROG.Talents.getActorTalentScore(actor.actorId(), abbr);
@@ -3740,7 +3880,7 @@ FROG.Talents.talentCheck = function (options) {
                 if (o.rem) {
                     FROG.Talents.cleanRemCheck();
                     var arrRemChk = [];
-                    for (var i in FROG.Talents.rememberCheck) {
+                    for (var i=0, j=FROG.Talents.rememberCheck.length; i<j; i++) {
                         var remChk = FROG.Talents.rememberCheck[i];
                         if (remChk.id == o.rem && remChk.aid == o.aid && remChk.lvl == actorLvl) {
                             remResult = remChk.result;
@@ -3784,7 +3924,7 @@ FROG.Talents.talentCheck = function (options) {
                 // See if this check has already been done
                 if (o.rem) {
                     FROG.Talents.cleanRemCheck();
-                    for (var i in FROG.Talents.rememberCheck) {
+                    for (var i=0, j=FROG.Talents.rememberCheck.length; i<j; i++) {
                         var remChk = FROG.Talents.rememberCheck[i];
                         if (remChk.id == o.rem && remChk.aid == o.aid && remChk.lvl == actorLvl) {
                             remResult = remChk.result;
@@ -4168,7 +4308,7 @@ FROG.Talents.canReceiveItem = function (targets, item) {
         var arr = talentReq.split(' ');
 
         if (arr.length >= 3) {
-            for (var i in targets) {
+            for (var i=0; i<targets.length; i++) {
                 var actor = targets[i];
 
                 if (actor) {

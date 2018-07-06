@@ -64,6 +64,11 @@ Take note that Class Signatures override the Starting Ranks.
 
 **Synergy Bonuses** - D&D 3.x had a feature called Synergy Bonuses.  If a character builds one talent up to a certain point, usually 5 ranks, they receive a small bonus to one or more other talents.  Most medicine comes from the nature, especially in a medieval setting, so it would make sense to, perhaps, grant a +2 bonus to Medicine if an actor has 5 ranks in Nature.  This property allows you to specify the Talent, Required Ranks and the Bonus received for the associated Talent.
 
+**Required Item** - Some talents may require one or more of an item to perform.  It might be difficult to pick a lock without a set of lockpicks.  Fixing the warp reactor would be equally impossible without engine parts.  This option will allow you to choose a specified number of a single item as a requirement to perform this talent check.
+* **Item Id** - The item that is required.
+* **Count** - The number of this item you need to to perform this check.
+* **Consume** - If set to true, the required item(s) are consumed when the check is performed whether the check is successful or not.
+
 
 **Class Config**
 
@@ -131,6 +136,8 @@ From here on out, most of the parameters are just single values that you fill in
 **Add to Formulas** - Wait.  Didn’t you say that talents were out-of-battle stats?  I sure did and that is their primary purpose but this is your game, not mine.  I highly suggest making your Talent Abbreviations four or five characters long so that you don’t accidentally overwrite one of the core attributes that the system needs.  If you have no need to use talents in formula boxes, turn this option off.
 
 **Save Talents Object** - Setting this to true allows you to modify the $dataTalents object, which contains most of the information within the plugin parameters, when the player saves the game.  By default, this object is built from the plugin parameters when a new game is started or a saved game is loaded.  This is usually what you’ll want.  If, for some reason, you need need to alter this data in-game and have those changes persist until the end of the game, you’ll need to turn this option on.
+
+**Class Change Reset** - Setting this to true will refund all of an actor's talent points if they change class.  This may be needed if different classes have unique talents as the player could have spent points on talents that the actor no longer has access to.  By default, this is set to false which will retain the points spent but only if the Save Level option is used.  If and actor is reverted back to their initial level, the reset always occurs.
 
 **Max Type** - There are two options here that will allow you to customize how your players assign their talents.
 * **Relative to Level** - This option sets a cap on how many ranks a player can assign to a single skill based on the actor’s level plus the number entered in for Max Ranks.  If the Max Ranks is 3, an actor cannot assign more than Level+3 ranks into any one skill.
@@ -448,6 +455,11 @@ Congratulations!  You’ve got your Talent system set up now.  All of the parame
 
 **Font Size** - Font size in the Talents window.  Scaling down the font size in this window arguably looks better.
 
+**Show Required Item** - Configure how the Required Item for a talent check is displayed.
+* **Name** - Only the item name and count are shown
+* **Item** - Only the item icon and count are shown
+* **Both** - Both the item name and icon are shown
+
 
 ### Note Tags
 
@@ -527,3 +539,7 @@ Credit Frogboy in your work.
     * Bug fix for class changes.
     * Now requires FROG_Core
 * Version 1.21 - Removed localized namespace.
+* Version 1.3
+    * Added Class Change Reset option.
+    * Added Required Items to perform a check.
+    * Fixed bugs.

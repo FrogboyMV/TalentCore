@@ -11,7 +11,7 @@ FROG.Talents = FROG.Talents || {};
 if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
 
 /*:
- * @plugindesc FROG_TalentCore v1.3 Talent system that closely resembles Skills in Dungeons & Dragons
+ * @plugindesc FROG_TalentCore v1.31 Talent system that closely resembles Skills in Dungeons & Dragons
  * @author Frogboy
  *
  * @help
@@ -1092,6 +1092,7 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * Version 1.3  - Added Class Change Reset option.
  *              - Added Required Items to perform a check.
  *              - Fixed bugs.
+ * Version 1.31 - Added support for Yanfly's Auto Passive States
  *
  * ============================================================================
  *
@@ -3698,6 +3699,15 @@ FROG.Talents.getActorTalentScore = function (actorId, abbr, pointsAdded) {
                     score += FROG.Core.extractMetaBonus(state, "TalentBonus", abbr);
                 }
 
+                // Yanfly's Auto-passive States
+                if (Imported.YEP_AutoPassiveStates) {
+                    var passiveStates = actor.passiveStates();
+                    for (var i=0; i<passiveStates.length; i++) {
+                        var state = passiveStates[i];
+                        score += FROG.Core.extractMetaBonus(state, "TalentBonus", abbr);
+                    }
+                }
+
                 // Synergy Bonuses
                 var talentConfig = $dataTalents.talentConfig.filter(function (config) {
                     return config.abbreviation == abbr;
@@ -4216,21 +4226,6 @@ Game_Interpreter.prototype.pluginCommand = function (command, args) {
     }
 }
 
-/** Creates an object out of name:value paired parameters
- * @param {array} args - Plugin Command parameter args array
- * @returns {object} Assembles an object into the appropriate name/value pairs
- */
-/*Game_Interpreter.prototype.nameValueParams = function (args) {
-    var options = {};
-    for (var i=1; i<args.length; i++) {
-        if (args[i].indexOf(':') > 0) {
-            var prop = FROG.Talents.formatArg(args[i].split(':')[0].toLowerCase());
-            var val = FROG.Talents.formatArg(args[i].split(':')[1]);
-            options[prop] = val;
-        }
-    }
-    return options;
-}*/
 
 /* ---------------------------------------------------------------*\
                         Talent Requirements

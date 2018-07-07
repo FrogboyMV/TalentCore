@@ -538,8 +538,9 @@ Credit Frogboy in your work.
     * Added automatic distribution of points per actor if desired.
     * Bug fix for class changes.
     * Now requires FROG_Core
-* Version 1.21 - Removed localized namespace.
+* Version 1.2.1 - Removed localized namespace.
 * Version 1.3
     * Added Class Change Reset option.
     * Added Required Items to perform a check.
     * Fixed bugs.
+* Version 1.3.1 - Added support for Yanfly's Auto Passive States.

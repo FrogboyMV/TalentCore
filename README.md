@@ -544,3 +544,4 @@ Credit Frogboy in your work.
     * Added Required Items to perform a check.
     * Fixed bugs.
 * Version 1.3.1 - Added support for Yanfly's Auto Passive States.
+* Version 1.3.2 - Bug fix, Cancelling talent check registered as an attempt.

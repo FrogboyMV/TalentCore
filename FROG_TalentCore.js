@@ -11,7 +11,7 @@ FROG.Talents = FROG.Talents || {};
 if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
 
 /*:
- * @plugindesc FROG_TalentCore v1.31 Talent system that closely resembles Skills in Dungeons & Dragons
+ * @plugindesc FROG_TalentCore v1.3.2 Talent system that closely resembles Skills in Dungeons & Dragons
  * @author Frogboy
  *
  * @help
@@ -1083,16 +1083,17 @@ if (!Imported.FROG_Core) console.error("This plugin requires FROG_Core");
  * Changelog
  * ============================================================================
  *
- * Version 1.0  - Initial release
- * Version 1.1  - Talent-based Traits display what you'll gain when adding ranks.
- * Version 1.2  - Added automatic distribution of points per actor if desired.
- *              - Bug fix for class changes.
- *              - Now requires FROG_Core.
- * Version 1.21 - Removed the localized namespace.
- * Version 1.3  - Added Class Change Reset option.
- *              - Added Required Items to perform a check.
- *              - Fixed bugs.
- * Version 1.31 - Added support for Yanfly's Auto Passive States
+ * Version 1.0   - Initial release
+ * Version 1.1   - Talent-based Traits display what you'll gain when adding ranks.
+ * Version 1.2   - Added automatic distribution of points per actor if desired.
+ *               - Bug fix for class changes.
+ *               - Now requires FROG_Core.
+ * Version 1.2.1 - Removed the localized namespace.
+ * Version 1.3   - Added Class Change Reset option.
+ *               - Added Required Items to perform a check.
+ *               - Fixed bugs.
+ * Version 1.3.1 - Added support for Yanfly's Auto Passive States
+ * Version 1.3.2 - Bug fix, Cancelling talent check registered as an attempt.
  *
  * ============================================================================
  *
@@ -3034,7 +3035,7 @@ Scene_TalentCheckResults.prototype.createCommandWindow = function () {
     this._commandWindow.setHandler('attempt', this.commandAttempt.bind(this));
     this._commandWindow.setHandler('pass', this.commandPass.bind(this));
     this._commandWindow.setHandler('exit', this.popScene.bind(this));
-    this._commandWindow.setHandler('cancel', this.popScene.bind(this));
+    this._commandWindow.setHandler('cancel', this.commandPass.bind(this));
     this._commandWindow._view = this._options.view;
     this._commandWindow._abbr = this._options.abbr;
     this.addWindow(this._commandWindow);

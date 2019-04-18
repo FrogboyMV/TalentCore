@@ -239,10 +239,10 @@ If you prefer using JavaScript calls instead of Plugin Commands, you can do the 
 *Example Script calls:*
 
 ```javascript
-var x = FROG.Talents.talentCheck({ var: 5, type: max, aid: 1, abbr: "perc", target: 4, view: "none" });
-var x = FROG.Talents.talentCheck({ var: 6, type: rnd, aid: 2, abbr: "jump", target: 3, view: "ask" });
+var x = FROG.Talents.talentCheck({ var: 5, type: "max", aid: 1, abbr: "perc", target: 4, view: "none" });
+var x = FROG.Talents.talentCheck({ var: 6, type: "rnd", aid: 2, abbr: "jump", target: 3, view: "ask" });
 var x = FROG.Talents.talentCheck({ abbr: "lock", target: 11 });
-var x = FROG.Talents.talentCheck({ var: 7, type: roll, aid: 3, abbr: "arca", mod: 2, target: 13, view: "show", dcount: 1, die: 20 });
+var x = FROG.Talents.talentCheck({ var: 7, type: "roll", aid: 3, abbr: "arca", mod: 2, target: 13, view: "show", dcount: 1, die: 20 });
 ```
 
 *Other useful Plugin Commands and Script Calls:*

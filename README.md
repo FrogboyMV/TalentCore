@@ -281,7 +281,7 @@ FROG.Talents.addTalentPoints(actorId, points);
 
 Remove Talent Points from an actor’s pool.
 ```
-TALENT REMPOINTS [actorId] [points]
+TALENT REMOVEPOINTS [actorId] [points]
 ```
 ```javascript
 FROG.Talents.removeTalentPoints(actorId, points);
@@ -313,7 +313,7 @@ FROG.Talents.addTalentRanks(actorId, abbr, ranks);
 
 Remove Talent Ranks from an actor’s talent.
 ```
-TALENT REMRANKS [actorId] [abbr] [ranks]
+TALENT REMOVERANKS [actorId] [abbr] [ranks]
 ```
 ```javascript
 FROG.Talents.removeTalentRanks(actorId, abbr, ranks);
